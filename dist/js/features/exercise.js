@@ -1,11 +1,11 @@
-import { renderFocusExercise } from "./focus-reader.js?v=taigi-2";
-import { compactOptions } from "../data/compact-options.js?v=taigi-2";
-import { $ } from "../core/dom.js?v=taigi-2";
-import { bank, types } from "../data/questions.js?v=taigi-2";
-import { getState, recordResult } from "../core/store.js?v=taigi-2";
-import { selectQuestions } from "../core/engine.js?v=taigi-2";
-import { restoreSession, saveSession } from "../core/session.js?v=taigi-2";
-import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=taigi-2";
+import { renderFocusExercise } from "./focus-reader.js?v=hakka-2";
+import { compactOptions } from "../data/compact-options.js?v=hakka-2";
+import { $ } from "../core/dom.js?v=hakka-2";
+import { bank, types } from "../data/questions.js?v=hakka-2";
+import { getState, recordResult } from "../core/store.js?v=hakka-2";
+import { selectQuestions } from "../core/engine.js?v=hakka-2";
+import { restoreSession, saveSession } from "../core/session.js?v=hakka-2";
+import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=hakka-2";
 export function createExerciseController({ refresh }) {
   let session = restoreSession(bank);
   let lastFocusSpeech = "";

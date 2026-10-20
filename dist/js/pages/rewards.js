@@ -1,8 +1,8 @@
-import { bank } from "../data/questions.js?v=taigi-2";
-import { getState, getMistakes } from "../core/store.js?v=taigi-2";
-import { getRewards, getCompanion } from "../core/rewards.js?v=taigi-2";
-import { rewardBadges } from "../components/badges.js?v=taigi-2";
-import { companion } from "../components/companion.js?v=taigi-2";
+import { bank } from "../data/questions.js?v=hakka-2";
+import { getState, getMistakes } from "../core/store.js?v=hakka-2";
+import { getRewards, getCompanion } from "../core/rewards.js?v=hakka-2";
+import { rewardBadges } from "../components/badges.js?v=hakka-2";
+import { companion } from "../components/companion.js?v=hakka-2";
 export function rewardsPage() {
   const reward = getRewards(getState().attempts, bank);
   const friend = getCompanion(reward.stars, reward.total);

@@ -24,7 +24,9 @@
 | 答題與成果流程 | `dist/js/features/exercise.js` |
 | 最大字分段閱讀 | `dist/js/features/focus-reader.js` |
 | 獎勵規則與畫面 | `dist/js/core/rewards.js`、`dist/js/pages/rewards.js` |
-| 台語 API、音檔快取與取消播放 | `dist/js/features/taiwanese-tts.js` |
+| 台語 API | `dist/js/features/taiwanese-tts.js` |
+| 客語 API、數字讀法與串流解析 | `dist/js/features/hakka-tts.js` |
+| 共用音檔快取、取消與播放 | `dist/js/features/remote-speech.js` |
 | 語音選擇與國語朗讀 | `dist/js/features/accessibility.js` |
 | 紀錄與設定 | `dist/js/core/store.js` |
 | 模組串接 | `dist/js/features/integration.js` |

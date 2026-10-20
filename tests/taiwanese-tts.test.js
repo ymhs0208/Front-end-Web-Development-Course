@@ -96,6 +96,7 @@ test("手機禁止自動播放時保留音檔，按第二次可直接重播", as
   let requests = 0;
   let error;
   let blocked = true;
+  let lastState;
   const tts = createTaiwaneseSpeech({
     fetchImpl: async () => {
       requests++;
@@ -110,9 +111,13 @@ test("手機禁止自動播放時保留音檔，按第二次可直接重播", as
     onError: (message) => {
       error = message;
     },
+    onState: (state) => {
+      lastState = state;
+    },
   });
   await tts.speak("你好");
   assert.match(error, /再按一次/);
+  assert.equal(lastState, "ready");
   assert.equal(tts.isActive(), false);
   blocked = false;
   await tts.speak("你好");

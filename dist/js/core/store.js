@@ -1,5 +1,5 @@
-import { bank } from "../data/questions.js?v=taigi-2";
-import { findMistakes } from "./engine.js?v=taigi-2";
+import { bank } from "../data/questions.js?v=hakka-2";
+import { findMistakes } from "./engine.js?v=hakka-2";
 const STORAGE_KEY = "vault-training-v1";
 let state = {
   attempts: [],
@@ -27,8 +27,11 @@ export function loadState(onWarning = () => {}) {
         if (typeof saved.settings?.[key] === "boolean")
           state.settings[key] = saved.settings[key];
       }
-      state.settings.speechLanguage =
-        saved.settings?.speechLanguage === "taigi" ? "taigi" : "mandarin";
+      state.settings.speechLanguage = ["taigi", "hakka"].includes(
+        saved.settings?.speechLanguage,
+      )
+        ? saved.settings.speechLanguage
+        : "mandarin";
       const level = saved.settings?.fontLevel;
       state.settings.fontLevel =
         Number.isInteger(level) && level >= 0 && level <= 3
@@ -55,7 +58,7 @@ export function getState() {
   return structuredClone(state);
 }
 export function updateSettings(patch) {
-  if (["mandarin", "taigi"].includes(patch.speechLanguage))
+  if (["mandarin", "taigi", "hakka"].includes(patch.speechLanguage))
     state.settings.speechLanguage = patch.speechLanguage;
   for (const key of ["large", "voice"]) {
     if (typeof patch[key] === "boolean") state.settings[key] = patch[key];

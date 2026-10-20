@@ -85,3 +85,14 @@ test("台語語音偏好可保存，未知語言不覆寫既有設定", () => {
   assert.equal(getState().settings.voice, false);
   assert.equal(getState().settings.speechLanguage, "taigi");
 });
+
+test("客語偏好可保存，切換語言不影響作答紀錄", () => {
+  const attempts = getState().attempts;
+  updateSettings({ voice: true, speechLanguage: "hakka" });
+  loadState();
+  assert.equal(getState().settings.speechLanguage, "hakka");
+  assert.deepEqual(getState().attempts, attempts);
+  updateSettings({ speechLanguage: "mandarin" });
+  loadState();
+  assert.equal(getState().settings.speechLanguage, "mandarin");
+});

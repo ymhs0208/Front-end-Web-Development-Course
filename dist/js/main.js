@@ -1,10 +1,10 @@
-import { toast } from "./components/notifications.js?v=taigi-2";
-import { loadState } from "./core/store.js?v=taigi-2";
-import { createRouter } from "./core/router.js?v=taigi-2";
-import { initAccessibility } from "./features/accessibility.js?v=taigi-2";
-import { createExerciseController } from "./features/exercise.js?v=taigi-2";
-import { initIntegration } from "./features/integration.js?v=taigi-2";
-import { exportProgress } from "./features/export.js?v=taigi-2";
+import { toast } from "./components/notifications.js?v=hakka-2";
+import { loadState } from "./core/store.js?v=hakka-2";
+import { createRouter } from "./core/router.js?v=hakka-2";
+import { initAccessibility } from "./features/accessibility.js?v=hakka-2";
+import { createExerciseController } from "./features/exercise.js?v=hakka-2";
+import { initIntegration } from "./features/integration.js?v=hakka-2";
+import { exportProgress } from "./features/export.js?v=hakka-2";
 
 loadState(toast);
 let router;

@@ -1,31 +1,39 @@
-import { $ } from "../core/dom.js?v=taigi-2";
-import { getState, updateSettings } from "../core/store.js?v=taigi-2";
-import { toast } from "../components/notifications.js?v=taigi-2";
-import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=taigi-2";
+import { $ } from "../core/dom.js?v=hakka-2";
+import { getState, updateSettings } from "../core/store.js?v=hakka-2";
+import { toast } from "../components/notifications.js?v=hakka-2";
+import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=hakka-2";
+import { createHakkaSpeech } from "./hakka-tts.js?v=hakka-2";
 function updateReadButton(state) {
   const button = document.querySelector("[data-read]");
   if (!button) return;
   button.textContent =
     state === "loading"
       ? "取消等候"
-      : state === "playing"
-        ? "停止朗讀"
-        : button.dataset.idleLabel || "唸給我聽";
+      : state === "ready"
+        ? "播放語音"
+        : state === "playing"
+          ? "停止朗讀"
+          : button.dataset.idleLabel || "唸給我聽";
   button.setAttribute(
     "aria-label",
-    state === "loading" ? "台語準備中，按一下取消" : button.textContent,
+    state === "loading" ? "語音準備中，按一下取消" : button.textContent,
   );
-  button.setAttribute("aria-pressed", String(state !== "idle"));
+  button.setAttribute(
+    "aria-pressed",
+    String(state === "playing" || state === "loading"),
+  );
   button.setAttribute("aria-busy", String(state === "loading"));
 }
 const taiwanese = createTaiwaneseSpeech({
   onState: updateReadButton,
   onError: toast,
 });
+const hakka = createHakkaSpeech({ onState: updateReadButton, onError: toast });
 let speechGeneration = 0;
 export function isSpeaking() {
   return (
     taiwanese.isActive() ||
+    hakka.isActive() ||
     ("speechSynthesis" in window && speechSynthesis.speaking)
   );
 }
@@ -36,8 +44,12 @@ export function say(text, force = false) {
     void taiwanese.speak(text);
     return;
   }
+  if (getState().settings.speechLanguage === "hakka") {
+    void hakka.speak(text);
+    return;
+  }
   if (!("speechSynthesis" in window)) {
-    if (force) toast("此瀏覽器不支援國語朗讀，可改選台語。");
+    if (force) toast("此瀏覽器不支援國語朗讀，可改選台語或客語。");
     return;
   }
   const token = speechGeneration;
@@ -65,6 +77,7 @@ export function stopSpeech() {
   speechGeneration++;
   if ("speechSynthesis" in window) speechSynthesis.cancel();
   taiwanese.stop();
+  hakka.stop();
   updateReadButton("idle");
 }
 export function initAccessibility() {
@@ -90,7 +103,9 @@ export function initAccessibility() {
         say(
           language === "taigi"
             ? "台語朗讀已開啟，咱做伙來學防詐騙。"
-            : "國語朗讀已開啟。點選情境練習，就可以開始學習。",
+            : language === "hakka"
+              ? "客語朗讀已開啟。請小心詐騙。"
+              : "國語朗讀已開啟。點選情境練習，就可以開始學習。",
         );
     }
   };

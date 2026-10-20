@@ -33,11 +33,11 @@ python3 -m http.server 5173 --directory dist
 - 首頁四個入口：開始練習、自己選題、我的獎勵、怎麼操作。
 - 訊息、電話、網購三類示範情境，共 9 題；每次練習抽 3 題。
 - 獨立作答頁，依序選答案、看解說、進入下一題。
-- 四級字體與國語／台語朗讀；最大字模式提供分段閱讀。
+- 四級字體與國語／台語／客語朗讀；最大字模式提供分段閱讀。
 - 我的獎勵可收集安心星，讓星星夥伴披上披風、戴上皇冠；有錯題時可按「再練一次」複習。
 - 電腦與手機排版；頁尾僅保留品牌首頁與使用說明。
 
-紀錄保存在目前瀏覽器，不跨裝置同步。清除瀏覽資料會移除紀錄。國語使用裝置語音；台語使用外部 model6 TTS，需連線且受服務流量限制。台語朗讀文字會送到外部服務，不包含作答紀錄；合成發音可能不完全自然。情境均為防詐教育示範。介面尚未經長輩真人試用。
+紀錄保存在目前瀏覽器，不跨裝置同步。清除瀏覽資料會移除紀錄。國語使用裝置語音；台語使用外部 model6 TTS，客語使用 Hugging Face 的臺灣客語語音合成系統，皆需連線且受服務流量限制。台語、客語朗讀文字會送到外部服務，不包含作答紀錄；合成發音可能不完全自然。情境均為防詐教育示範。介面尚未經長輩真人試用。
 
 ## 開發文件
 
@@ -57,8 +57,18 @@ npm test
 
 ## 台語朗讀
 
-上方「語音」可選關閉、國語或台語，設定會保存。台語沿用 [Taiwanese-tts Space](https://huggingface.co/spaces/tbdavid2019/Taiwanese-tts/blob/main/app.py) 使用的公開 model6 API，直接從瀏覽器呼叫 `https://learn-language.tokyo/taigiTTS/taigi-text-to-speech`，不需金鑰或新增後端。音檔由服務回傳的 HTTPS 網址播放。
+上方「語音」可選關閉、國語、台語或客語，設定會保存。台語沿用 [Taiwanese-tts Space](https://huggingface.co/spaces/tbdavid2019/Taiwanese-tts/blob/main/app.py) 使用的公開 model6 API，直接從瀏覽器呼叫 `https://learn-language.tokyo/taigiTTS/taigi-text-to-speech`，不需金鑰或新增後端。音檔由服務回傳的 HTTPS 網址播放。
 
 播放同文時使用本次開啟的快取（最多 32 段），重整後重新產生。可在準備中或播放時停止；換頁會取消等候及播放。45 秒未完成時提示稍後重試；API 限流或網路失敗不會自動改成國語。部分手機需要在音檔準備完成後再按一次朗讀。
 
 台語服務模組：`dist/js/features/taiwanese-tts.js`；語音介面：`dist/js/features/accessibility.js`。國語與台語共用 `say`、`stopSpeech`、`isSpeaking`，新頁面不應直接操作 SpeechSynthesis。
+
+## 客語朗讀
+
+上方「語音」選客語，使用 [臺灣客語語音合成系統](https://huggingface.co/spaces/united-link/taiwanese-hakka-tts) 的公開 Gradio `/text_to_speech` API。固定模型 `yourtts-htia-240704`、四縣腔（`sixian`）、預設語者朱品諭，語速參數 1.1。無需錄音或上傳個人聲音。
+
+客語是依輸入文字合成發音，沒有額外翻譯國語文法。引擎不接受阿拉伯數字，因此僅在朗讀內容中將數字、金額和百分比轉成中文讀法，並略去不發音的引號，將發話者標點轉為停頓；畫面題目不變。無法辨識的字詞或服務忙碌時會提示重試或改選國語，不會假裝成功或自行切換語言。
+
+使用 POST 建立合成工作，再以串流讀取音檔結果；等候上限 90 秒。停止、換頁或切換語言時會中斷瀏覽器等候及播放；已送出的伺服器工作不保證同時終止。客語與台語各有最多 32 段音檔網址快取，重新開啟後清空。手機若阻擋自動播放，準備完成後會顯示「播放語音」，再按一次即可。
+
+`hakka-tts.js` 處理客語格式與串流；`taiwanese-tts.js` 處理台語 API；`remote-speech.js` 共用取消、快取、逾時與音檔播放邏輯。三者位於 `dist/js/features/`。
