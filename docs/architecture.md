@@ -19,7 +19,7 @@
 | --- | --- |
 | 題目、答案與解說 | `dist/js/data/questions.js` |
 | 最大字短版選項 | `dist/js/data/compact-options.js` |
-| 首頁四個入口 | `dist/js/pages/home.js`、`dist/js/components/tiles.js` |
+| 首頁主要練習按鈕與次要入口 | `dist/js/pages/home.js`、`dist/js/components/tiles.js` |
 | 隨機出題與複習排序 | `dist/js/core/engine.js` |
 | 答題與成果流程 | `dist/js/features/exercise.js` |
 | 最大字分段閱讀 | `dist/js/features/focus-reader.js` |
@@ -30,6 +30,10 @@
 | 語音選擇與國語朗讀 | `dist/js/features/accessibility.js` |
 | 紀錄與設定 | `dist/js/core/store.js` |
 | 模組串接 | `dist/js/features/integration.js` |
+
+## 首頁
+
+`pages/home.js` 提供一個主要練習按鈕與三個次要連結，`css/home.css` 獨立處理首頁排版；與情境列表的四方塊樣式分開。手機最大字模式保留 30px 次要入口文字，以縮短留白及圖示尺寸讓入口保持可見。
 
 ## 共用頁首
 
@@ -48,7 +52,7 @@
 - `#mistakes`：保留的錯題筆記路由。
 - `#guide`：使用說明。
 
-練習優先排序為錯題、未練習、較少練習。最近一次答對的題目會移出錯題清單。每完成不同情境獲得一顆安心星，答錯仍算完成，重複同題不重複加星。夥伴在 3 顆星時披上披風，完成全部情境後戴上皇冠。成長規則在 `core/rewards.js`，插圖在 `components/companion.js`，動畫尊重減少動態效果設定。
+練習優先排序為錯題、未練習、較少練習。最近一次答對的題目會移出錯題清單。每筆有效作答紀錄都獲得一顆安心星，答錯及重複同題也計入；星星沒有題庫數量上限。勳章仍以不同情境及類型判斷。夥伴在 3 顆星時披上披風，9 顆星（目前題庫數量）時戴上皇冠，之後仍可繼續收星。既有紀錄直接重新計算，不做寫入遷移。成長規則在 `core/rewards.js`，插圖在 `components/companion.js`，動畫尊重減少動態效果設定。
 
 `localStorage` 使用 `vault-training-v1` 保存紀錄與設定；`sessionStorage` 使用 `vault-exercise-v1` 還原同分頁練習進度。保留既有 key，避免升級後遺失資料。
 

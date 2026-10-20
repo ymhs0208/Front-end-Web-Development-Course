@@ -1,5 +1,5 @@
-import { $ } from "../core/dom.js?v=hakka-3";
-import { compactOptions } from "../data/compact-options.js?v=hakka-3";
+import { $ } from "../core/dom.js?v=welcome-1";
+import { compactOptions } from "../data/compact-options.js?v=welcome-1";
 
 export function focusText(session) {
   const q = session.qs[session.index];

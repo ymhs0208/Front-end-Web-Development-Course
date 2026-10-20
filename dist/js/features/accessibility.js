@@ -1,8 +1,8 @@
-import { $ } from "../core/dom.js?v=hakka-3";
-import { getState, updateSettings } from "../core/store.js?v=hakka-3";
-import { toast } from "../components/notifications.js?v=hakka-3";
-import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=hakka-3";
-import { createHakkaSpeech } from "./hakka-tts.js?v=hakka-3";
+import { $ } from "../core/dom.js?v=welcome-1";
+import { getState, updateSettings } from "../core/store.js?v=welcome-1";
+import { toast } from "../components/notifications.js?v=welcome-1";
+import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=welcome-1";
+import { createHakkaSpeech } from "./hakka-tts.js?v=welcome-1";
 function updateReadButton(state) {
   const button = document.querySelector("[data-read]");
   if (!button) return;

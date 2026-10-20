@@ -1,5 +1,5 @@
-import { getState } from "../core/store.js?v=hakka-3";
-import { toast } from "../components/notifications.js?v=hakka-3";
+import { getState } from "../core/store.js?v=welcome-1";
+import { toast } from "../components/notifications.js?v=welcome-1";
 export function exportProgress() {
   const blob = new Blob(
     [

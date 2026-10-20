@@ -1,6 +1,6 @@
-import { bank } from "../data/questions.js?v=hakka-3";
-import { getState, recordResult } from "../core/store.js?v=hakka-3";
-import { toast } from "../components/notifications.js?v=hakka-3";
+import { bank } from "../data/questions.js?v=welcome-1";
+import { getState, recordResult } from "../core/store.js?v=welcome-1";
+import { toast } from "../components/notifications.js?v=welcome-1";
 // Public compatibility boundary shared by the three team modules.
 export function initIntegration(exercise) {
   window.VaultTraining = Object.freeze({

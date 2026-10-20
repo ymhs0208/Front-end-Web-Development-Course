@@ -1,12 +1,12 @@
-import { completionCard } from "../components/completion.js?v=finish-1";
-import { renderFocusExercise } from "./focus-reader.js?v=hakka-3";
-import { compactOptions } from "../data/compact-options.js?v=hakka-3";
-import { $ } from "../core/dom.js?v=hakka-3";
-import { bank, types } from "../data/questions.js?v=hakka-3";
-import { getState, recordResult } from "../core/store.js?v=hakka-3";
-import { selectQuestions } from "../core/engine.js?v=hakka-3";
-import { restoreSession, saveSession } from "../core/session.js?v=hakka-3";
-import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=hakka-3";
+import { completionCard } from "../components/completion.js?v=welcome-1";
+import { renderFocusExercise } from "./focus-reader.js?v=welcome-1";
+import { compactOptions } from "../data/compact-options.js?v=welcome-1";
+import { $ } from "../core/dom.js?v=welcome-1";
+import { bank, types } from "../data/questions.js?v=welcome-1";
+import { getState, recordResult } from "../core/store.js?v=welcome-1";
+import { selectQuestions } from "../core/engine.js?v=welcome-1";
+import { restoreSession, saveSession } from "../core/session.js?v=welcome-1";
+import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=welcome-1";
 export function createExerciseController({ refresh }) {
   let session = restoreSession(bank);
   let lastFocusSpeech = "";

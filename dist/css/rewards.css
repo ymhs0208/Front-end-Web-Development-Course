@@ -509,3 +509,6 @@ body:is([data-text-size="2"], [data-text-size="3"]) .companion-art {
     animation: none;
   }
 }
+.companion-count strong {
+  overflow-wrap: anywhere;
+}

@@ -1,5 +1,5 @@
-import { bank } from "../data/questions.js?v=hakka-3";
-import { findMistakes } from "./engine.js?v=hakka-3";
+import { bank } from "../data/questions.js?v=welcome-1";
+import { findMistakes } from "./engine.js?v=welcome-1";
 const STORAGE_KEY = "vault-training-v1";
 let state = {
   attempts: [],

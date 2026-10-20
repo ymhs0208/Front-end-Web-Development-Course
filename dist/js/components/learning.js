@@ -1,6 +1,6 @@
-import { types } from "../data/questions.js?v=hakka-3";
-import { getState, getMistakes } from "../core/store.js?v=hakka-3";
-import { moduleArt } from "./illustrations.js?v=hakka-3";
+import { types } from "../data/questions.js?v=welcome-1";
+import { getState, getMistakes } from "../core/store.js?v=welcome-1";
+import { moduleArt } from "./illustrations.js?v=welcome-1";
 export function moduleCards(filter = "all") {
   return `<div class="cards">${Object.entries(types)
     .filter(([k]) => filter === "all" || k === filter)

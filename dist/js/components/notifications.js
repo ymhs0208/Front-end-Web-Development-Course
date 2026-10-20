@@ -1,4 +1,4 @@
-import { $ } from "../core/dom.js?v=hakka-3";
+import { $ } from "../core/dom.js?v=welcome-1";
 let toastTimer;
 export function toast(t) {
   $("#toast").textContent = t;

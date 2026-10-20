@@ -1,0 +1,153 @@
+/* One obvious start action; compact secondary navigation stays discoverable. */
+.welcome-home {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 30px 60px;
+  max-width: 1100px;
+  margin: 18px auto 0;
+}
+.home-intro h1 {
+  margin: 0;
+  color: #202c24;
+  font-size: 48px;
+  line-height: 1.45;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.home-intro h1 span {
+  display: block;
+}
+.home-intro h1 span:last-child {
+  color: #286541;
+}
+.home-start {
+  min-width: 0;
+}
+.home-start-button.primary {
+  display: block;
+  width: 100%;
+  min-height: 94px;
+  padding: 18px;
+  font-size: 34px;
+  line-height: 1.4;
+  font-weight: 800;
+  border-radius: 22px;
+}
+.home-start p {
+  text-align: center;
+  font-size: 24px;
+  line-height: 1.5;
+  color: #4f5c4f;
+  margin: 12px 0 0;
+}
+.home-shortcuts {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  padding: 0;
+  margin-top: 12px;
+  white-space: normal;
+}
+.home-shortcuts a {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 12px;
+  min-height: 86px;
+  padding: 18px;
+  border: 1px solid #d5d9d5;
+  border-radius: 19px;
+  background: #fff;
+  color: #243128;
+  font-size: 25px;
+  line-height: 1.4;
+  font-weight: 650;
+  text-decoration: none;
+}
+.home-shortcuts a:hover {
+  background: #eef4ed;
+  border-color: #7b987d;
+}
+.welcome-home .home-shortcuts .ios-tile-icon {
+  width: 32px;
+  height: 36px;
+  border-radius: 0;
+  background: transparent;
+  color: #386b50;
+  margin: 0;
+  box-shadow: none;
+  flex-shrink: 0;
+}
+.welcome-home .home-shortcuts .ios-tile-icon svg {
+  width: 30px;
+  height: 30px;
+}
+.home-shortcuts .shortcut-arrow {
+  margin-left: auto;
+  color: #607366;
+  font-size: 30px;
+}
+body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts a {
+  font-size: var(--read-font);
+}
+@media (max-width: 760px) {
+  .welcome-home {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    margin-top: 4px;
+  }
+  .home-intro h1 {
+    font-size: 34px;
+    line-height: 1.35;
+  }
+  .home-start-button.primary {
+    min-height: 76px;
+    padding: 14px 10px;
+    font-size: 30px;
+    border-radius: 19px;
+  }
+  .home-start p {
+    margin-top: 8px;
+    font-size: 23px;
+  }
+  .home-shortcuts {
+    grid-column: auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 0;
+  }
+  .home-shortcuts a {
+    min-height: 66px;
+    padding: 12px 16px;
+    font-size: 25px;
+    border-radius: 16px;
+  }
+  .welcome-home .home-shortcuts .ios-tile-icon {
+    width: 28px;
+    height: 32px;
+  }
+  .welcome-home .home-shortcuts .ios-tile-icon svg {
+    width: 27px;
+    height: 27px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"]) .home-intro h1 {
+    font-size: 38px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"])
+    .home-start-button.primary {
+    font-size: 34px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"]) .home-start p {
+    font-size: 28px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts a {
+    padding: 12px;
+    font-size: 30px;
+  }
+}
