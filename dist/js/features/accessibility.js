@@ -1,16 +1,20 @@
-import { $ } from "../core/dom.js?v=taigi-1";
-import { getState, updateSettings } from "../core/store.js?v=taigi-1";
-import { toast } from "../components/notifications.js?v=taigi-1";
-import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=taigi-1";
+import { $ } from "../core/dom.js?v=taigi-2";
+import { getState, updateSettings } from "../core/store.js?v=taigi-2";
+import { toast } from "../components/notifications.js?v=taigi-2";
+import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=taigi-2";
 function updateReadButton(state) {
   const button = document.querySelector("[data-read]");
   if (!button) return;
   button.textContent =
     state === "loading"
-      ? "準備中，點此取消"
+      ? "取消等候"
       : state === "playing"
         ? "停止朗讀"
         : button.dataset.idleLabel || "唸給我聽";
+  button.setAttribute(
+    "aria-label",
+    state === "loading" ? "台語準備中，按一下取消" : button.textContent,
+  );
   button.setAttribute("aria-pressed", String(state !== "idle"));
   button.setAttribute("aria-busy", String(state === "loading"));
 }

@@ -1,5 +1,5 @@
-import { $ } from "../core/dom.js?v=taigi-1";
-import { compactOptions } from "../data/compact-options.js?v=taigi-1";
+import { $ } from "../core/dom.js?v=taigi-2";
+import { compactOptions } from "../data/compact-options.js?v=taigi-2";
 
 export function focusText(session) {
   const q = session.qs[session.index];

@@ -1,5 +1,5 @@
-import { getState } from "../core/store.js?v=taigi-1";
-import { toast } from "../components/notifications.js?v=taigi-1";
+import { getState } from "../core/store.js?v=taigi-2";
+import { toast } from "../components/notifications.js?v=taigi-2";
 export function exportProgress() {
   const blob = new Blob(
     [

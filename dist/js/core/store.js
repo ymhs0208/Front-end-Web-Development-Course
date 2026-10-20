@@ -1,5 +1,5 @@
-import { bank } from "../data/questions.js?v=taigi-1";
-import { findMistakes } from "./engine.js?v=taigi-1";
+import { bank } from "../data/questions.js?v=taigi-2";
+import { findMistakes } from "./engine.js?v=taigi-2";
 const STORAGE_KEY = "vault-training-v1";
 let state = {
   attempts: [],

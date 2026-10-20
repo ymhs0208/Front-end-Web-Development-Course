@@ -1,0 +1,14 @@
+/* Keep both large selectors clear of the brand on narrow exercise screens. */
+@media (max-width: 420px) {
+  body.is-exercising header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 6px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  body.is-exercising header .access {
+    width: 100%;
+    margin-left: 0;
+  }
+}

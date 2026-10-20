@@ -1,4 +1,4 @@
-import { $ } from "../core/dom.js?v=taigi-1";
+import { $ } from "../core/dom.js?v=taigi-2";
 let toastTimer;
 export function toast(t) {
   $("#toast").textContent = t;
