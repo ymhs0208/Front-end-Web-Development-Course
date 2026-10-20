@@ -1,7 +1,7 @@
 /* One obvious start action; compact secondary navigation stays discoverable. */
 .welcome-home {
-  --home-title: 48px;
-  --home-mobile-title: 34px;
+  --home-title: 32px;
+  --home-mobile-title: 22px;
   --home-action: 32px;
   --home-link: 26px;
   --home-hint: 24px;
@@ -15,13 +15,14 @@
 .home-intro h1 {
   margin: 0;
   color: #18291e;
-  font-size: var(--home-title);
+  font-size: min(var(--home-title), 3.4vw);
+  white-space: nowrap;
   line-height: 1.45;
   font-weight: 800;
   letter-spacing: -0.5px;
 }
 .home-intro h1 span {
-  display: block;
+  display: inline;
 }
 .home-intro h1 span:last-child {
   color: #215331;
@@ -157,22 +158,22 @@ body:is([data-text-size="2"], [data-text-size="3"])
   }
 }
 body[data-text-size="1"] .welcome-home {
-  --home-title: 50px;
-  --home-mobile-title: 36px;
+  --home-title: 34px;
+  --home-mobile-title: 23px;
   --home-action: 34px;
   --home-link: 28px;
   --home-hint: 26px;
 }
 body[data-text-size="2"] .welcome-home {
-  --home-title: 52px;
-  --home-mobile-title: 38px;
+  --home-title: 36px;
+  --home-mobile-title: 24px;
   --home-action: 36px;
   --home-link: 30px;
   --home-hint: 28px;
 }
 body[data-text-size="3"] .welcome-home {
-  --home-title: 54px;
-  --home-mobile-title: 40px;
+  --home-title: 38px;
+  --home-mobile-title: 25px;
   --home-action: 38px;
   --home-link: 32px;
   --home-hint: 30px;
