@@ -1,0 +1,230 @@
+/* Independent header classes keep legacy page styles out of the shared shell. */
+body[data-text-size] header.site-header {
+  display: grid;
+  grid-template-areas: "brand settings home";
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto 12px;
+  padding: 24px 38px;
+  gap: 24px;
+  background: #fffdf7;
+  border: 0;
+  border-bottom: 1px solid #dfdfd3;
+  border-radius: 0 0 24px 24px;
+}
+.header-brand {
+  grid-area: brand;
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  width: fit-content;
+  max-width: 100%;
+  text-decoration: none;
+  color: #244e3c;
+}
+.header-mark {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 58px;
+  height: 62px;
+  border-radius: 19px;
+  color: #fff3cb;
+  background: #32654d;
+  box-shadow: 0 3px 0 #dbe5d8;
+}
+.header-mark svg {
+  width: 39px;
+  height: 39px;
+}
+.header-brand-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.header-brand-copy strong {
+  font-size: 27px;
+  line-height: 1.4;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.header-brand-copy > span {
+  font-size: 18px;
+  line-height: 1.5;
+  color: #65705e;
+}
+.header-home {
+  grid-area: home;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 56px;
+  padding: 9px 16px;
+  border: 1px solid #b8c7b7;
+  border-radius: 16px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-decoration: none;
+  color: #31573f;
+  background: #edf3e9;
+}
+.header-home svg {
+  width: 23px;
+  height: 23px;
+}
+.header-home:hover,
+.header-brand:hover {
+  color: #17492c;
+}
+.header-home:hover {
+  background: #e2eddd;
+}
+.header-settings {
+  grid-area: settings;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 288px;
+}
+.header-control {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+.header-control > span {
+  color: #535e51;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.header-control select {
+  appearance: auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  padding: 5px 12px;
+  margin: 0;
+  border: 1px solid #aab9a7;
+  border-radius: 13px;
+  background: #fff;
+  color: #234d3c;
+  font-family: inherit;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.header-control select:focus-visible {
+  outline: 3px solid #965128;
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  body[data-text-size] header.site-header {
+    padding: 19px 24px;
+    gap: 18px;
+  }
+  .header-brand-copy strong {
+    font-size: 23px;
+  }
+  .header-mark {
+    width: 48px;
+    height: 52px;
+    border-radius: 16px;
+  }
+  .header-mark svg {
+    width: 33px;
+    height: 33px;
+  }
+  .header-settings {
+    min-width: 240px;
+    gap: 12px;
+  }
+  .header-home {
+    padding-inline: 12px;
+  }
+  .header-home svg {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  body[data-text-size] header.site-header {
+    grid-template-areas: "brand home" "settings settings";
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 16px 20px 18px;
+    gap: 16px 10px;
+    margin-bottom: 12px;
+    border-radius: 0 0 22px 22px;
+  }
+  .header-brand {
+    gap: 10px;
+  }
+  .header-brand-copy strong {
+    font-size: 22px;
+  }
+  .header-brand-copy > span {
+    font-size: 17px;
+  }
+  .header-mark {
+    width: 43px;
+    height: 48px;
+    border-radius: 15px;
+  }
+  .header-mark svg {
+    width: 31px;
+    height: 31px;
+  }
+  .header-home {
+    min-height: 48px;
+    padding: 7px 10px;
+    font-size: 21px;
+    border-radius: 13px;
+  }
+  .header-settings {
+    min-width: 0;
+    gap: 14px;
+  }
+  .header-control > span {
+    font-size: 20px;
+  }
+  .header-control select {
+    min-height: 52px;
+    font-size: 23px;
+  }
+  body.is-exercising[data-text-size] header.site-header {
+    padding-block: 10px;
+    gap: 9px 10px;
+    margin-bottom: 6px;
+  }
+  body.is-exercising .header-brand-copy > span {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  body[data-text-size] header.site-header {
+    padding-inline: 16px;
+  }
+  .header-brand {
+    gap: 8px;
+  }
+  .header-brand-copy strong {
+    font-size: 20px;
+    letter-spacing: -0.6px;
+  }
+  .header-mark {
+    width: 36px;
+    height: 42px;
+    border-radius: 12px;
+  }
+  .header-mark svg {
+    width: 27px;
+    height: 27px;
+  }
+  .header-home {
+    padding-inline: 9px;
+    font-size: 20px;
+  }
+}

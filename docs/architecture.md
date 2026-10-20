@@ -31,6 +31,10 @@
 | 紀錄與設定 | `dist/js/core/store.js` |
 | 模組串接 | `dist/js/features/integration.js` |
 
+## 共用頁首
+
+頁首 HTML 位於 `dist/index.html`，獨立樣式位於 `dist/css/header.css`，最後載入。使用 `header-*` 類別，避免舊版 `.brand`、`.access`、`.font-control` 樣式影響頁首。字體與語音保留原本的 select ID，沿用既有設定及事件。電腦版品牌、設定與首頁入口同列；手機分成品牌／首頁與兩個設定欄。作答時縮短間距，最大字閱讀仍依可用高度分段。
+
 ## CSS 分工
 
 `dist/style.css` 是樣式入口，依序載入基本、響應式、作答、無障礙、簡化流程、iOS 風格、圖示教學、電腦版、分段閱讀與獎勵樣式。載入順序會影響覆寫結果，請在對應功能檔案修改。
