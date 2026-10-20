@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fcfaf5" />
+    <meta
+      name="description"
+      content="金庫防爆特攻隊：用生活情境練習辨識詐騙，大字體、語音朗讀，陪你一步步守護安心生活。"
+    />
+    <title>金庫防爆特攻隊｜安心學防詐</title>
+    <link rel="stylesheet" href="style.css?v=rewards-11" />
+  </head>
+  <body>
+    <a class="skip" href="#main">跳到主要內容</a>
+    <header>
+      <a class="brand" href="#home"
+        ><span class="brand-icon">▥</span
+        ><span
+          >金庫防爆<span class="brand-light">特攻隊</span
+          ><small>守護你的錢，也守護你的安心</small></span
+        ></a
+      >
+      <nav aria-label="主要導覽">
+        <a href="#home">首頁</a><a href="#practice">開始練習</a
+        ><a href="#rewards">我的獎勵</a>
+      </nav>
+      <div class="access">
+        <label class="font-control"
+          ><span>字體</span
+          ><select id="fontSizeSelect" aria-label="字體大小">
+            <option value="0">大字</option>
+            <option value="1">更大</option>
+            <option value="2">特大</option>
+            <option value="3">最大</option>
+          </select></label
+        >
+        <button id="voiceBtn" aria-label="切換語音朗讀" aria-pressed="false">
+          <span>◖))</span><span class="access-label">語音關閉</span>
+        </button>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer>
+      <a class="brand footer-brand" href="#home"
+        ><span class="brand-icon">▥</span><span>金庫防爆特攻隊</span></a
+      >
+      <a href="#guide">使用說明 ↗</a>
+    </footer>
+    <div class="ios-backbar" id="backBar" hidden>
+      <button data-home><span aria-hidden="true">‹</span> 返回主畫面</button>
+    </div>
+    <div id="toast" role="status"></div>
+    <script type="module" src="js/main.js?v=rewards-11"></script>
+  </body>
+</html>

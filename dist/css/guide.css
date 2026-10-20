@@ -1,0 +1,97 @@
+/* Illustration-first instructions, without long paragraphs. */
+.visual-guide {
+  max-width: 960px;
+  margin: auto;
+}
+.visual-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 25px 0 28px;
+  counter-reset: guide-step;
+}
+.visual-step {
+  position: relative;
+  background: #fff;
+  border: 1px solid #d1d1d6;
+  border-radius: 26px;
+  padding: 25px 20px 27px;
+  text-align: center;
+  min-width: 0;
+}
+.step-count {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  background: #e2edfb;
+  color: #154f8d;
+  border-radius: 50%;
+  font-size: 25px;
+  font-weight: 700;
+}
+.step-illustration {
+  max-width: 230px;
+  margin: 3px auto 12px;
+}
+.step-illustration svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.visual-step h2 {
+  font-size: 27px;
+  line-height: 1.6;
+  margin: 0 0 10px;
+  color: #1c1c1e;
+}
+.visual-step p {
+  font-size: 22px;
+  line-height: 1.7;
+  margin: 0;
+  color: #48484a;
+}
+.guide-start {
+  max-width: 500px;
+  margin: auto;
+}
+.guide-start button {
+  width: 100%;
+  font-size: 27px;
+  min-height: 76px;
+}
+body:is([data-text-size="2"], [data-text-size="3"]) .visual-step h2 {
+  font-size: var(--tile-font);
+}
+body:is([data-text-size="2"], [data-text-size="3"]) .visual-step p {
+  font-size: var(--read-font);
+}
+@media (max-width: 760px) {
+  .visual-steps {
+    grid-template-columns: 1fr;
+    gap: 19px;
+    margin-top: 20px;
+  }
+  .visual-step {
+    padding: 22px 23px 27px;
+  }
+  .step-illustration {
+    max-width: 190px;
+    margin: -25px auto 4px;
+  }
+  .visual-step h2 {
+    font-size: 27px;
+  }
+  .visual-step p {
+    font-size: 23px;
+  }
+  .step-count {
+    position: relative;
+    z-index: 1;
+  }
+  .guide-start button {
+    font-size: 27px;
+  }
+}

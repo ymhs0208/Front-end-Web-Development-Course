@@ -1,0 +1,121 @@
+/* Full-page exercise flow */
+.exercise-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.exercise-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 0 23px;
+  font-size: 17px;
+  color: var(--muted);
+}
+.back-link {
+  border: 0;
+  background: transparent;
+  padding: 10px 0;
+  color: var(--green);
+  font-size: 18px;
+  font-weight: 600;
+  min-height: 48px;
+}
+.back-link:hover {
+  text-decoration: underline;
+}
+.exercise-shell {
+  background: #fffef9;
+  border: 1px solid #e1e5d5;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 6px 0 #e9ebde55;
+}
+.exercise-progress {
+  height: 6px;
+  background: #e6eadc;
+}
+.exercise-progress i {
+  display: block;
+  height: 100%;
+  background: #87a174;
+  border-radius: 0 4px 4px 0;
+}
+.exercise-shell .quiz-top {
+  font-size: 18px;
+  padding: 21px 32px;
+  border-bottom: 0;
+}
+.exercise-shell .quiz-content {
+  padding: 29px 35px 36px;
+}
+.exercise-shell h1 {
+  font-size: 32px;
+  line-height: 1.6;
+  margin: 12px 0 25px;
+}
+.exercise-shell .answer-prompt {
+  font-size: 23px;
+  margin: 15px 0;
+}
+.exercise-shell .scenario {
+  padding: 24px;
+}
+.exercise-shell .option {
+  min-height: 70px;
+}
+.exercise-shell .bubble {
+  font-size: 22px;
+}
+.exercise-shell .result-score {
+  margin: 25px 0;
+}
+.exercise-shell .center {
+  padding: 45px 35px;
+}
+.large .exercise-shell .bubble,
+.large .exercise-shell .option {
+  font-size: 24px;
+}
+@media (max-width: 760px) {
+  .exercise-heading {
+    align-items: start;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 17px;
+  }
+  .exercise-heading > span {
+    font-size: 16px;
+  }
+  .exercise-shell {
+    border-radius: 20px;
+  }
+  .exercise-shell .quiz-top {
+    padding: 17px 20px;
+    font-size: 16px;
+  }
+  .exercise-shell .quiz-content {
+    padding: 23px 20px 28px;
+  }
+  .exercise-shell h1 {
+    font-size: 28px;
+  }
+  .exercise-shell .scenario {
+    padding: 17px;
+  }
+  .exercise-shell .bubble {
+    font-size: 20px;
+  }
+  .exercise-shell .answer-prompt {
+    font-size: 21px;
+  }
+  .exercise-shell .center {
+    padding: 33px 22px;
+  }
+  .exercise-shell .utility {
+    flex-direction: column;
+  }
+  .exercise-shell .utility button {
+    width: 100%;
+  }
+}

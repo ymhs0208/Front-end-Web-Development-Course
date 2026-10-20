@@ -1,0 +1,400 @@
+/* Fewer navigation choices and one clear next action per page. */
+.home-help {
+  display: inline-block;
+  font-size: 20px;
+  color: #475c42;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  margin-top: 22px;
+}
+.home-paths {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 23px;
+  margin-top: 26px;
+}
+.home-paths > a {
+  display: block;
+  border: 1px solid #cbd5bf;
+  background: #fffef9;
+  border-radius: 20px;
+  padding: 24px 28px;
+}
+.home-paths > a:hover {
+  background: #edf2e4;
+}
+.home-paths strong {
+  display: flex;
+  justify-content: space-between;
+  font-size: 25px;
+  margin-bottom: 7px;
+}
+.home-paths > a > span {
+  display: block;
+  color: #515c4e;
+  font-size: 21px;
+}
+.simple-start {
+  background: #f5e9d9;
+  border: 1px solid #e8d9c2;
+  padding: 29px 35px 34px;
+  border-radius: 25px;
+}
+.simple-start h1 {
+  font-size: 38px;
+  margin: 0 0 8px;
+}
+.simple-start p {
+  margin: 0 0 23px;
+  font-size: 22px;
+}
+.simple-start .primary {
+  min-width: 260px;
+}
+.review-notebook {
+  margin: 0 0 27px;
+}
+.review-notebook a {
+  font-size: 22px;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  color: #385532;
+}
+body.is-exercising header nav,
+body.is-exercising header #voiceBtn,
+body.is-exercising footer {
+  display: none;
+}
+body.is-exercising header {
+  padding-top: 17px;
+  padding-bottom: 17px;
+}
+body.is-exercising .access {
+  margin-left: auto;
+  display: flex;
+  width: auto;
+}
+body.is-exercising main {
+  padding-top: 16px;
+}
+.is-exercising .exercise-heading {
+  margin-bottom: 10px;
+}
+.exercise-shell .quiz-content {
+  padding-top: 22px;
+}
+.exercise-shell h1 {
+  margin-top: 0;
+  font-size: 31px;
+}
+.exercise-shell .scenario {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+.exercise-shell .answer-prompt {
+  margin: 22px 0 3px;
+}
+.answer-instruction {
+  margin: 0 0 17px;
+  color: #515c4e;
+  font-size: 21px;
+}
+.option {
+  display: flex;
+  gap: 17px;
+  align-items: center;
+}
+.option-number {
+  border-radius: 50%;
+  background: #e8eedf;
+  display: grid;
+  place-items: center;
+  min-width: 36px;
+  height: 36px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #436039;
+}
+.answer-label {
+  display: inline-block;
+  font-size: 22px;
+  color: #365c34;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.safe-action {
+  background: #e8f0df;
+  border: 1px solid #cbd9be;
+  border-radius: 19px;
+  padding: 22px 25px;
+  margin: 20px 0;
+}
+.safe-action h2 {
+  font-size: 21px;
+  margin: 0 0 9px;
+  color: #445a3e;
+}
+.safe-action p {
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.8;
+  margin: 0;
+  color: #2e4930;
+}
+.answer-explanation {
+  font-size: 23px;
+  line-height: 1.95;
+  margin: 22px 0;
+}
+.trap-details {
+  font-size: 21px;
+  color: #46533e;
+  margin: 20px 0 28px;
+}
+.trap-details summary {
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  padding: 9px 0;
+  min-height: 48px;
+}
+.trap-details p {
+  background: #f2f0e4;
+  padding: 17px 20px;
+  border-radius: 12px;
+}
+.answer-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+  margin: 25px 0 4px;
+}
+.answer-actions button {
+  width: 100%;
+  min-height: 68px;
+}
+.answer-actions .secondary {
+  border-color: #a6b399;
+  background: #fffdf5;
+  box-shadow: none;
+}
+.result-page {
+  max-width: 730px;
+  margin: auto;
+}
+.result-page h1 {
+  font-size: 35px;
+}
+.result-page p {
+  font-size: 24px;
+}
+.result-page .answer-actions {
+  max-width: 420px;
+  margin: 30px auto 0;
+}
+.large .answer-explanation,
+.large .result-page p {
+  font-size: 26px;
+}
+.large .safe-action p {
+  font-size: 30px;
+}
+@media (max-width: 760px) {
+  .home-paths {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  .home-paths > a {
+    padding: 24px;
+  }
+  .home-paths strong {
+    font-size: 25px;
+  }
+  .home-paths > a > span {
+    font-size: 21px;
+  }
+  .home-help {
+    font-size: 20px;
+  }
+  .simple-start {
+    padding: 24px;
+  }
+  .simple-start h1 {
+    font-size: 34px;
+  }
+  .simple-start .primary {
+    min-width: 0;
+    width: 100%;
+  }
+  nav a {
+    font-size: 20px;
+  }
+  .large nav a {
+    font-size: 20px;
+  }
+  body.is-exercising header {
+    padding: 15px 19px;
+    gap: 12px;
+  }
+  body.is-exercising header .brand {
+    font-size: 19px;
+  }
+  body.is-exercising header .brand small {
+    display: none;
+  }
+  body.is-exercising .access .access-label {
+    font-size: 17px;
+  }
+  body.is-exercising .access button {
+    padding: 9px;
+    min-height: 51px;
+    width: auto;
+  }
+  .exercise-shell h1 {
+    font-size: 28px;
+  }
+  .exercise-shell .quiz-content {
+    padding: 23px 19px;
+  }
+  .exercise-shell .scenario {
+    padding: 15px;
+  }
+  .exercise-shell .bubble {
+    padding: 13px;
+  }
+  .scenario-label {
+    font-size: 18px;
+  }
+  .exercise-shell .option {
+    gap: 12px;
+    padding: 15px;
+  }
+  .option-number {
+    min-width: 32px;
+    height: 32px;
+    font-size: 19px;
+  }
+  .answer-instruction {
+    font-size: 21px;
+  }
+  .answer-label {
+    font-size: 22px;
+    margin-bottom: 13px;
+  }
+  .safe-action {
+    padding: 19px;
+  }
+  .safe-action p {
+    font-size: 25px;
+  }
+  .answer-explanation {
+    font-size: 22px;
+  }
+  .result-page h1 {
+    font-size: 30px;
+  }
+  .result-page p {
+    font-size: 23px;
+  }
+  .is-exercising .back-link {
+    font-size: 20px;
+  }
+}
+
+/* Footer contains only the brand and help links. */
+footer {
+  justify-content: space-between;
+}
+
+/* Readable instructions and full-width touch targets. */
+.senior-steps {
+  list-style: none;
+  counter-reset: senior-step;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 20px;
+}
+.senior-steps li {
+  counter-increment: senior-step;
+  background: #fffef8;
+  border: 1px solid #cad5bd;
+  border-radius: 20px;
+  padding: 25px 28px 25px 85px;
+  position: relative;
+}
+.senior-steps li:before {
+  content: counter(senior-step);
+  position: absolute;
+  left: 25px;
+  top: 25px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #dce8ce;
+  color: #38532e;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+.senior-steps h2 {
+  font-size: 27px;
+  margin: 0 0 10px;
+}
+.senior-steps p {
+  font-size: 23px;
+  line-height: 1.95;
+  margin: 0;
+  color: #46533e;
+}
+.read-question {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}
+.trap-details summary,
+.learning-details summary,
+.home-help,
+.review-notebook a {
+  min-height: 52px;
+}
+.home-help,
+.review-notebook a {
+  display: inline-flex;
+  align-items: center;
+}
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #8e431d;
+  outline-offset: 4px;
+}
+button:focus:not(:focus-visible) {
+  outline: none;
+}
+body {
+  overflow-wrap: break-word;
+}
+@media (max-width: 760px) {
+  .senior-steps li {
+    padding: 23px;
+  }
+  .senior-steps li:before {
+    position: static;
+    margin-bottom: 14px;
+  }
+  .senior-steps h2 {
+    font-size: 26px;
+  }
+  .senior-steps p {
+    font-size: 22px;
+  }
+  .exercise-shell .read-question {
+    width: 100%;
+    font-size: 21px;
+  }
+  .exercise-shell .quiz-top > span {
+    white-space: normal;
+  }
+}

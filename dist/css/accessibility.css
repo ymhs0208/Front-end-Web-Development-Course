@@ -1,0 +1,574 @@
+/* Clear text and fewer decisions on every screen. */
+:root {
+  --font: 22px;
+  --muted: #515c4e;
+  --ink: #2e4033;
+}
+body {
+  line-height: 1.85;
+}
+.brand small {
+  font-size: 15px;
+  color: #515c4e;
+  letter-spacing: 0;
+}
+nav {
+  font-size: 20px;
+}
+.access button {
+  font-size: 21px;
+  min-height: 56px;
+  padding: 10px 14px;
+  color: #2e4033;
+  border-color: #9fab95;
+}
+.access-label {
+  font-size: 18px;
+  display: inline;
+}
+.hero p,
+.practice-intro p,
+.section-head p,
+.module p,
+.record p,
+.tip-panel p,
+.random-banner p {
+  font-size: 22px;
+  color: #515c4e;
+  line-height: 1.9;
+}
+.eyebrow,
+.hero-note,
+.practice-benefits,
+.small-tag,
+.module-top,
+.module-number,
+.practice-heading > span,
+.practice-footnote,
+.stat span,
+.panel-head a,
+.tip-kicker,
+.record-meta,
+.scenario-label,
+.quiz-top,
+.exercise-heading,
+.exercise-heading > span,
+.badge {
+  font-size: 18px;
+  color: #515c4e;
+}
+.hero-note {
+  line-height: 2;
+}
+.module p {
+  min-height: 84px;
+}
+.module-body {
+  padding: 23px 25px 26px;
+}
+.module h3 {
+  font-size: 28px;
+}
+.module-bottom button,
+.primary,
+.secondary {
+  font-size: 22px;
+  min-height: 64px;
+  padding: 14px 22px;
+  font-weight: 700;
+}
+.module-bottom button {
+  background: #dfe8d3;
+  color: #34522f;
+}
+.phone .module-bottom button {
+  color: #55466d;
+  background: #e5dff0;
+}
+.shop .module-bottom button {
+  color: #694919;
+  background: #f0e0be;
+}
+.scene-caption {
+  font-size: 16px;
+  color: #425439;
+}
+.phone .scene-caption {
+  color: #594a73;
+}
+.shop .scene-caption {
+  color: #715322;
+}
+.practice-heading {
+  margin-bottom: 24px;
+}
+.practice-heading h2,
+.section-head h2 {
+  font-size: 28px;
+}
+.practice-intro {
+  padding: 27px 35px;
+}
+.practice-intro h1 {
+  font-size: 39px;
+}
+.practice-benefits {
+  display: none;
+}
+.page-title h1 {
+  font-size: 38px;
+}
+.page-title .eyebrow {
+  display: none;
+}
+.page-title p {
+  font-size: 22px;
+  color: #515c4e;
+}
+.panel-head,
+.tip-panel h3,
+.record h3,
+.info-box h2 {
+  font-size: 25px;
+}
+.bar-row {
+  grid-template-columns: 155px 1fr 85px;
+  font-size: 20px;
+}
+.stat strong {
+  font-size: 38px;
+}
+.stat small {
+  font-size: 21px;
+}
+.exercise-shell .bubble,
+.exercise-shell .option {
+  font-size: 24px;
+  line-height: 1.95;
+  color: #2e4033;
+}
+.exercise-shell .option {
+  border: 2px solid #aebba2;
+  min-height: 76px;
+  padding: 17px 21px;
+}
+.exercise-shell .quiz-top {
+  font-size: 22px;
+  color: #354d39;
+}
+.exercise-shell .answer-prompt {
+  font-size: 26px;
+}
+.exercise-shell h1 {
+  font-size: 34px;
+}
+.exercise-shell .badge {
+  color: #45553c;
+}
+.scenario small {
+  font-size: 18px;
+  color: #515c4e;
+}
+.scenario-label {
+  font-size: 20px;
+}
+.feedback {
+  font-size: 22px;
+  line-height: 1.95;
+}
+.feedback h3 {
+  font-size: 27px;
+}
+.options > [data-next] {
+  width: 100%;
+  min-height: 70px;
+}
+.back-link {
+  font-size: 22px;
+}
+.exercise-heading > span {
+  font-size: 19px;
+}
+.quiz-content .secondary {
+  font-size: 21px;
+}
+.exercise-shell .scenario {
+  background: #edf2e5;
+}
+.review-start {
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+  padding: 32px 35px;
+  background: #edf2e4;
+  border: 1px solid #cedac2;
+  border-radius: 24px;
+  margin: 0 0 27px;
+}
+.review-icon {
+  flex-shrink: 0;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #d6e2ca;
+  display: grid;
+  place-items: center;
+  color: #456339;
+  font-size: 35px;
+}
+.review-start h2 {
+  font-size: 30px;
+  line-height: 1.6;
+  margin: 0 0 8px;
+}
+.review-start p {
+  font-size: 22px;
+  color: #515c4e;
+  margin: 0 0 24px;
+  max-width: 720px;
+}
+.review-start .primary {
+  min-width: 235px;
+}
+.learning-details {
+  border: 1px solid #d5ddcb;
+  background: #fffdf8;
+  border-radius: 20px;
+  overflow: hidden;
+}
+.learning-details summary {
+  cursor: pointer;
+  min-height: 68px;
+  padding: 16px 25px;
+  color: #385532;
+  font-size: 22px;
+  font-weight: 600;
+}
+.learning-details summary:hover {
+  background: #f0f3e8;
+}
+.learning-details summary:focus-visible {
+  outline: 3px solid #b65c36;
+  outline-offset: -5px;
+}
+.details-content {
+  padding: 0 25px 25px;
+}
+.details-content .progress-panel {
+  margin: 14px 0;
+}
+.details-title {
+  font-size: 25px;
+  margin: 0 0 18px;
+}
+.large {
+  --font: 25px;
+}
+.large .module p,
+.large .hero p,
+.large .practice-intro p,
+.large .section-head p,
+.large .review-start p {
+  font-size: 25px;
+}
+.large .exercise-shell .bubble,
+.large .exercise-shell .option {
+  font-size: 28px;
+}
+.large nav {
+  font-size: 22px;
+}
+footer {
+  font-size: 18px;
+  color: #515c4e;
+}
+footer > span {
+  font-size: 16px;
+  color: #515c4e;
+}
+@media (max-width: 1140px) {
+  header {
+    gap: 18px;
+  }
+  nav {
+    font-size: 20px;
+  }
+  .module h3 {
+    font-size: 26px;
+  }
+  .module p {
+    font-size: 22px;
+  }
+  .cards {
+    gap: 19px;
+  }
+}
+@media (max-width: 760px) {
+  header {
+    padding: 17px 19px;
+    gap: 13px;
+  }
+  .brand {
+    font-size: 21px;
+  }
+  .brand small {
+    font-size: 14px;
+  }
+  .access {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .access button {
+    width: 100%;
+    font-size: 22px;
+    min-height: 58px;
+    gap: 9px;
+  }
+  .access-label {
+    display: inline;
+    font-size: 20px;
+  }
+  nav {
+    order: 2;
+    font-size: 18px;
+    gap: 4px;
+  }
+  nav a {
+    padding: 11px 4px;
+  }
+  .large nav {
+    font-size: 20px;
+  }
+  main {
+    padding-top: 23px;
+  }
+  .hero {
+    padding: 26px 23px;
+  }
+  .hero h1 {
+    font-size: 38px;
+  }
+  .hero p,
+  .module p,
+  .section-head p,
+  .practice-intro p,
+  .record p,
+  .tip-panel p,
+  .random-banner p {
+    font-size: 22px;
+  }
+  .hero-art {
+    max-width: 245px;
+  }
+  .hero-note {
+    font-size: 16px;
+  }
+  .primary,
+  .secondary,
+  .module-bottom button {
+    font-size: 22px;
+    min-height: 64px;
+  }
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+  .hero-actions .secondary {
+    background: transparent;
+    box-shadow: none;
+  }
+  .hero-actions .primary,
+  .hero-actions .secondary {
+    width: 100%;
+  }
+  .module-body {
+    padding: 23px;
+  }
+  .module h3 {
+    font-size: 29px;
+  }
+  .module p {
+    min-height: 0;
+  }
+  .module-art {
+    height: 146px;
+  }
+  .module-art svg {
+    height: 140px;
+  }
+  .module-top,
+  .module-number {
+    font-size: 18px;
+  }
+  .scene-caption {
+    font-size: 15px;
+  }
+  .section-head {
+    gap: 11px;
+  }
+  .section-head h2 {
+    font-size: 27px;
+  }
+  .practice-intro {
+    padding: 24px;
+  }
+  .practice-intro h1 {
+    font-size: 32px;
+  }
+  .practice-intro .eyebrow {
+    display: none;
+  }
+  .practice-heading h2 {
+    font-size: 26px;
+  }
+  .practice-heading > span {
+    font-size: 18px;
+  }
+  .practice-footnote {
+    font-size: 18px;
+  }
+  .practice-sticker {
+    display: none;
+  }
+  .random-banner .primary {
+    font-size: 22px;
+  }
+  .panel-head {
+    font-size: 24px;
+  }
+  .panel-head a {
+    font-size: 18px;
+  }
+  .stat span {
+    font-size: 18px;
+  }
+  .stat strong {
+    font-size: 34px;
+  }
+  .stat small {
+    font-size: 19px;
+  }
+  .tip-panel p br {
+    display: none;
+  }
+  .page-title {
+    padding: 24px;
+  }
+  .page-title h1 {
+    font-size: 34px;
+  }
+  .page-title p {
+    font-size: 22px;
+  }
+  .review-start {
+    padding: 26px 23px;
+    gap: 12px;
+  }
+  .review-icon {
+    display: none;
+  }
+  .review-start h2 {
+    font-size: 28px;
+  }
+  .review-start p {
+    font-size: 22px;
+  }
+  .review-start .primary {
+    width: 100%;
+    min-width: 0;
+  }
+  .learning-details summary {
+    font-size: 22px;
+    padding: 17px 21px;
+  }
+  .details-content {
+    padding: 0 18px 20px;
+  }
+  .details-content .progress-panel {
+    padding: 22px 16px;
+  }
+  .bar-row {
+    grid-template-columns: 1fr 65px;
+    font-size: 20px;
+    gap: 6px;
+  }
+  .bar-row .bar {
+    grid-row: 2;
+    grid-column: 1/-1;
+    height: 14px;
+  }
+  .bar-row > span:last-child {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+  .exercise-heading {
+    gap: 7px;
+  }
+  .exercise-heading > span {
+    font-size: 19px;
+  }
+  .exercise-shell .quiz-content {
+    padding: 23px 19px;
+  }
+  .exercise-shell .quiz-top {
+    font-size: 20px;
+    padding: 17px 19px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .exercise-shell h1 {
+    font-size: 29px;
+  }
+  .exercise-shell .scenario {
+    padding: 16px;
+  }
+  .exercise-shell .bubble {
+    padding: 15px;
+    font-size: 24px;
+  }
+  .scenario-label {
+    font-size: 20px;
+  }
+  .scenario small {
+    font-size: 18px;
+  }
+  .exercise-shell .option {
+    padding: 16px;
+    font-size: 24px;
+  }
+  .exercise-shell .answer-prompt {
+    font-size: 25px;
+  }
+  .feedback {
+    font-size: 22px;
+    padding: 19px;
+  }
+  .feedback h3 {
+    font-size: 26px;
+  }
+  .exercise-shell .badge {
+    font-size: 17px;
+  }
+  .back-link {
+    font-size: 22px;
+  }
+  .info-box {
+    padding: 24px;
+  }
+  .info-box p {
+    font-size: 22px;
+  }
+  .utility .primary,
+  .utility .secondary {
+    width: 100%;
+  }
+  footer p {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,340 @@
+@media (max-width: 1140px) {
+  header {
+    flex-wrap: wrap;
+    padding: 20px 30px;
+  }
+  .access {
+    margin-left: auto;
+  }
+  nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  .hero {
+    padding: 32px;
+    grid-template-columns: 1.1fr 1fr;
+  }
+  .hero h1 {
+    font-size: 43px;
+  }
+  .hero p br {
+    display: none;
+  }
+  .cards {
+    gap: 18px;
+  }
+  .module-body {
+    padding: 20px;
+  }
+  .module h3 {
+    font-size: 23px;
+  }
+  .module p {
+    font-size: 17px;
+  }
+  footer {
+    margin: 0 36px;
+  }
+  .random-banner {
+    gap: 16px;
+  }
+  .random-banner h3 {
+    font-size: 20px;
+  }
+}
+@media (max-width: 760px) {
+  header {
+    padding: 17px 19px;
+    gap: 17px;
+  }
+  .brand {
+    font-size: 19px;
+    gap: 9px;
+  }
+  .brand-icon {
+    width: 37px;
+    height: 41px;
+    font-size: 27px;
+    border-radius: 13px;
+  }
+  .brand small {
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+  .access {
+    gap: 7px;
+  }
+  .access button {
+    padding: 9px;
+    min-width: 44px;
+    justify-content: center;
+  }
+  .access-label {
+    display: none;
+  }
+  nav {
+    gap: 3px;
+    justify-content: space-between;
+    font-size: 16px;
+  }
+  nav a {
+    padding: 9px 10px;
+    flex: 1;
+    text-align: center;
+  }
+  .large nav {
+    font-size: 17px;
+  }
+  main {
+    padding: 22px 19px 36px;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 28px;
+    border-radius: 25px;
+  }
+  .hero h1 {
+    font-size: 40px;
+  }
+  .hero p {
+    font-size: 19px;
+  }
+  .hero-art {
+    max-width: 340px;
+    justify-self: center;
+    margin-top: 16px;
+  }
+  .hero-actions {
+    gap: 10px;
+  }
+  .primary,
+  .secondary {
+    padding: 12px 19px;
+    font-size: 18px;
+    gap: 13px;
+  }
+  .hero-note {
+    font-size: 13px;
+  }
+  .eyebrow {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  .art-label {
+    font-size: 15px;
+  }
+  .section-head {
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 29px;
+  }
+  .section-head h2 {
+    font-size: 26px;
+  }
+  .section-head p {
+    font-size: 18px;
+  }
+  .small-tag {
+    font-size: 14px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 23px;
+  }
+  .module-art {
+    height: 182px;
+  }
+  .module-art svg {
+    height: 174px;
+  }
+  .module-body {
+    padding: 22px 25px 25px;
+  }
+  .module h3 {
+    font-size: 28px;
+  }
+  .module p {
+    font-size: 19px;
+    min-height: 0;
+  }
+  .module-bottom button {
+    font-size: 20px;
+    min-height: 58px;
+  }
+  .module-top {
+    font-size: 15px;
+  }
+  .lower-grid {
+    grid-template-columns: 1fr;
+    gap: 19px;
+  }
+  .panel-head {
+    font-size: 21px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .panel-head a {
+    font-size: 15px;
+  }
+  .progress-panel,
+  .tip-panel {
+    padding: 24px;
+  }
+  .stat strong {
+    font-size: 33px;
+  }
+  .stat span {
+    font-size: 15px;
+  }
+  .tip-panel p {
+    font-size: 18px;
+  }
+  .practice-intro {
+    padding: 25px;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 23px;
+  }
+  .practice-intro h1 {
+    font-size: 32px;
+    max-width: 320px;
+  }
+  .practice-intro p {
+    font-size: 18px;
+  }
+  .practice-intro p br {
+    display: none;
+  }
+  .practice-intro .eyebrow {
+    max-width: 245px;
+  }
+  .practice-sticker {
+    display: none;
+  }
+  .practice-benefits {
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 15px;
+  }
+  .practice-heading {
+    display: block;
+    margin-top: 28px;
+  }
+  .practice-heading h2 {
+    font-size: 25px;
+  }
+  .practice-heading > span {
+    display: block;
+    font-size: 16px;
+    margin-top: 5px;
+  }
+  .filter-row {
+    gap: 8px;
+    margin: 18px 0 23px;
+  }
+  .filter-row button {
+    padding: 7px 13px;
+    font-size: 15px;
+  }
+  .large .filter-row button {
+    font-size: 17px;
+  }
+  .random-banner {
+    padding: 24px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+  .random-symbol {
+    display: none;
+  }
+  .random-banner h3 {
+    font-size: 23px;
+  }
+  .random-banner p {
+    font-size: 18px;
+  }
+  .random-banner .primary {
+    margin: 0;
+    width: 100%;
+  }
+  .practice-footnote {
+    text-align: left;
+    font-size: 14px;
+  }
+  .page-title {
+    padding: 25px;
+  }
+  .page-title h1 {
+    font-size: 32px;
+  }
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  .record {
+    padding: 23px;
+  }
+  .record h3 {
+    font-size: 24px;
+  }
+  .bar-row {
+    grid-template-columns: 110px 1fr 58px;
+    gap: 8px;
+    font-size: 16px;
+  }
+  .quiz-content {
+    padding: 21px;
+  }
+  .quiz-top {
+    padding: 16px 20px;
+    font-size: 16px;
+  }
+  .quiz-content h2 {
+    font-size: 25px;
+  }
+  .scenario {
+    padding: 18px;
+  }
+  .bubble {
+    padding: 16px;
+    font-size: 20px;
+  }
+  .option {
+    font-size: 20px;
+    padding: 15px;
+  }
+  .feedback {
+    padding: 20px;
+  }
+  .feedback h3 {
+    font-size: 23px;
+  }
+  footer {
+    margin: 0 19px;
+    gap: 17px;
+    padding: 24px 0;
+    font-size: 15px;
+  }
+  footer p {
+    flex-basis: 100%;
+    order: 2;
+  }
+  footer > span {
+    order: 3;
+  }
+  .footer-brand {
+    font-size: 16px;
+  }
+  .large .module h3 {
+    font-size: 30px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

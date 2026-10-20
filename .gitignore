@@ -1,0 +1,10 @@
+.DS_Store
+node_modules/
+.openai/
+.env
+.env.*
+!.env.example
+*.log
+*.zip
+*.tar.gz
+__pycache__/

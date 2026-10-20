@@ -1,0 +1,434 @@
+/* Desktop composition only. Mobile keeps its large tile flow. */
+@media (min-width: 1024px) {
+  body.is-home {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+  header {
+    width: 100%;
+    max-width: 1280px;
+    padding: 25px 38px;
+    gap: 28px;
+    flex-wrap: nowrap;
+  }
+  .brand {
+    font-size: 26px;
+    gap: 15px;
+  }
+  .brand-icon {
+    width: 51px;
+    height: 54px;
+  }
+  .brand small {
+    font-size: 16px;
+    margin-top: 5px;
+  }
+  .access {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 15px;
+    margin-left: auto;
+    width: auto;
+  }
+  .font-control {
+    min-width: 190px;
+    gap: 14px;
+    padding: 8px 15px;
+    font-size: 21px;
+  }
+  .font-control select {
+    font-size: 24px;
+    min-width: 94px;
+    max-width: 135px;
+  }
+  .access button {
+    font-size: 23px;
+    min-width: 170px;
+    padding: 12px 19px;
+  }
+  .access-label {
+    font-size: 21px;
+  }
+  main {
+    width: 100%;
+    max-width: 1280px;
+    min-height: 0;
+    padding: 15px 38px 34px;
+    margin: 0 auto;
+  }
+  body.is-home main {
+    flex: 1;
+  }
+  .ios-screen,
+  .visual-guide {
+    max-width: none;
+  }
+  .ios-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 25px;
+    margin: 9px 0 29px;
+  }
+  .ios-title h1 {
+    font-size: 43px;
+    margin: 0;
+  }
+  .ios-title p {
+    font-size: 25px;
+    text-align: right;
+    margin: 0;
+  }
+  .ios-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .ios-tile {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 29px;
+    row-gap: 8px;
+    align-content: center;
+    justify-content: start;
+    align-items: center;
+    text-align: left;
+    min-height: 206px;
+    padding: 30px 34px;
+    border-radius: 28px;
+    box-shadow: 0 4px 15px #16244804;
+  }
+  .ios-tile-icon {
+    grid-column: 1;
+    grid-row: 1/3;
+    width: 88px;
+    height: 88px;
+    border-radius: 24px;
+    margin: 0;
+  }
+  .ios-tile-icon svg {
+    width: 48px;
+    height: 48px;
+  }
+  .ios-tile strong {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    font-size: 33px;
+    min-width: 0;
+    line-height: 1.4;
+  }
+  .ios-tile-description {
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    align-self: start;
+    min-width: 0;
+    font-size: 23px;
+    line-height: 1.6;
+  }
+  .ios-tile:hover {
+    border-color: #7598bf;
+    box-shadow: 0 7px 24px #1637590c;
+    transform: translateY(-2px);
+  }
+  .ios-tile:active {
+    transform: translateY(0);
+  }
+  .ios-reassurance {
+    font-size: 22px;
+    margin: 25px 0 0;
+  }
+  .large .ios-tile {
+    min-height: 218px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"]) .ios-tile {
+    min-height: 235px;
+    grid-template-columns: 82px minmax(0, 1fr);
+    column-gap: 23px;
+    padding: 29px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"]) .ios-title {
+    align-items: start;
+  }
+  .large .ios-title p {
+    max-width: 490px;
+  }
+  footer {
+    width: calc(100% - 76px);
+    max-width: 1204px;
+    margin: 18px auto 0;
+    padding: 21px 0 23px;
+    flex-shrink: 0;
+  }
+  .footer-brand {
+    font-size: 19px;
+  }
+  footer .brand-icon {
+    width: 30px;
+    height: 33px;
+  }
+  footer > a:not(.brand) {
+    font-size: 21px;
+  }
+  .ios-backbar {
+    padding: 12px 38px max(14px, env(safe-area-inset-bottom));
+  }
+  .ios-backbar button {
+    max-width: 1204px;
+    min-height: 65px;
+    font-size: 25px;
+    border-radius: 17px;
+  }
+  /* Normal-size questions: read on the left, choose on the right. */
+  body.is-exercising header {
+    max-width: 1320px;
+    padding: 22px 38px;
+  }
+  body.is-exercising main {
+    max-width: 1320px;
+    padding: 10px 38px 35px;
+  }
+  .exercise-page {
+    max-width: 1244px;
+  }
+  .exercise-shell {
+    border-radius: 27px;
+  }
+  .exercise-shell .quiz-top {
+    padding: 19px 32px;
+    font-size: 22px;
+  }
+  .exercise-shell .question-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
+    grid-template-areas: "title title" "scenario prompt" "scenario instruction" "scenario options" "read options";
+    column-gap: 34px;
+    row-gap: 12px;
+    padding: 27px 32px 32px;
+    align-items: start;
+  }
+  .question-layout > h1 {
+    grid-area: title;
+    margin: 0 0 8px;
+    font-size: 33px;
+  }
+  .question-layout > .scenario {
+    grid-area: scenario;
+    margin: 0;
+    padding: 22px;
+    align-self: stretch;
+  }
+  .question-layout > .scenario .bubble {
+    line-height: 1.85;
+    padding: 19px;
+    font-size: 25px;
+    margin-top: 15px;
+  }
+  .question-layout > .read-question {
+    grid-area: read;
+    margin: 0 !important;
+    font-size: 23px;
+    min-height: 63px;
+  }
+  .question-layout > .answer-prompt {
+    grid-area: prompt;
+    margin: 0;
+    font-size: 27px;
+  }
+  .question-layout > .answer-instruction {
+    grid-area: instruction;
+    margin: 0 0 4px;
+    font-size: 21px;
+  }
+  .question-layout > .options {
+    grid-area: options;
+    gap: 14px;
+  }
+  .question-layout .option {
+    font-size: 24px;
+    line-height: 1.7;
+    min-height: 86px;
+    padding: 17px 19px;
+    gap: 14px;
+  }
+  .question-layout .option-number {
+    width: 35px;
+    min-width: 35px;
+    height: 35px;
+    font-size: 21px;
+  }
+  .exercise-shell .answer-page,
+  .exercise-shell .result-page {
+    max-width: 920px;
+    margin: auto;
+    padding: 31px 42px 37px;
+  }
+  .answer-page .safe-action {
+    padding: 22px 27px;
+  }
+  .answer-page .answer-explanation {
+    margin: 20px 0;
+  }
+  .answer-actions {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"]) .question-layout {
+    display: block;
+    max-width: 960px;
+    margin: auto;
+    padding: 30px 40px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"])
+    .question-layout
+    > .scenario {
+    margin: 20px 0;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"])
+    .question-layout
+    > .read-question {
+    margin-bottom: 21px !important;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"])
+    .question-layout
+    > .answer-prompt {
+    margin: 20px 0 8px;
+  }
+  body:is([data-text-size="2"], [data-text-size="3"])
+    .question-layout
+    > .answer-instruction {
+    margin: 0 0 18px;
+  }
+  .visual-steps {
+    gap: 24px;
+    margin: 12px 0 29px;
+  }
+  .visual-step {
+    padding: 24px 23px 28px;
+  }
+  .step-illustration {
+    max-width: 225px;
+    margin: -20px auto 15px;
+  }
+  .visual-step h2 {
+    font-size: 29px;
+  }
+  .visual-step p {
+    font-size: 23px;
+  }
+  .guide-start {
+    max-width: 520px;
+  }
+  .guide-start button {
+    min-height: 74px;
+  }
+  .page-title {
+    padding: 11px 0 22px;
+    margin-bottom: 8px;
+  }
+  .page-title h1 {
+    font-size: 40px;
+  }
+  .page-title p {
+    font-size: 24px;
+  }
+  .review-start {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 26px;
+    padding: 33px 38px;
+    margin-bottom: 24px;
+  }
+  .review-icon {
+    width: 74px;
+    height: 74px;
+    font-size: 39px;
+  }
+  .review-start h2 {
+    font-size: 32px;
+  }
+  .review-start p {
+    max-width: 950px;
+    font-size: 24px;
+    margin-bottom: 23px;
+  }
+  .review-start .primary {
+    min-width: 330px;
+    min-height: 74px;
+  }
+  .review-notebook {
+    margin: 0 0 22px;
+  }
+  .review-notebook a {
+    padding: 20px 29px;
+  }
+  .learning-details summary {
+    padding: 20px 29px;
+  }
+  .details-content {
+    padding: 0 28px 28px;
+  }
+}
+@media (min-width: 1600px) {
+  header {
+    padding-top: 35px;
+    padding-bottom: 32px;
+  }
+  main {
+    padding-top: 22px;
+  }
+  .ios-title {
+    margin-bottom: 34px;
+  }
+  .ios-grid {
+    gap: 28px;
+  }
+  .ios-tile {
+    min-height: 224px;
+  }
+  .ios-reassurance {
+    margin-top: 30px;
+  }
+}
+
+/* Keep the last answer above the return bar on common 768px laptops. */
+@media (min-width: 1024px) and (max-height: 820px) {
+  body.is-exercising header {
+    padding-top: 13px;
+    padding-bottom: 13px;
+  }
+  body.is-exercising main {
+    padding-top: 0;
+  }
+  body[data-text-size="0"] .exercise-shell .quiz-top {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+  body[data-text-size="0"] .exercise-shell .question-layout {
+    padding-top: 20px;
+    padding-bottom: 23px;
+    row-gap: 8px;
+  }
+  body[data-text-size="0"] .question-layout > h1 {
+    font-size: 30px;
+    margin-bottom: 4px;
+  }
+  body[data-text-size="0"] .question-layout > .scenario {
+    padding: 18px;
+  }
+  body[data-text-size="0"] .question-layout > .scenario .bubble {
+    font-size: 24px;
+    padding: 16px;
+  }
+  body[data-text-size="0"] .question-layout .option {
+    min-height: 80px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+  body[data-text-size="0"] .question-layout > .read-question {
+    min-height: 59px;
+  }
+}
