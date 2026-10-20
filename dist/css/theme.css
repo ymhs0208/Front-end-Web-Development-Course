@@ -1,0 +1,245 @@
+/* Shared palette supplied for the current website. */
+:root {
+  --theme-paper: #f5eeff;
+  --theme-mint: #d8e9ea;
+  --theme-blush: #feeaf6;
+  --theme-primary: #804fc0;
+  --theme-teal: #2da3ab;
+  --theme-pink: #dd6cb0;
+  --theme-ink: #000000;
+  --theme-white: #ffffff;
+  --theme-subtitle: #37325a;
+  --theme-link: #305af0;
+  --theme-line: #d9cce9;
+  --paper: var(--theme-paper);
+  --ink: var(--theme-ink);
+  --muted: var(--theme-subtitle);
+}
+body {
+  background: var(--theme-paper);
+  color: var(--theme-ink);
+}
+.header-brand,
+.header-brand:hover {
+  color: var(--theme-ink);
+}
+.header-home-icon {
+  color: var(--theme-primary);
+}
+.header-control {
+  border-color: var(--theme-line);
+}
+.header-control > span {
+  color: var(--theme-subtitle);
+}
+.header-control select {
+  background: var(--theme-paper);
+  color: var(--theme-subtitle);
+}
+.header-control select:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline-color: var(--theme-link);
+}
+.home-intro h1,
+.ios-title h1,
+.ios-tile strong,
+.visual-step h2,
+.exercise-shell .completion-card h1 {
+  color: var(--theme-ink);
+}
+.home-intro h1 span:last-child,
+.ios-title p,
+.ios-reassurance,
+.ios-tile-description,
+.visual-step p {
+  color: var(--theme-subtitle);
+}
+.primary,
+.answer-actions .primary,
+.exercise-shell .completion-card .primary,
+body .welcome-home .home-start-button.primary {
+  background: var(--theme-primary);
+  border-color: var(--theme-primary);
+  color: var(--theme-white);
+}
+.primary:hover,
+.answer-actions .primary:hover,
+body .welcome-home .home-start-button.primary:hover {
+  background: #6d40a8;
+  border-color: #6d40a8;
+}
+body .welcome-home .home-start-button.primary {
+  box-shadow: 0 5px 0 #d9c6f1;
+}
+.start-copy strong,
+.start-copy > span,
+.start-play {
+  color: var(--theme-white);
+}
+.start-play {
+  border-color: var(--theme-white);
+}
+/* Dark labels keep the supplied secondary button colors easy to read. */
+.secondary,
+.exercise-shell .read-question {
+  background: var(--theme-teal);
+  border-color: #237e84;
+  color: var(--theme-ink);
+}
+.secondary:hover,
+.exercise-shell .read-question:hover {
+  background: #27949b;
+  color: var(--theme-ink);
+}
+.welcome-home .home-shortcuts a {
+  color: var(--theme-ink);
+  border-color: var(--theme-line);
+}
+.welcome-home .home-shortcuts a:nth-child(1) {
+  background: var(--theme-teal);
+  border-color: #237e84;
+}
+.welcome-home .home-shortcuts a:nth-child(2) {
+  background: var(--theme-pink);
+  border-color: #b54e8b;
+}
+.welcome-home .home-shortcuts a:nth-child(3) {
+  background: var(--theme-white);
+}
+.welcome-home .home-shortcuts a:hover {
+  outline: 2px solid var(--theme-primary);
+  outline-offset: 2px;
+}
+.welcome-home .home-shortcuts .ios-tile-icon,
+.home-shortcuts .shortcut-arrow {
+  color: var(--theme-subtitle);
+}
+.welcome-home
+  .home-shortcuts
+  a:nth-child(-n + 2)
+  :is(.ios-tile-icon, .shortcut-arrow) {
+  color: var(--theme-ink);
+}
+.ios-tile.tile-green {
+  background: var(--theme-paper);
+}
+.ios-tile.tile-blue {
+  background: var(--theme-mint);
+}
+.ios-tile.tile-orange {
+  background: var(--theme-blush);
+}
+.ios-tile:hover {
+  border-color: var(--theme-primary);
+}
+.ios-tile.tile-green .ios-tile-icon,
+.ios-tile.tile-purple .ios-tile-icon {
+  background: var(--theme-primary);
+  color: var(--theme-white);
+}
+.ios-tile.tile-blue .ios-tile-icon {
+  background: var(--theme-teal);
+  color: var(--theme-ink);
+}
+.ios-tile.tile-orange .ios-tile-icon {
+  background: var(--theme-pink);
+  color: var(--theme-ink);
+}
+.quiz-top {
+  background: var(--theme-mint);
+  color: var(--theme-subtitle);
+}
+.exercise-progress i {
+  background: var(--theme-primary);
+}
+.scenario.line {
+  background: var(--theme-paper);
+}
+.scenario.phone {
+  background: var(--theme-mint);
+}
+.scenario.shop {
+  background: var(--theme-blush);
+}
+.scenario .bubble,
+.option {
+  color: var(--theme-ink);
+}
+.option-number {
+  background: var(--theme-paper);
+  color: var(--theme-subtitle);
+}
+.reader-hint,
+.reader-previous {
+  color: var(--theme-subtitle);
+}
+.ios-backbar {
+  background: #f5eefff5;
+  border-color: var(--theme-line);
+}
+.ios-backbar button,
+.ios-backbar button:hover {
+  background: var(--theme-primary);
+  color: var(--theme-white);
+  border-color: var(--theme-primary);
+}
+.visual-step:nth-child(2) {
+  background: var(--theme-mint);
+}
+.visual-step:nth-child(3) {
+  background: var(--theme-blush);
+}
+.step-count {
+  background: var(--theme-primary);
+  color: var(--theme-white);
+}
+.companion-card {
+  background: var(--theme-mint);
+  border-color: #aaced0;
+}
+.companion-portrait {
+  background: transparent;
+}
+.companion-content h2,
+.reward-badge h2 {
+  color: var(--theme-ink);
+}
+.companion-greeting,
+.companion-name,
+.companion-note,
+.companion-count,
+.companion-goal,
+.reward-total,
+.exercise-shell .completion-card p {
+  color: var(--theme-subtitle);
+}
+.companion-count strong {
+  color: var(--theme-primary);
+}
+.companion-goal {
+  background: var(--theme-white);
+  border-color: #aaced0;
+}
+.reward-badge.earned {
+  background: var(--theme-blush);
+  border-color: #e6bbd4;
+  box-shadow: 0 5px 0 #ecd5e5;
+}
+.reward-rules summary,
+.reward-rules a {
+  color: var(--theme-link);
+}
+footer {
+  border-color: var(--theme-line);
+}
+footer .brand {
+  color: var(--theme-ink);
+}
+footer .footer-brand .brand-icon {
+  background: var(--theme-primary);
+  color: var(--theme-white);
+}
+footer > a:not(.brand) {
+  color: var(--theme-link);
+}
