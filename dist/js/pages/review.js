@@ -1,2 +1,2 @@
 // Compatibility export for existing module imports.
-export { rewardsPage as reviewPage } from "./rewards.js?v=senior-1";
+export { rewardsPage as reviewPage } from "./rewards.js?v=polish-1";

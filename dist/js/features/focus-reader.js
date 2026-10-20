@@ -1,5 +1,5 @@
-import { $ } from "../core/dom.js?v=senior-1";
-import { compactOptions } from "../data/compact-options.js?v=senior-1";
+import { $ } from "../core/dom.js?v=polish-1";
+import { compactOptions } from "../data/compact-options.js?v=polish-1";
 
 export function focusText(session) {
   const q = session.qs[session.index];

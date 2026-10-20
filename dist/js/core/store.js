@@ -1,5 +1,5 @@
-import { bank } from "../data/questions.js?v=senior-1";
-import { findMistakes } from "./engine.js?v=senior-1";
+import { bank } from "../data/questions.js?v=polish-1";
+import { findMistakes } from "./engine.js?v=polish-1";
 const STORAGE_KEY = "vault-training-v1";
 const DEFAULT_SETTINGS = {
   large: true,

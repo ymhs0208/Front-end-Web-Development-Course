@@ -1,0 +1,133 @@
+/* A restrained lavender identity, with legibility kept ahead of decoration. */
+:root {
+  --surface-shadow: 0 4px 16px #3523470a;
+}
+body[data-text-size] {
+  background: #f6f3fa;
+}
+body[data-text-size] header.site-header {
+  border-color: #c1b4ce;
+}
+body[data-text-size] .header-control,
+body[data-text-size] .page-listen {
+  border-radius: 16px;
+  box-shadow: 0 2px 0 #35234708;
+}
+body[data-text-size] .ios-title h1,
+body[data-text-size] .home-intro h1 {
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+body[data-text-size] .ios-title p {
+  color: #42364e;
+}
+body[data-text-size] .ios-grid .ios-tile {
+  position: relative;
+  background: #fff;
+  border: 2px solid #9b8aa9;
+  border-radius: 24px;
+  box-shadow: var(--surface-shadow);
+  align-items: center;
+}
+body[data-text-size] .ios-grid .ios-tile .ios-tile-icon {
+  border: 1px solid #d6c7e5;
+  border-radius: 18px;
+  background: #eee6f7;
+  color: #603595;
+}
+body[data-text-size] .ios-grid .ios-tile .ios-tile-icon svg {
+  width: 62%;
+  height: 62%;
+}
+body[data-text-size] .ios-grid .ios-tile strong {
+  color: #261a32;
+  letter-spacing: 0.5px;
+}
+body[data-text-size] .ios-grid .ios-tile .ios-tile-description {
+  color: #43374f;
+}
+body[data-text-size] .ios-grid .tile-purple {
+  background: #f0e9f8;
+  border-color: #806299;
+}
+body[data-text-size] .ios-grid .tile-purple .ios-tile-icon {
+  color: #fff;
+  background: #603595;
+  border-color: #603595;
+}
+body[data-text-size] .ios-grid .ios-tile:hover {
+  border-color: #603595;
+  background: #f6f1fb;
+  box-shadow: 0 4px 16px #35234712;
+  transform: none;
+}
+body[data-text-size] .senior-home .home-main {
+  box-shadow: var(--surface-shadow);
+}
+body[data-text-size] .senior-home .home-shortcuts a {
+  box-shadow: var(--surface-shadow);
+  border-color: #9b8aa9;
+}
+body[data-text-size] .visual-step,
+body[data-text-size] .exercise-shell,
+body[data-text-size] .simple-reward-card {
+  background: #fff;
+  border: 2px solid #9b8aa9;
+  box-shadow: var(--surface-shadow);
+}
+body[data-text-size] .exercise-shell .focus-top {
+  background: #eee6f7;
+  border-bottom: 1px solid #c1b4ce;
+}
+body[data-text-size] .reward-badge.earned {
+  background: #fff;
+  border-color: #9b8aa9;
+  box-shadow: var(--surface-shadow);
+}
+body[data-text-size] .reward-rules {
+  border-color: #9b8aa9;
+  border-radius: 20px;
+}
+body[data-text-size] .ios-reassurance {
+  color: #43374f;
+  text-align: left;
+  padding: 14px 18px;
+  border-left: 4px solid #806299;
+  background: #eee6f7;
+  border-radius: 0 14px 14px 0;
+}
+@media (min-width: 1024px) {
+  body[data-text-size] .practice-screen .ios-title {
+    align-items: center;
+    padding-bottom: 22px;
+    border-bottom: 2px solid #c1b4ce;
+  }
+  body[data-text-size] .ios-grid .ios-tile {
+    min-height: 192px;
+    padding: 28px;
+  }
+  body[data-text-size] .ios-grid .ios-tile .ios-tile-icon {
+    width: 64px;
+    height: 64px;
+  }
+}
+@media (max-width: 760px) {
+  body[data-text-size] .senior-home .home-main {
+    box-shadow: none;
+    background: transparent;
+  }
+  body[data-text-size] .ios-grid .ios-tile {
+    border-radius: 20px;
+  }
+  body[data-text-size] .ios-grid .ios-tile .ios-tile-icon {
+    border-radius: 14px;
+  }
+}
+@media (forced-colors: active) {
+  body[data-text-size] .ios-grid .ios-tile,
+  body[data-text-size] .visual-step,
+  body[data-text-size] .simple-reward-card {
+    border-color: ButtonText;
+    box-shadow: none;
+  }
+}

@@ -1,5 +1,5 @@
-import { types } from "../data/questions.js?v=senior-1";
-import { getState, getMistakes as mistakes } from "../core/store.js?v=senior-1";
+import { types } from "../data/questions.js?v=polish-1";
+import { getState, getMistakes as mistakes } from "../core/store.js?v=polish-1";
 export function mistakePage() {
   const data = getState();
   const list = mistakes();
