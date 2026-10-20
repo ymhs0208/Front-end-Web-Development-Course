@@ -1,9 +1,9 @@
-import { pageNarration } from "./page-narration.js?v=polish-1";
-import { $ } from "../core/dom.js?v=polish-1";
-import { getState, updateSettings } from "../core/store.js?v=polish-1";
-import { toast } from "../components/notifications.js?v=polish-1";
-import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=polish-1";
-import { createHakkaSpeech } from "./hakka-tts.js?v=polish-1";
+import { pageNarration } from "./page-narration.js?v=labels-1";
+import { $ } from "../core/dom.js?v=labels-1";
+import { getState, updateSettings } from "../core/store.js?v=labels-1";
+import { toast } from "../components/notifications.js?v=labels-1";
+import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=labels-1";
+import { createHakkaSpeech } from "./hakka-tts.js?v=labels-1";
 function updateReadButton(state) {
   document.querySelectorAll("[data-read], #pageReadBtn").forEach((button) => {
     const pageButton = button.id === "pageReadBtn";
@@ -124,10 +124,10 @@ export function initAccessibility() {
       else
         say(
           language === "taigi"
-            ? "台語朗讀已開啟，咱做伙來學防詐騙。"
+            ? "台語自動朗讀已開啟，咱做伙來學防詐騙。"
             : language === "hakka"
-              ? "客語朗讀已開啟。請小心詐騙。"
-              : "國語朗讀已開啟。點選情境練習，就可以開始學習。",
+              ? "客語自動朗讀已開啟。請小心詐騙。"
+              : "國語自動朗讀已開啟。點選情境練習，就可以開始學習。",
         );
     }
   };

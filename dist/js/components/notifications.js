@@ -1,4 +1,4 @@
-import { $ } from "../core/dom.js?v=polish-1";
+import { $ } from "../core/dom.js?v=labels-1";
 let toastTimer;
 export function toast(t) {
   $("#toast").textContent = t;

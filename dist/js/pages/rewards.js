@@ -1,11 +1,11 @@
-import { bank } from "../data/questions.js?v=polish-1";
-import { getState, getMistakes } from "../core/store.js?v=polish-1";
+import { bank } from "../data/questions.js?v=labels-1";
+import { getState, getMistakes } from "../core/store.js?v=labels-1";
 import {
   getRewards,
   getCompanion,
-} from "../core/rewards.js?v=polish-1";
-import { rewardBadges } from "../components/badges.js?v=polish-1";
-import { companion } from "../components/companion.js?v=polish-1";
+} from "../core/rewards.js?v=labels-1";
+import { rewardBadges } from "../components/badges.js?v=labels-1";
+import { companion } from "../components/companion.js?v=labels-1";
 export function rewardsPage() {
   const reward = getRewards(getState().attempts, bank);
   const friend = getCompanion(reward.stars, reward.total);

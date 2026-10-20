@@ -1,6 +1,6 @@
-import { bank, types } from "../data/questions.js?v=polish-1";
-import { getState } from "../core/store.js?v=polish-1";
-import { stats } from "./learning.js?v=polish-1";
+import { bank, types } from "../data/questions.js?v=labels-1";
+import { getState } from "../core/store.js?v=labels-1";
+import { stats } from "./learning.js?v=labels-1";
 export function learningHistory({ before = "" } = {}) {
   const data = getState();
   return `<details class="learning-details"><summary>看紀錄與複習</summary><div class="details-content">${before}<section class="progress-panel"><div class="panel-head">我的練習紀錄</div>${stats()}</section><section class="progress-panel"><h2 class="details-title">各情境正確率</h2>${Object.entries(

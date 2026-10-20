@@ -1,12 +1,12 @@
-import { completionCard } from "../components/completion.js?v=polish-1";
-import { renderFocusExercise } from "./focus-reader.js?v=polish-1";
-import { compactOptions } from "../data/compact-options.js?v=polish-1";
-import { $ } from "../core/dom.js?v=polish-1";
-import { bank, types } from "../data/questions.js?v=polish-1";
-import { getState, recordResult } from "../core/store.js?v=polish-1";
-import { selectQuestions } from "../core/engine.js?v=polish-1";
-import { restoreSession, saveSession } from "../core/session.js?v=polish-1";
-import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=polish-1";
+import { completionCard } from "../components/completion.js?v=labels-1";
+import { renderFocusExercise } from "./focus-reader.js?v=labels-1";
+import { compactOptions } from "../data/compact-options.js?v=labels-1";
+import { $ } from "../core/dom.js?v=labels-1";
+import { bank, types } from "../data/questions.js?v=labels-1";
+import { getState, recordResult } from "../core/store.js?v=labels-1";
+import { selectQuestions } from "../core/engine.js?v=labels-1";
+import { restoreSession, saveSession } from "../core/session.js?v=labels-1";
+import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=labels-1";
 export function createExerciseController({ refresh }) {
   let session = restoreSession(bank);
   let lastFocusSpeech = "";

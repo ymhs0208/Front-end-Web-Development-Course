@@ -57,7 +57,7 @@ npm test
 
 ## 台語朗讀
 
-上方「語音」可選關閉、國語、台語或客語，設定會保存。台語沿用 [Taiwanese-tts Space](https://huggingface.co/spaces/tbdavid2019/Taiwanese-tts/blob/main/app.py) 使用的公開 model6 API，直接從瀏覽器呼叫 `https://learn-language.tokyo/taigiTTS/taigi-text-to-speech`，不需金鑰或新增後端。音檔由服務回傳的 HTTPS 網址播放。
+上方「自動朗讀」可選不自動、國語、台語或客語，設定會保存。「不自動」只停止自動播放，手動朗讀仍使用上次選擇的語言，初次使用為國語。台語沿用 [Taiwanese-tts Space](https://huggingface.co/spaces/tbdavid2019/Taiwanese-tts/blob/main/app.py) 使用的公開 model6 API，直接從瀏覽器呼叫 `https://learn-language.tokyo/taigiTTS/taigi-text-to-speech`，不需金鑰或新增後端。音檔由服務回傳的 HTTPS 網址播放。
 
 播放同文時使用本次開啟的快取（最多 32 段），重整後重新產生。可在準備中或播放時停止；換頁會取消等候及播放。45 秒未完成時提示稍後重試；API 限流或網路失敗不會自動改成國語。部分手機需要在音檔準備完成後再按一次朗讀。
 
@@ -65,7 +65,7 @@ npm test
 
 ## 客語朗讀
 
-上方「語音」選客語，使用 [臺灣客語語音合成系統](https://huggingface.co/spaces/united-link/taiwanese-hakka-tts) 的公開 Gradio `/text_to_speech` API。固定模型 `yourtts-htia-240704`、四縣腔（`sixian`）、預設語者朱品諭，語速參數 1.1。無需錄音或上傳個人聲音。
+上方「自動朗讀」選客語，使用 [臺灣客語語音合成系統](https://huggingface.co/spaces/united-link/taiwanese-hakka-tts) 的公開 Gradio `/text_to_speech` API。固定模型 `yourtts-htia-240704`、四縣腔（`sixian`）、預設語者朱品諭，語速參數 1.1。無需錄音或上傳個人聲音。
 
 客語是依輸入文字合成發音，沒有額外翻譯國語文法。引擎不接受阿拉伯數字，因此僅在朗讀內容中將數字、金額和百分比轉成中文讀法，並略去不發音的引號，將發話者標點轉為停頓；畫面題目不變。無法辨識的字詞或服務忙碌時會提示重試或改選國語，不會假裝成功或自行切換語言。
 
