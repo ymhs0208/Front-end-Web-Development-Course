@@ -2,7 +2,7 @@ import { $ } from "./dom.js";
 import { home } from "../pages/home.js?v=rewards-9";
 import { practice } from "../pages/practice.js";
 import { mistakePage } from "../pages/mistakes.js";
-import { rewardsPage } from "../pages/rewards.js?v=rewards-11";
+import { rewardsPage } from "../pages/rewards.js?v=companion-1";
 import { guide } from "../pages/guide.js";
 import { stopSpeech } from "../features/accessibility.js";
 export function createRouter(exercise) {

@@ -1,6 +1,6 @@
 import { toast } from "./components/notifications.js";
 import { loadState } from "./core/store.js";
-import { createRouter } from "./core/router.js?v=rewards-11";
+import { createRouter } from "./core/router.js?v=companion-1";
 import { initAccessibility } from "./features/accessibility.js";
 import { createExerciseController } from "./features/exercise.js";
 import { initIntegration } from "./features/integration.js";

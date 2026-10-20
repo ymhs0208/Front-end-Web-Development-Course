@@ -47,3 +47,28 @@ export function getRewards(attempts, questions) {
     earned: badges.filter((b) => b.earned).length,
   };
 }
+
+// Growth follows unique completed questions, using the same real star count.
+export function getCompanion(stars, total) {
+  const complete = total > 0 && stars >= total;
+  const grown = stars >= 3;
+  const next =
+    stars < 1 ? Math.min(1, total) : stars < 3 ? Math.min(3, total) : total;
+  return {
+    stage: complete ? "guardian" : grown ? "helper" : "friend",
+    title: complete ? "安心守護隊長" : grown ? "勇敢防詐夥伴" : "小小安心夥伴",
+    message: complete
+      ? "全部情境都練過了，真棒！"
+      : grown
+        ? "越練越安心，我陪你一起！"
+        : "你好呀！我們一起學防詐。",
+    remaining: Math.max(0, next - stars),
+    goal: complete
+      ? "安心星收集完成！"
+      : stars < 1
+        ? "拿到第一顆星"
+        : stars < 3
+          ? "讓夥伴披上披風"
+          : "讓夥伴戴上皇冠",
+  };
+}

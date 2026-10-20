@@ -354,3 +354,158 @@ body:is([data-text-size="2"], [data-text-size="3"]) .reward-next {
     font-size: 22px;
   }
 }
+
+/* A single companion, a visible collection, and one practice action. */
+.companion-card {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 38px;
+  align-items: center;
+  padding: 32px 42px;
+  border: 2px solid #e1cba3;
+  border-radius: 32px;
+  background: #fff8e9;
+}
+.companion-portrait {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  background: radial-gradient(ellipse, #f9e9be 0%, #fff8e9 70%);
+}
+.companion-art {
+  width: min(100%, 290px);
+  height: auto;
+  overflow: visible;
+  animation: companion-arrive 0.65s ease-out both;
+}
+.companion-name {
+  color: #705229;
+  font-size: 22px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.companion-content {
+  min-width: 0;
+}
+.companion-greeting {
+  margin: 0 0 6px;
+  font-size: var(--read-font, 22px);
+  color: #6b5334;
+}
+.companion-content h2 {
+  font-size: var(--tile-font, 30px);
+  color: #473b28;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+.companion-count {
+  margin: 0 0 8px;
+  font-size: var(--read-font, 22px);
+  color: #735222;
+}
+.companion-count strong {
+  font-size: 52px;
+  color: #80551c;
+  line-height: 1.2;
+}
+.star-collection {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 3px;
+  margin-bottom: 16px;
+}
+.collection-star {
+  font-size: clamp(22px, 2.8vw, 38px);
+  line-height: 1.3;
+  color: #fff8e9;
+  -webkit-text-stroke: 1.5px #927950;
+  text-align: center;
+}
+.collection-star.collected {
+  color: #efbc45;
+  -webkit-text-stroke-color: #997124;
+  animation: companion-arrive 0.5s ease-out both;
+}
+.companion-goal {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 18px;
+  background: #fffefa;
+  border-radius: 18px;
+  border: 1px solid #e4d5b8;
+  margin-bottom: 18px;
+  color: #604b2d;
+}
+.companion-goal > span {
+  font-size: 34px;
+  color: #41785d;
+}
+.companion-goal p {
+  margin: 0;
+  font-size: var(--read-font, 22px);
+  line-height: 1.5;
+}
+.companion-content .primary {
+  width: 100%;
+  min-height: 70px;
+  font-size: var(--read-font, 26px);
+}
+.companion-note {
+  font-size: var(--read-font, 20px);
+  line-height: 1.5;
+  color: #66583f;
+  margin: 12px 0 0;
+}
+.reward-badge.earned {
+  background: #fff9e8;
+  border: 2px solid #d2b66e;
+  box-shadow: 0 5px 0 #e9ddbd;
+}
+.reward-badge.earned .reward-emblem {
+  background: #f7dfa0;
+}
+@keyframes companion-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(9px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 760px) {
+  .companion-card {
+    grid-template-columns: 1fr;
+    padding: 22px 20px;
+    gap: 18px;
+  }
+  .companion-art {
+    width: 175px;
+  }
+  .companion-name {
+    font-size: 21px;
+  }
+  .companion-content {
+    text-align: center;
+  }
+  .companion-goal {
+    text-align: left;
+  }
+  .collection-star {
+    font-size: clamp(22px, 6vw, 34px);
+  }
+}
+body:is([data-text-size="2"], [data-text-size="3"]) .companion-card {
+  grid-template-columns: 1fr;
+}
+body:is([data-text-size="2"], [data-text-size="3"]) .companion-art {
+  width: 175px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .companion-art,
+  .collection-star.collected {
+    animation: none;
+  }
+}
