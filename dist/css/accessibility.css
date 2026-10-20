@@ -572,3 +572,17 @@ footer > span {
     font-size: 18px;
   }
 }
+
+/* Two familiar selects: font size and spoken language. */
+.voice-control {
+  flex-shrink: 0;
+}
+.voice-control select {
+  min-width: 88px;
+}
+@media (max-width: 760px) {
+  .access > .font-control {
+    flex: 1;
+    min-width: 0;
+  }
+}

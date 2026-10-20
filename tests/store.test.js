@@ -56,6 +56,7 @@ test("儲存模組保留舊紀錄、驗證結果並隔離外部修改", () => {
     large: false,
     voice: true,
     fontLevel: 0,
+    speechLanguage: "mandarin",
   });
 });
 
@@ -70,4 +71,17 @@ test("四級字體會儲存，重新載入保留選擇，無效值不改動設�
     updateSettings({ fontLevel: invalid });
     assert.equal(getState().settings.fontLevel, 3);
   }
+});
+
+test("台語語音偏好可保存，未知語言不覆寫既有設定", () => {
+  updateSettings({ voice: true, speechLanguage: "taigi" });
+  loadState();
+  assert.equal(getState().settings.speechLanguage, "taigi");
+  assert.equal(getState().settings.voice, true);
+  updateSettings({ speechLanguage: "unknown" });
+  assert.equal(getState().settings.speechLanguage, "taigi");
+  updateSettings({ voice: false });
+  loadState();
+  assert.equal(getState().settings.voice, false);
+  assert.equal(getState().settings.speechLanguage, "taigi");
 });

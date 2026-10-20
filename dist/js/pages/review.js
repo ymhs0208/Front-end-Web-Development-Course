@@ -1,2 +1,2 @@
 // Compatibility export for existing module imports.
-export { rewardsPage as reviewPage } from "./rewards.js";
+export { rewardsPage as reviewPage } from "./rewards.js?v=taigi-1";

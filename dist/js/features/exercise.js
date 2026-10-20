@@ -1,11 +1,11 @@
-import { renderFocusExercise } from "./focus-reader.js";
-import { compactOptions } from "../data/compact-options.js";
-import { $ } from "../core/dom.js";
-import { bank, types } from "../data/questions.js";
-import { getState, recordResult } from "../core/store.js";
-import { selectQuestions } from "../core/engine.js";
-import { restoreSession, saveSession } from "../core/session.js";
-import { say, stopSpeech } from "./accessibility.js";
+import { renderFocusExercise } from "./focus-reader.js?v=taigi-1";
+import { compactOptions } from "../data/compact-options.js?v=taigi-1";
+import { $ } from "../core/dom.js?v=taigi-1";
+import { bank, types } from "../data/questions.js?v=taigi-1";
+import { getState, recordResult } from "../core/store.js?v=taigi-1";
+import { selectQuestions } from "../core/engine.js?v=taigi-1";
+import { restoreSession, saveSession } from "../core/session.js?v=taigi-1";
+import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=taigi-1";
 export function createExerciseController({ refresh }) {
   let session = restoreSession(bank);
   let lastFocusSpeech = "";
@@ -113,7 +113,7 @@ export function createExerciseController({ refresh }) {
     else if (session) renderQuestion();
   }
   function read() {
-    if ("speechSynthesis" in window && speechSynthesis.speaking) {
+    if (isSpeaking()) {
       stopSpeech();
       return;
     }

@@ -1,43 +1,67 @@
-import { $ } from "../core/dom.js";
-import { getState, updateSettings } from "../core/store.js";
-import { toast } from "../components/notifications.js";
-function updateReadButton(speaking) {
+import { $ } from "../core/dom.js?v=taigi-1";
+import { getState, updateSettings } from "../core/store.js?v=taigi-1";
+import { toast } from "../components/notifications.js?v=taigi-1";
+import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=taigi-1";
+function updateReadButton(state) {
   const button = document.querySelector("[data-read]");
   if (!button) return;
-  button.textContent = speaking
-    ? "停止朗讀"
-    : button.dataset.idleLabel || "唸給我聽";
-  button.setAttribute("aria-pressed", String(speaking));
+  button.textContent =
+    state === "loading"
+      ? "準備中，點此取消"
+      : state === "playing"
+        ? "停止朗讀"
+        : button.dataset.idleLabel || "唸給我聽";
+  button.setAttribute("aria-pressed", String(state !== "idle"));
+  button.setAttribute("aria-busy", String(state === "loading"));
+}
+const taiwanese = createTaiwaneseSpeech({
+  onState: updateReadButton,
+  onError: toast,
+});
+let speechGeneration = 0;
+export function isSpeaking() {
+  return (
+    taiwanese.isActive() ||
+    ("speechSynthesis" in window && speechSynthesis.speaking)
+  );
 }
 export function say(text, force = false) {
-  if (!("speechSynthesis" in window)) {
-    if (force) toast("此瀏覽器不支援語音朗讀，請閱讀畫面文字。");
+  stopSpeech();
+  if (!getState().settings.voice && !force) return;
+  if (getState().settings.speechLanguage === "taigi") {
+    void taiwanese.speak(text);
     return;
   }
-  speechSynthesis.cancel();
-  if (getState().settings.voice || force) {
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = "zh-TW";
-    u.rate = 0.85;
-    u.onstart = () => updateReadButton(true);
-    u.onend = () => updateReadButton(false);
-    u.onerror = () => updateReadButton(false);
-    speechSynthesis.speak(u);
+  if (!("speechSynthesis" in window)) {
+    if (force) toast("此瀏覽器不支援國語朗讀，可改選台語。");
+    return;
   }
+  const token = speechGeneration;
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "zh-TW";
+  u.rate = 0.85;
+  u.onstart = () => {
+    if (token === speechGeneration) updateReadButton("playing");
+  };
+  u.onend = u.onerror = () => {
+    if (token === speechGeneration) updateReadButton("idle");
+  };
+  speechSynthesis.speak(u);
 }
 function applySettings() {
   const data = getState();
   document.body.classList.toggle("large", data.settings.large);
   document.body.dataset.textSize = String(data.settings.fontLevel);
   $("#fontSizeSelect").value = String(data.settings.fontLevel);
-  $("#voiceBtn").setAttribute("aria-pressed", String(data.settings.voice));
-  $("#voiceBtn .access-label").textContent = data.settings.voice
-    ? "語音開啟"
-    : "語音關閉";
+  $("#voiceSelect").value = data.settings.voice
+    ? data.settings.speechLanguage
+    : "off";
 }
 export function stopSpeech() {
+  speechGeneration++;
   if ("speechSynthesis" in window) speechSynthesis.cancel();
-  updateReadButton(false);
+  taiwanese.stop();
+  updateReadButton("idle");
 }
 export function initAccessibility() {
   $("#fontSizeSelect").onchange = (event) => {
@@ -46,16 +70,26 @@ export function initAccessibility() {
     applySettings();
     window.dispatchEvent(new Event("vault:text-size-changed"));
   };
-  $("#voiceBtn").onclick = () => {
-    if (!("speechSynthesis" in window)) {
-      toast("此瀏覽器不支援語音朗讀");
-      return;
-    }
-    updateSettings({ voice: !getState().settings.voice });
+  $("#voiceSelect").onchange = (event) => {
+    stopSpeech();
+    const language = event.target.value;
+    updateSettings(
+      language === "off"
+        ? { voice: false }
+        : { voice: true, speechLanguage: language },
+    );
     applySettings();
-    if (getState().settings.voice)
-      say("語音朗讀已開啟。點選情境練習，就可以開始學習。");
-    else stopSpeech();
+    if (language !== "off") {
+      if (document.querySelector("[data-read]"))
+        document.querySelector("[data-read]").click();
+      else
+        say(
+          language === "taigi"
+            ? "台語朗讀已開啟，咱做伙來學防詐騙。"
+            : "國語朗讀已開啟。點選情境練習，就可以開始學習。",
+        );
+    }
   };
+  window.addEventListener("pagehide", stopSpeech);
   applySettings();
 }

@@ -1,9 +1,14 @@
-import { bank } from "../data/questions.js";
-import { findMistakes } from "./engine.js";
+import { bank } from "../data/questions.js?v=taigi-1";
+import { findMistakes } from "./engine.js?v=taigi-1";
 const STORAGE_KEY = "vault-training-v1";
 let state = {
   attempts: [],
-  settings: { large: false, voice: false, fontLevel: 0 },
+  settings: {
+    large: false,
+    voice: false,
+    fontLevel: 0,
+    speechLanguage: "mandarin",
+  },
 };
 let storageOK = true;
 let notifyWarning = () => {};
@@ -22,6 +27,8 @@ export function loadState(onWarning = () => {}) {
         if (typeof saved.settings?.[key] === "boolean")
           state.settings[key] = saved.settings[key];
       }
+      state.settings.speechLanguage =
+        saved.settings?.speechLanguage === "taigi" ? "taigi" : "mandarin";
       const level = saved.settings?.fontLevel;
       state.settings.fontLevel =
         Number.isInteger(level) && level >= 0 && level <= 3
@@ -48,6 +55,8 @@ export function getState() {
   return structuredClone(state);
 }
 export function updateSettings(patch) {
+  if (["mandarin", "taigi"].includes(patch.speechLanguage))
+    state.settings.speechLanguage = patch.speechLanguage;
   for (const key of ["large", "voice"]) {
     if (typeof patch[key] === "boolean") state.settings[key] = patch[key];
   }
