@@ -1,0 +1,127 @@
+/* Responsive layouts keep the chosen font size; narrow screens use fewer columns. */
+body[data-text-size]
+  :is(
+    .home-main,
+    .home-shortcuts,
+    .ios-screen,
+    .visual-guide,
+    .rewards-page,
+    .exercise-shell,
+    .header-settings
+  ) {
+  min-width: 0;
+}
+body[data-text-size]
+  :is(
+    .ios-tile-description,
+    .option,
+    .reward-badge h2,
+    .reward-rules li,
+    .answer-explanation
+  ) {
+  overflow-wrap: anywhere;
+}
+body[data-text-size] .ios-backbar {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+@media (min-width: 761px) and (max-width: 1023px) {
+  body[data-text-size] header.site-header {
+    padding: 18px 28px;
+    gap: 16px;
+  }
+  body[data-text-size] .page-listen {
+    margin-left: auto;
+  }
+  body[data-text-size] .header-settings {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  body[data-text-size] .header-control select {
+    flex: 1;
+    min-width: 0;
+  }
+  body[data-text-size] main {
+    width: 100%;
+    max-width: 860px;
+    padding: 12px 28px 32px;
+  }
+  body[data-text-size] .ios-title {
+    display: block;
+  }
+  body[data-text-size] .ios-title p {
+    margin: 10px 0 0;
+    text-align: left;
+  }
+  body[data-text-size] .ios-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+  body[data-text-size="3"] .ios-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-text-size] .ios-tile {
+    padding: 20px;
+  }
+  body[data-text-size] .visual-steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-text-size] .visual-step {
+    display: grid;
+    grid-template-columns: 48px 150px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px 20px;
+    text-align: left;
+  }
+  body[data-text-size] .visual-step .step-count {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+  body[data-text-size] .visual-step .step-illustration {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    width: 150px;
+    margin: 0;
+  }
+  body[data-text-size] .visual-step h2,
+  body[data-text-size] .visual-step p {
+    grid-column: 3;
+    margin: 0;
+  }
+  body[data-text-size] .reward-badges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  body[data-text-size="3"] .reward-badges {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  body[data-text-size] .ios-backbar button {
+    max-width: 804px;
+  }
+}
+@media (max-width: 760px) {
+  body[data-text-size] .simple-reward-card .companion-count {
+    min-width: 0;
+  }
+  body[data-text-size] .visual-guide,
+  body[data-text-size] .ios-screen {
+    width: 100%;
+  }
+}
+/* A short landscape viewport needs natural scrolling instead of a covering bar. */
+@media (max-height: 560px) {
+  body[data-text-size] {
+    padding-bottom: 0;
+  }
+  body[data-text-size] .ios-backbar:not([hidden]) {
+    position: static;
+    margin-top: 20px;
+  }
+  body[data-text-size] .exercise-shell .focus-reader {
+    padding-top: 16px;
+    padding-bottom: 20px;
+  }
+  body[data-text-size] .ios-backbar button {
+    width: 100%;
+    min-width: 0;
+  }
+}
