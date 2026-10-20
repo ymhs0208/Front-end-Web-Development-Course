@@ -1,0 +1,168 @@
+/* One visual language: quiet surfaces, strong edges, generous readable controls. */
+body[data-text-size] {
+  background: #f5f1f9;
+  color: #17131d;
+  font-weight: 500;
+}
+body[data-text-size] header.site-header {
+  border-bottom: 2px solid #c2b8ce;
+  margin-bottom: 16px;
+}
+body[data-text-size] .header-brand strong {
+  color: #241a30;
+}
+body[data-text-size]
+  :is(
+    .primary,
+    .secondary,
+    .ios-tile,
+    .home-shortcuts a,
+    .option,
+    .page-listen
+  ) {
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
+}
+body[data-text-size]
+  :is(
+    .primary,
+    .secondary,
+    .ios-tile,
+    .home-shortcuts a,
+    .option,
+    .page-listen
+  ):active {
+  filter: brightness(0.94);
+}
+body[data-text-size] :is(a, button, select, summary):focus-visible {
+  outline: 4px solid #241a30;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 7px #fff;
+}
+body[data-text-size] .welcome-home.senior-home {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: none;
+  gap: 24px;
+  align-items: center;
+  margin-top: 12px;
+}
+body[data-text-size] .senior-home .home-main {
+  min-width: 0;
+  display: grid;
+  gap: 24px;
+  padding: 32px;
+  border: 2px solid #9a8aa8;
+  border-radius: 28px;
+  background: #fff;
+}
+body[data-text-size] .senior-home .home-intro,
+body[data-text-size] .senior-home .home-start {
+  grid-area: auto;
+  align-self: auto;
+}
+body[data-text-size] .senior-home .home-direction {
+  font-size: var(--read-font);
+  line-height: 1.5;
+  color: #37303e;
+  margin: 10px 0 0;
+}
+body[data-text-size] .senior-home .home-start-button.primary {
+  min-height: 156px;
+  border-radius: 20px;
+  box-shadow: none;
+  background: #603595;
+  border-color: #603595;
+}
+body[data-text-size] .senior-home .home-start-button.primary:hover {
+  background: #49246f;
+  border-color: #49246f;
+}
+body[data-text-size] .senior-home .home-shortcuts {
+  grid-area: auto;
+  grid-column: auto;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin: 0;
+}
+body[data-text-size] .senior-home .home-shortcuts a {
+  border: 2px solid #8c7e99;
+  border-radius: 20px;
+  color: #241a30;
+  min-height: 88px;
+  background: #fff;
+}
+body[data-text-size] .ios-tile {
+  border-radius: 22px;
+  transform: none;
+  box-shadow: none;
+}
+body[data-text-size] .reward-rules {
+  border: 2px solid #8c7e99;
+}
+body[data-text-size] .reward-rules summary {
+  color: #38204f;
+  font-weight: 650;
+}
+body[data-text-size] .ios-backbar {
+  background: #f5f1f9;
+}
+@media (min-width: 1024px) {
+  body[data-text-size] .welcome-home.senior-home {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 32px;
+    margin-top: 20px;
+  }
+  body[data-text-size] .senior-home .home-intro h1 {
+    font-size: var(--home-title);
+    letter-spacing: -1px;
+  }
+  body[data-text-size] .senior-home .home-shortcuts a {
+    min-height: 104px;
+    padding: 22px;
+  }
+}
+@media (max-width: 760px) {
+  body[data-text-size] header.site-header {
+    margin-bottom: 10px;
+  }
+  body[data-text-size] .welcome-home.senior-home {
+    gap: 16px;
+    margin-top: 0;
+  }
+  body[data-text-size] .senior-home .home-main {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    gap: 14px;
+  }
+  body[data-text-size] .senior-home .home-direction {
+    font-size: 26px;
+    margin-top: 6px;
+  }
+  body[data-text-size] .senior-home .home-shortcuts {
+    gap: 10px;
+  }
+  body[data-text-size] .senior-home .home-shortcuts a {
+    min-height: 68px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+  body[data-text-size] .senior-home .home-start-button.primary {
+    min-height: 132px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-text-size]
+    :is(
+      .primary,
+      .secondary,
+      .ios-tile,
+      .home-shortcuts a,
+      .option,
+      .page-listen
+    ) {
+    transition: none;
+  }
+}

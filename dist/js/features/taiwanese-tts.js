@@ -1,4 +1,4 @@
-import { createRemoteSpeech } from "./remote-speech.js?v=cute-star-1";
+import { createRemoteSpeech } from "./remote-speech.js?v=senior-1";
 // Same public model6 API used by the Taiwanese-tts Hugging Face Space.
 const ENDPOINT = "https://learn-language.tokyo/taigiTTS/taigi-text-to-speech";
 export function createTaiwaneseSpeech(options = {}) {

@@ -1,11 +1,11 @@
-import { bank } from "../data/questions.js?v=cute-star-1";
-import { getState, getMistakes } from "../core/store.js?v=cute-star-1";
+import { bank } from "../data/questions.js?v=senior-1";
+import { getState, getMistakes } from "../core/store.js?v=senior-1";
 import {
   getRewards,
   getCompanion,
-} from "../core/rewards.js?v=cute-star-1";
-import { rewardBadges } from "../components/badges.js?v=cute-star-1";
-import { companion } from "../components/companion.js?v=cute-star-1";
+} from "../core/rewards.js?v=senior-1";
+import { rewardBadges } from "../components/badges.js?v=senior-1";
+import { companion } from "../components/companion.js?v=senior-1";
 export function rewardsPage() {
   const reward = getRewards(getState().attempts, bank);
   const friend = getCompanion(reward.stars, reward.total);

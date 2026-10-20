@@ -1,6 +1,6 @@
-import { types } from "../data/questions.js?v=cute-star-1";
-import { getState, getMistakes } from "../core/store.js?v=cute-star-1";
-import { moduleArt } from "./illustrations.js?v=cute-star-1";
+import { types } from "../data/questions.js?v=senior-1";
+import { getState, getMistakes } from "../core/store.js?v=senior-1";
+import { moduleArt } from "./illustrations.js?v=senior-1";
 export function moduleCards(filter = "all") {
   return `<div class="cards">${Object.entries(types)
     .filter(([k]) => filter === "all" || k === filter)
