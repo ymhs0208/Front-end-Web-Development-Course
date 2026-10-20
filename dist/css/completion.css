@@ -1,0 +1,64 @@
+/* Celebrate participation with a single next action. */
+.exercise-shell .completion-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 38px 24px;
+  min-height: 380px;
+}
+.completion-star {
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+  animation: completion-pop 0.5s ease-out both;
+}
+.exercise-shell .completion-card h1 {
+  font-size: var(--title-font, 36px);
+  margin: 0;
+  line-height: 1.4;
+  color: #28533c;
+}
+.exercise-shell .completion-card p {
+  font-size: var(--read-font, 25px);
+  margin: 0;
+  line-height: 1.5;
+  color: #51584c;
+}
+.exercise-shell .completion-card .answer-actions {
+  display: block;
+  width: min(100%, 360px);
+  margin: 9px 0 0;
+}
+.exercise-shell .completion-card .primary {
+  width: 100%;
+  min-height: 64px;
+  font-size: var(--read-font, 25px);
+}
+@keyframes completion-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (max-width: 600px) {
+  .exercise-shell .completion-card {
+    gap: 16px;
+    padding: 25px 16px;
+    min-height: 330px;
+  }
+  .completion-star {
+    width: 96px;
+    height: 96px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .completion-star {
+    animation: none;
+  }
+}

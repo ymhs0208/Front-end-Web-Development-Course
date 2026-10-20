@@ -1,3 +1,4 @@
+import { completionCard } from "../components/completion.js?v=finish-1";
 import { renderFocusExercise } from "./focus-reader.js?v=hakka-3";
 import { compactOptions } from "../data/compact-options.js?v=hakka-3";
 import { $ } from "../core/dom.js?v=hakka-3";
@@ -88,19 +89,11 @@ export function createExerciseController({ refresh }) {
       refresh();
       window.scrollTo(0, 0);
       $("#main").focus({ preventScroll: true });
-      say(
-        "練習完成，答對" +
-          session.score +
-          "題，共" +
-          session.qs.length +
-          "題。",
-      );
+      say("你完成了，真棒！");
     }
   }
   function renderResults() {
-    const n = session.qs.length;
-    $("#quizBody").innerHTML =
-      `<div class="quiz-content center result-page"><span class="answer-label">✓ 練習完成</span><h1>今天的練習完成了！</h1><p>你答對了 <strong>${session.score}</strong> 題，共 ${n} 題。</p><p>${session.score === n ? "做得好，把安全的做法記在心裡。" : "答錯的題目已記下來，下次會陪你再練。"}</p><div class="answer-actions"><button class="primary" data-finish="home">完成，回首頁</button>${session.score < n ? '<button class="secondary" data-start="review">複習答錯的題目</button>' : ""}</div></div>`;
+    $("#quizBody").innerHTML = completionCard(session.qs.length);
   }
   function closeQuiz() {
     stopSpeech();
