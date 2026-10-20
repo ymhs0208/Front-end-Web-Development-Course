@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>金庫防爆特攻隊</title>
+    <script>
+      const target = new URL("./dist/", window.location.href);
+      target.search = window.location.search;
+      target.hash = window.location.hash;
+      window.location.replace(target.href);
+    </script>
+    <noscript><meta http-equiv="refresh" content="0; url=./dist/" /></noscript>
+    <style>
+      body { margin: 0; padding: 48px 24px; background: #f2f2f7; color: #1c1c1e; font: 24px/1.7 system-ui, sans-serif; text-align: center; }
+      a { display: inline-block; padding: 16px 28px; color: white; background: #087f42; border-radius: 18px; text-decoration: none; }
+      a:focus-visible { outline: 4px solid #15549a; outline-offset: 5px; }
+    </style>
+  </head>
+  <body>
+    <h1>金庫防爆特攻隊</h1>
+    <p><a href="./dist/">開啟網站</a></p>
+  </body>
+</html>

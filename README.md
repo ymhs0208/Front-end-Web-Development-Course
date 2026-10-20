@@ -1,5 +1,9 @@
 # 金庫防爆特攻隊｜主網站與系統整合
 
+[開啟網站](https://ymhs0208.github.io/Front-end-Web-Development-Course/)
+
+GitHub Pages 的根目錄入口會自動開啟 `dist/`，GitHub 儲存庫頁則顯示本說明文件。
+
 本機開發版本，不部署。使用原生 HTML、CSS、JavaScript ES Modules，無框架、無執行期套件，保留大字體、簡單操作和獨立作答頁面。
 
 ## 啟動
