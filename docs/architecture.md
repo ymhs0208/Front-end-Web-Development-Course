@@ -33,7 +33,7 @@
 
 ## 共用頁首
 
-頁首 HTML 位於 `dist/index.html`，獨立樣式位於 `dist/css/header.css`，最後載入。使用 `header-*` 類別，避免舊版 `.brand`、`.access`、`.font-control` 樣式影響頁首。字體與語音保留原本的 select ID，沿用既有設定及事件。電腦版品牌、設定與首頁入口同列；手機分成品牌／首頁與兩個設定欄。作答時縮短間距，最大字閱讀仍依可用高度分段。
+頁首 HTML 位於 `dist/index.html`，獨立樣式位於 `dist/css/header.css`，最後載入。使用 `header-*` 類別，避免舊版樣式影響。工具列提供可回首頁的網站名稱、字體及語音選單；手機分為名稱列和設定列，作答時縮短間距。字體與語音保留原本 select ID，沿用設定及事件。
 
 ## CSS 分工
 
