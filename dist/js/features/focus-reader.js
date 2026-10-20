@@ -1,5 +1,5 @@
-import { $ } from "../core/dom.js?v=welcome-1";
-import { compactOptions } from "../data/compact-options.js?v=welcome-1";
+import { $ } from "../core/dom.js?v=lowvision-5";
+import { compactOptions } from "../data/compact-options.js?v=lowvision-5";
 
 export function focusText(session) {
   const q = session.qs[session.index];
@@ -41,19 +41,22 @@ export function fitTextPage(text, offset, element, availableHeight) {
 
 export function renderFocusExercise(session) {
   const q = session.qs[session.index];
-  const top = `<div class="quiz-top focus-top"><span>第 ${session.index + 1} / ${session.qs.length} 題</span><span>${session.answered ? "看解說" : session.questionView === "choose" ? "選答案" : "看情境"}</span></div>`;
+  const heading =
+    !session.answered && session.questionView === "choose"
+      ? "選答案"
+      : session.answered
+        ? session.correct
+          ? "✓ 答對了"
+          : "一起記住"
+        : "先看情境";
+  const top = `<div class="quiz-top focus-top"><span>第 ${session.index + 1} / ${session.qs.length} 題</span><h1>${heading}</h1></div>`;
   if (!session.answered && session.questionView === "choose") {
     $("#quizBody").innerHTML =
-      `${top}<div class="focus-choices"><h1>你會怎麼做？</h1><div class="focus-tools"><button class="secondary" data-reader-back>看題目</button><button class="secondary" data-read data-idle-label="聽答案">聽答案</button></div><div class="options">${compactOptions[q.id].map((option, i) => `<button class="option" data-answer="${i}">${option}</button>`).join("")}</div></div>`;
+      `${top}<div class="focus-choices"><h2 class="choice-heading">你會怎麼做？</h2><div class="focus-tools"><button class="secondary" data-reader-back>看題目</button><button class="secondary" data-read data-idle-label="聽答案">聽答案</button></div><div class="options">${compactOptions[q.id].map((option, i) => `<button class="option" data-answer="${i}">${option}</button>`).join("")}</div></div>`;
     return;
   }
-  const heading = session.answered
-    ? session.correct
-      ? "✓ 答對了"
-      : "一起記住"
-    : "先看情境";
   $("#quizBody").innerHTML =
-    `${top}<div class="focus-reader"><h1>${heading}</h1><p class="reading-copy"></p><div class="focus-controls"><div class="reader-position"><button class="reader-previous" data-reader-previous>‹ 上一段</button><span class="reader-hint"></span></div><div class="reader-buttons"><button class="secondary" data-read data-idle-label="朗讀本段">朗讀本段</button><button class="primary" data-reader-next></button></div></div></div>`;
+    `${top}<div class="focus-reader"><p class="reading-copy"></p><div class="focus-controls"><div class="reader-position"><button class="reader-previous" data-reader-previous aria-label="回到上一段">上一段</button><span class="reader-hint">還有下一段</span></div><div class="reader-buttons"><button class="secondary" data-read data-idle-label="朗讀本段">朗讀本段</button><button class="primary" data-reader-next>下一段</button></div></div></div>`;
   const text = focusText(session);
   const element = $(".reading-copy");
   const controls = $(".focus-controls");
@@ -65,8 +68,9 @@ export function renderFocusExercise(session) {
     backTop,
   );
   const padding = parseFloat(getComputedStyle(body).paddingBottom);
+  const oneLine = parseFloat(getComputedStyle(element).lineHeight) || 62;
   const available = Math.max(
-    52,
+    oneLine,
     viewportBottom -
       element.getBoundingClientRect().top -
       controls.getBoundingClientRect().height -
@@ -77,7 +81,7 @@ export function renderFocusExercise(session) {
   session.readerEnd = page.end;
   session.readerFinished = page.finished;
   $(".reader-previous").disabled = !session.readerHistory?.length;
-  $(".reader-hint").textContent = page.finished ? "這一段看完了" : "還有下一段";
+  $(".reader-hint").textContent = page.finished ? "已讀完" : "還有下一段";
   $("[data-reader-next]").textContent = page.finished
     ? session.answered
       ? session.index + 1 === session.qs.length

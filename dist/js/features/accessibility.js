@@ -1,28 +1,46 @@
-import { $ } from "../core/dom.js?v=welcome-1";
-import { getState, updateSettings } from "../core/store.js?v=welcome-1";
-import { toast } from "../components/notifications.js?v=welcome-1";
-import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=welcome-1";
-import { createHakkaSpeech } from "./hakka-tts.js?v=welcome-1";
+import { pageNarration } from "./page-narration.js?v=lowvision-5";
+import { $ } from "../core/dom.js?v=lowvision-5";
+import { getState, updateSettings } from "../core/store.js?v=lowvision-5";
+import { toast } from "../components/notifications.js?v=lowvision-5";
+import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=lowvision-5";
+import { createHakkaSpeech } from "./hakka-tts.js?v=lowvision-5";
 function updateReadButton(state) {
-  const button = document.querySelector("[data-read]");
-  if (!button) return;
-  button.textContent =
-    state === "loading"
-      ? "取消等候"
-      : state === "ready"
-        ? "播放語音"
-        : state === "playing"
-          ? "停止朗讀"
-          : button.dataset.idleLabel || "唸給我聽";
-  button.setAttribute(
-    "aria-label",
-    state === "loading" ? "語音準備中，按一下取消" : button.textContent,
-  );
-  button.setAttribute(
-    "aria-pressed",
-    String(state === "playing" || state === "loading"),
-  );
-  button.setAttribute("aria-busy", String(state === "loading"));
+  document.querySelectorAll("[data-read], #pageReadBtn").forEach((button) => {
+    const pageButton = button.id === "pageReadBtn";
+    button.textContent =
+      state === "loading"
+        ? pageButton
+          ? "取消"
+          : "取消等候"
+        : state === "ready"
+          ? pageButton
+            ? "播放"
+            : "播放語音"
+          : state === "playing"
+            ? pageButton
+              ? "停止"
+              : "停止朗讀"
+            : pageButton
+              ? "朗讀"
+              : button.dataset.idleLabel || "唸給我聽";
+    button.setAttribute(
+      "aria-label",
+      state === "loading"
+        ? "語音準備中，按一下取消"
+        : pageButton
+          ? {
+              idle: "朗讀目前頁面",
+              ready: "播放目前頁面語音",
+              playing: "停止朗讀目前頁面",
+            }[state] || "朗讀目前頁面"
+          : button.textContent,
+    );
+    button.setAttribute(
+      "aria-pressed",
+      String(state === "playing" || state === "loading"),
+    );
+    button.setAttribute("aria-busy", String(state === "loading"));
+  });
 }
 const taiwanese = createTaiwaneseSpeech({
   onState: updateReadButton,
@@ -81,6 +99,10 @@ export function stopSpeech() {
   updateReadButton("idle");
 }
 export function initAccessibility() {
+  $("#pageReadBtn").onclick = () => {
+    if (isSpeaking()) stopSpeech();
+    else say(pageNarration(location.hash, $("#main")), true);
+  };
   $("#fontSizeSelect").onchange = (event) => {
     stopSpeech();
     updateSettings({ fontLevel: Number(event.target.value) });

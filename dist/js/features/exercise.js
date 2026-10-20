@@ -1,12 +1,12 @@
-import { completionCard } from "../components/completion.js?v=welcome-1";
-import { renderFocusExercise } from "./focus-reader.js?v=welcome-1";
-import { compactOptions } from "../data/compact-options.js?v=welcome-1";
-import { $ } from "../core/dom.js?v=welcome-1";
-import { bank, types } from "../data/questions.js?v=welcome-1";
-import { getState, recordResult } from "../core/store.js?v=welcome-1";
-import { selectQuestions } from "../core/engine.js?v=welcome-1";
-import { restoreSession, saveSession } from "../core/session.js?v=welcome-1";
-import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=welcome-1";
+import { completionCard } from "../components/completion.js?v=lowvision-5";
+import { renderFocusExercise } from "./focus-reader.js?v=lowvision-5";
+import { compactOptions } from "../data/compact-options.js?v=lowvision-5";
+import { $ } from "../core/dom.js?v=lowvision-5";
+import { bank, types } from "../data/questions.js?v=lowvision-5";
+import { getState, recordResult } from "../core/store.js?v=lowvision-5";
+import { selectQuestions } from "../core/engine.js?v=lowvision-5";
+import { restoreSession, saveSession } from "../core/session.js?v=lowvision-5";
+import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=lowvision-5";
 export function createExerciseController({ refresh }) {
   let session = restoreSession(bank);
   let lastFocusSpeech = "";
@@ -25,7 +25,7 @@ export function createExerciseController({ refresh }) {
     const q = session.qs[session.index];
     document.title =
       (session.answered ? "作答解說" : "正在練習") + "｜金庫防爆特攻隊";
-    if (getState().settings.fontLevel === 3) {
+    if (getState().settings.fontLevel >= 2) {
       renderFocusExercise(session);
       const speech =
         session.questionView === "choose" && !session.answered
@@ -66,7 +66,7 @@ export function createExerciseController({ refresh }) {
     document.title = "作答解說｜金庫防爆特攻隊";
     window.scrollTo(0, 0);
     $("#main").focus({ preventScroll: true });
-    if (getState().settings.fontLevel !== 3)
+    if (getState().settings.fontLevel < 2)
       say(
         (session.correct ? "答對了！" : "沒關係，我們一起看懂它。") + q.explain,
       );
@@ -112,7 +112,7 @@ export function createExerciseController({ refresh }) {
     }
     const question = session?.qs[session.index];
     if (!question) return;
-    if (getState().settings.fontLevel === 3) {
+    if (getState().settings.fontLevel >= 2) {
       const text =
         session.questionView === "choose" && !session.answered
           ? compactOptions[question.id]

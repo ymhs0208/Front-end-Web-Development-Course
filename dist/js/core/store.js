@@ -1,19 +1,19 @@
-import { bank } from "../data/questions.js?v=welcome-1";
-import { findMistakes } from "./engine.js?v=welcome-1";
+import { bank } from "../data/questions.js?v=lowvision-5";
+import { findMistakes } from "./engine.js?v=lowvision-5";
 const STORAGE_KEY = "vault-training-v1";
-let state = {
-  attempts: [],
-  settings: {
-    large: false,
-    voice: false,
-    fontLevel: 0,
-    speechLanguage: "mandarin",
-  },
+const DEFAULT_SETTINGS = {
+  large: true,
+  voice: false,
+  fontLevel: 2,
+  speechLanguage: "mandarin",
 };
+let state = { attempts: [], settings: { ...DEFAULT_SETTINGS } };
 let storageOK = true;
 let notifyWarning = () => {};
 export function loadState(onWarning = () => {}) {
   notifyWarning = onWarning;
+  state = { attempts: [], settings: { ...DEFAULT_SETTINGS } };
+  storageOK = true;
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (saved && Array.isArray(saved.attempts)) {
@@ -36,9 +36,11 @@ export function loadState(onWarning = () => {}) {
       state.settings.fontLevel =
         Number.isInteger(level) && level >= 0 && level <= 3
           ? level
-          : state.settings.large
-            ? 1
-            : 0;
+          : typeof saved.settings?.large === "boolean"
+            ? saved.settings.large
+              ? 1
+              : 0
+            : DEFAULT_SETTINGS.fontLevel;
       state.settings.large = state.settings.fontLevel > 0;
     }
   } catch {

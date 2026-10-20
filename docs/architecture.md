@@ -5,7 +5,7 @@
 | 位置 | 責任 |
 | --- | --- |
 | `dist/js/main.js` | 啟動、組合模組、分派操作事件 |
-| `dist/js/data/` | 題庫與最大字模式的短版選項 |
+| `dist/js/data/` | 題庫與特大／最大模式的短版選項 |
 | `dist/js/core/` | 路由、儲存、抽題排序、練習進度與獎勵計算 |
 | `dist/js/pages/` | 首頁、自選情境、獎勵、錯題與說明頁 |
 | `dist/js/components/` | 大方塊、步驟圖示、勳章、提示等共用元件 |
@@ -18,16 +18,18 @@
 | 需求 | 檔案 |
 | --- | --- |
 | 題目、答案與解說 | `dist/js/data/questions.js` |
-| 最大字短版選項 | `dist/js/data/compact-options.js` |
+| 特大／最大字短版選項 | `dist/js/data/compact-options.js` |
 | 首頁主要練習按鈕與次要入口 | `dist/js/pages/home.js`、`dist/js/components/tiles.js` |
 | 隨機出題與複習排序 | `dist/js/core/engine.js` |
 | 答題與成果流程 | `dist/js/features/exercise.js` |
-| 最大字分段閱讀 | `dist/js/features/focus-reader.js` |
+| 特大／最大字分段閱讀 | `dist/js/features/focus-reader.js` |
 | 獎勵規則與畫面 | `dist/js/core/rewards.js`、`dist/js/pages/rewards.js` |
 | 台語 API | `dist/js/features/taiwanese-tts.js` |
 | 客語 API、數字讀法與串流解析 | `dist/js/features/hakka-tts.js` |
 | 共用音檔快取、取消與播放 | `dist/js/features/remote-speech.js` |
 | 語音選擇與國語朗讀 | `dist/js/features/accessibility.js` |
+| 各頁簡短語音引導 | `dist/js/features/page-narration.js` |
+| 整站易讀樣式 | `dist/css/low-vision.css` |
 | 紀錄與設定 | `dist/js/core/store.js` |
 | 模組串接 | `dist/js/features/integration.js` |
 
@@ -39,11 +41,11 @@
 
 ## 共用頁首
 
-頁首 HTML 位於 `dist/index.html`，獨立樣式位於 `dist/css/header.css`，最後載入。使用 `header-*` 類別，避免舊版樣式影響。工具列提供可回首頁的網站名稱、字體及語音選單；手機分為名稱列和設定列，作答時縮短間距。字體與語音保留原本 select ID，沿用設定及事件。
+頁首 HTML 位於 `dist/index.html`，獨立樣式位於 `dist/css/header.css`，易讀覆寫位於最後載入的 `dist/css/low-vision.css`。使用 `header-*` 類別，避免舊版樣式影響。工具列提供可回首頁的網站名稱、朗讀按鈕、字體及語音選單；手機分為名稱列和設定列，作答時隱藏名稱及頁面朗讀，沿用本段朗讀按鈕。字體與語音保留原本 select ID，沿用設定及事件。
 
 ## 共用配色
 
-`css/theme.css` 集中定義單一紫色主題，最後載入，覆寫各功能的舊主題色。使用淺紫背景、白色卡片、淡紫圖示，紫色實底保留給主要操作；次要操作和返回按鈕使用白底描邊。只調整顏色，不改變字級與操作順序。獎勵星星保留金色，作答正誤保留原本的提示語與狀態圖示。
+`css/theme.css` 集中定義單一紫色主題；最後由 `css/low-vision.css` 加深文字、主按鈕與邊界。使用淺紫背景、白色卡片、淡紫圖示，紫色實底保留給主要操作；次要操作和返回按鈕使用白底描邊。易讀樣式也統一各頁的文字級距，保持操作順序。獎勵星星保留金色，作答正誤保留原本的提示語與狀態圖示。
 
 ## CSS 分工
 
@@ -65,3 +67,11 @@
 ## 網站入口
 
 GitHub Pages 使用根目錄 `index.html` 轉到 `dist/`，保留網址查詢參數與 hash。原始碼可直接提供靜態服務，無須產生另一份建置目錄。調整資料夾路徑時需同步檢查此入口、HTML、CSS 和 ES Modules 的相對路徑。
+
+## 視力較弱使用者的易讀模式
+
+新訪客預設特大字（level 2），既有字級、語言與作答紀錄保留。四級內文為 26／28／32／40px，選題與答案為 28／30／34／40px；首頁為保持主要入口可見，使用各自的字級規則。頁首選單文字至少 26px，主要操作至少 64px 高，聚焦框加深。小螢幕的選題、教學與勳章改為單欄；文字完整換行，不省略內容。
+
+特大／最大字以實際可用高度分段呈現題目與解說，保留上一段、朗讀本段、下一段；計算時納入完整控制列與底部返回列。答案保留完整文字，必要時垂直捲動。最小螢幕最大字可能每段只有兩行，優先保留可辨識字體及完整內容。新模式不自動開啟語音；手動按朗讀可聽當頁操作提示，換頁或再按一次即停止。尊重系統減少動態效果。
+
+驗證涵蓋 320×667、390×844 與電腦版，檢查首頁、選題、題目／解說、獎勵及說明；不等於長輩真人或所有視力狀況的可用性保證。

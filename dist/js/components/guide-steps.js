@@ -5,7 +5,7 @@ const drawings = {
   next: `<rect x="27" y="19" width="166" height="148" rx="23" fill="#eaf4ed"/><circle cx="110" cy="68" r="31" fill="#168349"/><path d="m94 67 11 11 23-24" fill="none" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M73 113h74" stroke="#9dbca7" stroke-width="5" stroke-linecap="round"/><rect x="58" y="129" width="104" height="27" rx="10" fill="#168349"/><path d="M92 142h33m-9-7 9 7-9 7" stroke="white" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`,
 };
 const steps = [
-  { icon: "start", title: "按「開始練習」", description: "點綠色按鈕。" },
+  { icon: "start", title: "按「開始練習」", description: "點最上方的大按鈕。" },
   { icon: "choose", title: "點一個答案", description: "慢慢想，選一個。" },
   { icon: "next", title: "看解說，按下一題", description: "答錯也沒關係。" },
 ];

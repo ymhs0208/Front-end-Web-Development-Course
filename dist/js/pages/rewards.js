@@ -1,8 +1,8 @@
-import { bank } from "../data/questions.js?v=welcome-1";
-import { getState, getMistakes } from "../core/store.js?v=welcome-1";
-import { getRewards, getCompanion } from "../core/rewards.js?v=welcome-1";
-import { rewardBadges } from "../components/badges.js?v=welcome-1";
-import { companion } from "../components/companion.js?v=welcome-1";
+import { bank } from "../data/questions.js?v=lowvision-5";
+import { getState, getMistakes } from "../core/store.js?v=lowvision-5";
+import { getRewards, getCompanion } from "../core/rewards.js?v=lowvision-5";
+import { rewardBadges } from "../components/badges.js?v=lowvision-5";
+import { companion } from "../components/companion.js?v=lowvision-5";
 export function rewardsPage() {
   const reward = getRewards(getState().attempts, bank);
   const friend = getCompanion(reward.stars, reward.total);

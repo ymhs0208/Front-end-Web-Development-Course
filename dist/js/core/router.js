@@ -1,10 +1,10 @@
-import { $ } from "./dom.js?v=welcome-1";
-import { home } from "../pages/home.js?v=start-card-1";
-import { practice } from "../pages/practice.js?v=welcome-1";
-import { mistakePage } from "../pages/mistakes.js?v=welcome-1";
-import { rewardsPage } from "../pages/rewards.js?v=welcome-1";
-import { guide } from "../pages/guide.js?v=welcome-1";
-import { stopSpeech } from "../features/accessibility.js?v=welcome-1";
+import { $ } from "./dom.js?v=lowvision-5";
+import { home } from "../pages/home.js?v=lowvision-5";
+import { practice } from "../pages/practice.js?v=lowvision-5";
+import { mistakePage } from "../pages/mistakes.js?v=lowvision-5";
+import { rewardsPage } from "../pages/rewards.js?v=lowvision-5";
+import { guide } from "../pages/guide.js?v=lowvision-5";
+import { stopSpeech } from "../features/accessibility.js?v=lowvision-5";
 export function createRouter(exercise) {
   function render() {
     const session = exercise.getSession();
