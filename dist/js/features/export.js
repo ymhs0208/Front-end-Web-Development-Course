@@ -1,5 +1,5 @@
-import { getState } from "../core/store.js?v=rewards-simple-2";
-import { toast } from "../components/notifications.js?v=rewards-simple-2";
+import { getState } from "../core/store.js?v=cute-star-1";
+import { toast } from "../components/notifications.js?v=cute-star-1";
 export function exportProgress() {
   const blob = new Blob(
     [

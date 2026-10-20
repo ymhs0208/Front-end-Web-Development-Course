@@ -1,14 +1,22 @@
-// Code-native illustration: no external image or loading dependency.
+// Rounded SVG mascot stays sharp when text or the browser is enlarged.
 export function companion(stage) {
-  const cape = stage !== "friend";
+  const cape = stage === "helper" || stage === "guardian";
   const crown = stage === "guardian";
-  return `<svg class="companion-art" viewBox="0 0 260 240" role="img" aria-label="${crown ? "戴皇冠的" : cape ? "披著披風的" : "微笑的"}安心星夥伴"><ellipse cx="130" cy="219" rx="71" ry="10" fill="#e6d7b2"/>
-  ${cape ? '<path d="M90 110 55 201q75-20 150 0l-35-91" fill="#80bba9" stroke="#306d5b" stroke-width="4"/>' : ""}
-  <path d="m87 166-9 38m95-38 9 38" stroke="#8c612a" stroke-width="12" stroke-linecap="round"/>
-  <path d="m71 122-24 15m142-15 24-15" stroke="#8c612a" stroke-width="11" stroke-linecap="round"/>
-  <path d="M130 33q8 0 12 13l17 36 40 6q20 3 6 19l-29 30 6 43q3 20-16 11l-36-19-36 19q-19 9-16-11l6-43-29-30q-14-16 6-19l40-6 17-36q4-13 12-13Z" fill="#ffda78" stroke="#8c612a" stroke-width="4" stroke-linejoin="round"/>
-  <ellipse cx="102" cy="125" rx="11" ry="7" fill="#efa58e"/><ellipse cx="158" cy="125" rx="11" ry="7" fill="#efa58e"/>
-  <path d="M108 108v7m44-7v7m-34 14q12 14 24 0" fill="none" stroke="#61472e" stroke-width="5" stroke-linecap="round"/>
-  ${crown ? '<path d="m101 49-6-27 23 12 12-22 12 22 23-12-6 27Z" fill="#efa85d" stroke="#8c612a" stroke-width="4" stroke-linejoin="round"/>' : ""}
-  <g fill="#c98237"><path d="m36 54 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/><path d="m218 151 3 8 8 3-8 3-3 8-3-8-8-3 8-3Z"/></g></svg>`;
+  return `<svg class="companion-art" viewBox="0 0 260 240" role="img" aria-label="${crown ? "戴皇冠的" : cape ? "披著披風的" : "微笑的"}圓滾滾安心星夥伴">
+    <ellipse cx="130" cy="219" rx="66" ry="9" fill="#e9e0cf"/>
+    ${cape ? '<path d="M92 116Q70 148 61 202q34-12 69-3 35-9 69 3-9-54-31-86Z" fill="#b8a2dc" stroke="#65507e" stroke-width="5" stroke-linejoin="round"/>' : ""}
+    <ellipse cx="103" cy="207" rx="17" ry="10" fill="#f4c96e" stroke="#80572e" stroke-width="5"/>
+    <ellipse cx="157" cy="207" rx="17" ry="10" fill="#f4c96e" stroke="#80572e" stroke-width="5"/>
+    <path d="M63 123q-23-13-25 1t25 23m134-24q20-24 27-12t-22 33" fill="#ffe29a" stroke="#80572e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M112 49Q130 15 148 49l15 27 34 5q36 5 13 33l-24 27 4 36q4 34-27 20l-33-15-33 15q-31 14-27-20l4-36-24-27Q27 86 63 81l34-5Z" fill="#ffe29a" stroke="#80572e" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M105 79q8-18 17-25" fill="none" stroke="#fff5d6" stroke-width="8" stroke-linecap="round"/>
+    <ellipse cx="91" cy="139" rx="16" ry="10" fill="#edaa98"/>
+    <ellipse cx="169" cy="139" rx="16" ry="10" fill="#edaa98"/>
+    <ellipse cx="106" cy="122" rx="9" ry="13" fill="#49382e"/>
+    <ellipse cx="154" cy="122" rx="9" ry="13" fill="#49382e"/>
+    <circle cx="103" cy="117" r="3.5" fill="#fff"/><circle cx="151" cy="117" r="3.5" fill="#fff"/>
+    <path d="M119 142q11 17 22 0" fill="#d87d78" stroke="#684738" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${cape ? '<path d="m130 171-12-7v16l12-6 12 6v-16Z" fill="#8c70b7" stroke="#65507e" stroke-width="3" stroke-linejoin="round"/><circle cx="130" cy="172" r="4" fill="#fff0bf"/>' : ""}
+    ${crown ? '<path d="m103 53-5-29 21 12 11-23 11 23 21-12-5 29Z" fill="#efc36b" stroke="#80572e" stroke-width="5" stroke-linejoin="round"/><circle cx="130" cy="44" r="4" fill="#b795d8"/>' : ""}
+  </svg>`;
 }

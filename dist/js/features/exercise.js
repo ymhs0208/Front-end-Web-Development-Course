@@ -1,12 +1,12 @@
-import { completionCard } from "../components/completion.js?v=rewards-simple-2";
-import { renderFocusExercise } from "./focus-reader.js?v=rewards-simple-2";
-import { compactOptions } from "../data/compact-options.js?v=rewards-simple-2";
-import { $ } from "../core/dom.js?v=rewards-simple-2";
-import { bank, types } from "../data/questions.js?v=rewards-simple-2";
-import { getState, recordResult } from "../core/store.js?v=rewards-simple-2";
-import { selectQuestions } from "../core/engine.js?v=rewards-simple-2";
-import { restoreSession, saveSession } from "../core/session.js?v=rewards-simple-2";
-import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=rewards-simple-2";
+import { completionCard } from "../components/completion.js?v=cute-star-1";
+import { renderFocusExercise } from "./focus-reader.js?v=cute-star-1";
+import { compactOptions } from "../data/compact-options.js?v=cute-star-1";
+import { $ } from "../core/dom.js?v=cute-star-1";
+import { bank, types } from "../data/questions.js?v=cute-star-1";
+import { getState, recordResult } from "../core/store.js?v=cute-star-1";
+import { selectQuestions } from "../core/engine.js?v=cute-star-1";
+import { restoreSession, saveSession } from "../core/session.js?v=cute-star-1";
+import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=cute-star-1";
 export function createExerciseController({ refresh }) {
   let session = restoreSession(bank);
   let lastFocusSpeech = "";
