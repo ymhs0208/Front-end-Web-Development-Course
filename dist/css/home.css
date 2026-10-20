@@ -1,5 +1,10 @@
 /* One obvious start action; compact secondary navigation stays discoverable. */
 .welcome-home {
+  --home-title: 48px;
+  --home-mobile-title: 34px;
+  --home-action: 32px;
+  --home-link: 26px;
+  --home-hint: 24px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
@@ -9,8 +14,8 @@
 }
 .home-intro h1 {
   margin: 0;
-  color: #202c24;
-  font-size: 48px;
+  color: #18291e;
+  font-size: var(--home-title);
   line-height: 1.45;
   font-weight: 800;
   letter-spacing: -0.5px;
@@ -19,27 +24,31 @@
   display: block;
 }
 .home-intro h1 span:last-child {
-  color: #286541;
+  color: #215331;
 }
 .home-start {
   min-width: 0;
 }
-.home-start-button.primary {
+body .welcome-home .home-start-button.primary {
   display: block;
   width: 100%;
   min-height: 94px;
   padding: 18px;
-  font-size: 34px;
+  font-size: var(--home-action);
   line-height: 1.4;
   font-weight: 800;
   border-radius: 22px;
+  background: #24643b;
+  color: #fff;
+  border: 2px solid #24643b;
 }
 .home-start p {
   text-align: center;
-  font-size: 24px;
-  line-height: 1.5;
-  color: #4f5c4f;
-  margin: 12px 0 0;
+  font-size: var(--home-hint);
+  line-height: 1.4;
+  font-weight: 700;
+  color: #284332;
+  margin: 0 0 10px;
 }
 .home-shortcuts {
   grid-column: 1 / -1;
@@ -50,7 +59,7 @@
   margin-top: 12px;
   white-space: normal;
 }
-.home-shortcuts a {
+.welcome-home .home-shortcuts a {
   display: flex;
   align-items: center;
   min-width: 0;
@@ -61,12 +70,12 @@
   border-radius: 19px;
   background: #fff;
   color: #243128;
-  font-size: 25px;
+  font-size: var(--home-link);
   line-height: 1.4;
   font-weight: 650;
   text-decoration: none;
 }
-.home-shortcuts a:hover {
+.welcome-home .home-shortcuts a:hover {
   background: #eef4ed;
   border-color: #7b987d;
 }
@@ -93,28 +102,31 @@ body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts {
   grid-template-columns: 1fr;
   gap: 10px;
 }
-body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts a {
-  font-size: var(--read-font);
+body:is([data-text-size="2"], [data-text-size="3"])
+  .welcome-home
+  .home-shortcuts
+  a {
+  font-size: var(--home-link);
 }
 @media (max-width: 760px) {
   .welcome-home {
     grid-template-columns: minmax(0, 1fr);
-    gap: 16px;
+    gap: 12px;
     margin-top: 4px;
   }
   .home-intro h1 {
-    font-size: 34px;
+    font-size: var(--home-mobile-title);
     line-height: 1.35;
   }
-  .home-start-button.primary {
+  body .welcome-home .home-start-button.primary {
     min-height: 76px;
     padding: 14px 10px;
-    font-size: 30px;
+    font-size: var(--home-action);
     border-radius: 19px;
   }
   .home-start p {
-    margin-top: 8px;
-    font-size: 23px;
+    margin: 0 0 8px;
+    font-size: var(--home-hint);
   }
   .home-shortcuts {
     grid-column: auto;
@@ -122,10 +134,10 @@ body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts a {
     gap: 10px;
     margin-top: 0;
   }
-  .home-shortcuts a {
+  .welcome-home .home-shortcuts a {
     min-height: 66px;
     padding: 12px 16px;
-    font-size: 25px;
+    font-size: var(--home-link);
     border-radius: 16px;
   }
   .welcome-home .home-shortcuts .ios-tile-icon {
@@ -136,18 +148,40 @@ body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts a {
     width: 27px;
     height: 27px;
   }
-  body:is([data-text-size="2"], [data-text-size="3"]) .home-intro h1 {
-    font-size: 38px;
-  }
   body:is([data-text-size="2"], [data-text-size="3"])
-    .home-start-button.primary {
-    font-size: 34px;
-  }
-  body:is([data-text-size="2"], [data-text-size="3"]) .home-start p {
-    font-size: 28px;
-  }
-  body:is([data-text-size="2"], [data-text-size="3"]) .home-shortcuts a {
+    .welcome-home
+    .home-shortcuts
+    a {
     padding: 12px;
-    font-size: 30px;
+    font-size: var(--home-link);
   }
+}
+body[data-text-size="1"] .welcome-home {
+  --home-title: 50px;
+  --home-mobile-title: 36px;
+  --home-action: 34px;
+  --home-link: 28px;
+  --home-hint: 26px;
+}
+body[data-text-size="2"] .welcome-home {
+  --home-title: 52px;
+  --home-mobile-title: 38px;
+  --home-action: 36px;
+  --home-link: 30px;
+  --home-hint: 28px;
+}
+body[data-text-size="3"] .welcome-home {
+  --home-title: 54px;
+  --home-mobile-title: 40px;
+  --home-action: 38px;
+  --home-link: 32px;
+  --home-hint: 30px;
+}
+body .welcome-home .home-start-button.primary:hover {
+  background: #1c5130;
+  border-color: #1c5130;
+}
+body .welcome-home .home-start-button.primary:focus-visible {
+  outline: 3px solid #8e431d;
+  outline-offset: 4px;
 }

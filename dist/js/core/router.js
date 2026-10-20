@@ -1,5 +1,5 @@
 import { $ } from "./dom.js?v=welcome-1";
-import { home } from "../pages/home.js?v=welcome-1";
+import { home } from "../pages/home.js?v=readable-1";
 import { practice } from "../pages/practice.js?v=welcome-1";
 import { mistakePage } from "../pages/mistakes.js?v=welcome-1";
 import { rewardsPage } from "../pages/rewards.js?v=welcome-1";
