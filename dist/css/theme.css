@@ -1,16 +1,12 @@
-/* Shared palette supplied for the current website. */
+/* Quiet purple theme: one strong action color and neutral supporting surfaces. */
 :root {
   --theme-paper: #f5eeff;
-  --theme-mint: #d8e9ea;
-  --theme-blush: #feeaf6;
   --theme-primary: #804fc0;
-  --theme-teal: #2da3ab;
-  --theme-pink: #dd6cb0;
   --theme-ink: #000000;
   --theme-white: #ffffff;
   --theme-subtitle: #37325a;
-  --theme-link: #305af0;
-  --theme-line: #d9cce9;
+  --theme-link: #623c93;
+  --theme-line: #ddd4e6;
   --paper: var(--theme-paper);
   --ink: var(--theme-ink);
   --muted: var(--theme-subtitle);
@@ -70,7 +66,7 @@ body .welcome-home .home-start-button.primary:hover {
   border-color: #6d40a8;
 }
 body .welcome-home .home-start-button.primary {
-  box-shadow: 0 5px 0 #d9c6f1;
+  box-shadow: 0 3px 0 #e2d8ed;
 }
 .start-copy strong,
 .start-copy > span,
@@ -80,74 +76,52 @@ body .welcome-home .home-start-button.primary {
 .start-play {
   border-color: var(--theme-white);
 }
-/* Dark labels keep the supplied secondary button colors easy to read. */
+/* Secondary actions use white surfaces so the primary action stands out. */
 .secondary,
 .exercise-shell .read-question {
-  background: var(--theme-teal);
-  border-color: #237e84;
+  background: var(--theme-white);
+  border-color: #bcaacd;
   color: var(--theme-ink);
 }
 .secondary:hover,
 .exercise-shell .read-question:hover {
-  background: #27949b;
+  background: #eee6f7;
   color: var(--theme-ink);
 }
 .welcome-home .home-shortcuts a {
+  background: var(--theme-white);
   color: var(--theme-ink);
   border-color: var(--theme-line);
-}
-.welcome-home .home-shortcuts a:nth-child(1) {
-  background: var(--theme-teal);
-  border-color: #237e84;
-}
-.welcome-home .home-shortcuts a:nth-child(2) {
-  background: var(--theme-pink);
-  border-color: #b54e8b;
-}
-.welcome-home .home-shortcuts a:nth-child(3) {
-  background: var(--theme-white);
 }
 .welcome-home .home-shortcuts a:hover {
   outline: 2px solid var(--theme-primary);
   outline-offset: 2px;
 }
-.welcome-home .home-shortcuts .ios-tile-icon,
+.welcome-home .home-shortcuts .ios-tile-icon {
+  color: var(--theme-link);
+}
 .home-shortcuts .shortcut-arrow {
   color: var(--theme-subtitle);
 }
-.welcome-home
-  .home-shortcuts
-  a:nth-child(-n + 2)
-  :is(.ios-tile-icon, .shortcut-arrow) {
-  color: var(--theme-ink);
-}
 .ios-tile.tile-green {
-  background: var(--theme-paper);
+  background: var(--theme-white);
 }
 .ios-tile.tile-blue {
-  background: var(--theme-mint);
+  background: var(--theme-white);
 }
 .ios-tile.tile-orange {
-  background: var(--theme-blush);
+  background: var(--theme-white);
 }
 .ios-tile:hover {
   border-color: var(--theme-primary);
 }
-.ios-tile.tile-green .ios-tile-icon,
-.ios-tile.tile-purple .ios-tile-icon {
-  background: var(--theme-primary);
-  color: var(--theme-white);
-}
-.ios-tile.tile-blue .ios-tile-icon {
-  background: var(--theme-teal);
-  color: var(--theme-ink);
-}
-.ios-tile.tile-orange .ios-tile-icon {
-  background: var(--theme-pink);
-  color: var(--theme-ink);
+.ios-tile:is(.tile-green, .tile-purple, .tile-blue, .tile-orange)
+  .ios-tile-icon {
+  background: #eee6f7;
+  color: var(--theme-link);
 }
 .quiz-top {
-  background: var(--theme-mint);
+  background: var(--theme-paper);
   color: var(--theme-subtitle);
 }
 .exercise-progress i {
@@ -157,10 +131,10 @@ body .welcome-home .home-start-button.primary {
   background: var(--theme-paper);
 }
 .scenario.phone {
-  background: var(--theme-mint);
+  background: var(--theme-paper);
 }
 .scenario.shop {
-  background: var(--theme-blush);
+  background: var(--theme-paper);
 }
 .scenario .bubble,
 .option {
@@ -180,23 +154,23 @@ body .welcome-home .home-start-button.primary {
 }
 .ios-backbar button,
 .ios-backbar button:hover {
-  background: var(--theme-primary);
-  color: var(--theme-white);
-  border-color: var(--theme-primary);
+  background: var(--theme-white);
+  color: var(--theme-subtitle);
+  border-color: #bcaacd;
 }
 .visual-step:nth-child(2) {
-  background: var(--theme-mint);
+  background: var(--theme-white);
 }
 .visual-step:nth-child(3) {
-  background: var(--theme-blush);
+  background: var(--theme-white);
 }
 .step-count {
-  background: var(--theme-primary);
-  color: var(--theme-white);
+  background: #eee6f7;
+  color: var(--theme-subtitle);
 }
 .companion-card {
-  background: var(--theme-mint);
-  border-color: #aaced0;
+  background: var(--theme-white);
+  border-color: var(--theme-line);
 }
 .companion-portrait {
   background: transparent;
@@ -218,13 +192,13 @@ body .welcome-home .home-start-button.primary {
   color: var(--theme-primary);
 }
 .companion-goal {
-  background: var(--theme-white);
-  border-color: #aaced0;
+  background: var(--theme-paper);
+  border-color: var(--theme-line);
 }
 .reward-badge.earned {
-  background: var(--theme-blush);
-  border-color: #e6bbd4;
-  box-shadow: 0 5px 0 #ecd5e5;
+  background: var(--theme-white);
+  border-color: var(--theme-line);
+  box-shadow: none;
 }
 .reward-rules summary,
 .reward-rules a {
