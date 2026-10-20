@@ -1,4 +1,4 @@
-import { createRemoteSpeech } from "./remote-speech.js?v=lowvision-5";
+import { createRemoteSpeech } from "./remote-speech.js?v=rewards-simple-2";
 const ORIGIN = "https://united-link-taiwanese-hakka-tts.hf.space";
 const ENDPOINT = `${ORIGIN}/gradio_api/call/text_to_speech`;
 const DIGITS = "零一二三四五六七八九";

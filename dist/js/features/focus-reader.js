@@ -1,5 +1,5 @@
-import { $ } from "../core/dom.js?v=lowvision-5";
-import { compactOptions } from "../data/compact-options.js?v=lowvision-5";
+import { $ } from "../core/dom.js?v=rewards-simple-2";
+import { compactOptions } from "../data/compact-options.js?v=rewards-simple-2";
 
 export function focusText(session) {
   const q = session.qs[session.index];

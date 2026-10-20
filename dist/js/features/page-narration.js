@@ -5,7 +5,7 @@ export function pageNarration(hash, main) {
       return "請選訊息防詐、電話防詐或網購防詐，每次三題。按幫我選題，也可以直接開始。";
     case "rewards":
     case "review":
-      return `我的獎勵。${main.querySelector(".companion-count")?.innerText || ""}。每完成一題就加一顆星，答錯和重複練習都算。按繼續練習或再練一次，可以繼續學習。`;
+      return `我的獎勵。${main.querySelector(".companion-count")?.innerText || ""}。按繼續練習，就可以再做三題。`;
     case "guide":
       return "先按開始練習。慢慢看，選一個答案。看完解說，再按下一題。答錯也沒關係。";
     case "mistakes":

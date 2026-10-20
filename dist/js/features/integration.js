@@ -1,6 +1,6 @@
-import { bank } from "../data/questions.js?v=lowvision-5";
-import { getState, recordResult } from "../core/store.js?v=lowvision-5";
-import { toast } from "../components/notifications.js?v=lowvision-5";
+import { bank } from "../data/questions.js?v=rewards-simple-2";
+import { getState, recordResult } from "../core/store.js?v=rewards-simple-2";
+import { toast } from "../components/notifications.js?v=rewards-simple-2";
 // Public compatibility boundary shared by the three team modules.
 export function initIntegration(exercise) {
   window.VaultTraining = Object.freeze({

@@ -1,0 +1,51 @@
+/* Keep the main reward to a companion, a count and one action. */
+body[data-text-size] .rewards-page .simple-reward-card {
+  display: grid;
+  grid-template-columns: 144px minmax(0, 1fr);
+  gap: 20px 28px;
+  padding: 28px;
+  max-width: 680px;
+  margin-inline: auto;
+}
+body[data-text-size] .simple-reward-card .companion-art {
+  width: 144px;
+  grid-column: 1;
+  grid-row: 1;
+}
+body[data-text-size] .simple-reward-card .companion-count {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0;
+  color: #272331;
+  font-size: var(--read-font);
+  line-height: 1.4;
+}
+body[data-text-size] .simple-reward-card .companion-count strong {
+  font-size: 64px;
+  line-height: 1.15;
+  color: #111;
+  max-width: 100%;
+}
+body[data-text-size] .simple-reward-card .primary {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px;
+  font-size: var(--choice-font);
+  line-height: 1.4;
+}
+@media (max-width: 760px) {
+  body[data-text-size] .rewards-page .simple-reward-card {
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 18px 12px;
+    padding: 16px;
+  }
+  body[data-text-size] .simple-reward-card .companion-art {
+    width: 56px;
+  }
+  body[data-text-size] .simple-reward-card .companion-count strong {
+    font-size: 56px;
+  }
+}
