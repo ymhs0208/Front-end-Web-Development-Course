@@ -1,5 +1,5 @@
-import { types } from "../data/questions.js?v=hakka-2";
-import { getState, getMistakes as mistakes } from "../core/store.js?v=hakka-2";
+import { types } from "../data/questions.js?v=hakka-3";
+import { getState, getMistakes as mistakes } from "../core/store.js?v=hakka-3";
 export function mistakePage() {
   const data = getState();
   const list = mistakes();

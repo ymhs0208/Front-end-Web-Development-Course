@@ -74,7 +74,7 @@ export function createRemoteSpeech({
       state(error.name === "NotAllowedError" ? "ready" : "idle");
       onError(
         error.name === "NotAllowedError"
-          ? `${label}準備好了，請再按一次「唸給我聽」。`
+          ? `${label}準備好了，請再按一次「播放語音」。`
           : error.name === "AbortError"
             ? `${label}語音等候較久，請稍後再試，或改選國語。`
             : error.message?.startsWith(label)
