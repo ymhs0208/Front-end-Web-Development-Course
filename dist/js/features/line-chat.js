@@ -100,12 +100,85 @@ function renderJobConversation(question, session, stage) {
   </div>`;
 }
 
-export function renderSupportCallStage(stage) {
+const callIcon = {
+  phone: '<path d="M5.2 3.8 8.6 3l2.1 4.7-2.2 1.6a15 15 0 0 0 6.2 6.2l1.6-2.2 4.7 2.1-.8 3.4a2 2 0 0 1-2.2 1.5C9.3 19.2 4.8 14.7 3.7 6a2 2 0 0 1 1.5-2.2Z"/>',
+  end: '<path d="m6 6 12 12M18 6 6 18"/>',
+  mute: '<path d="M11 5 6 9H3v6h3l5 4V5Zm4 3 6 8m0-8-6 8"/>',
+  video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/>',
+  speaker: '<path d="M4 10v4h4l5 4V6l-5 4H4Zm12-1a5 5 0 0 1 0 6m2-9a9 9 0 0 1 0 12"/>',
+};
+
+function callControl(action, label, icon, enabled, activeLabel) {
+  return `<button class="support-call-control${enabled ? " is-on" : ""}" type="button" data-scene-action="${action}" aria-pressed="${enabled}" aria-label="${label}（${enabled ? "已開啟" : "未開啟"}）"><svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg><span>${enabled ? activeLabel : label}</span></button>`;
+}
+
+function renderCallStatusBar() {
+  return `<div class="support-call-statusbar" aria-hidden="true"><time>10:24</time><span><i>●●●</i><i>◖</i><i class="support-call-battery"><b></b></i></span></div>`;
+}
+
+export function renderSupportCallResult(question, session) {
+  const isSafe = session.correct === true;
+  const nextLabel = session.index + 1 === session.qs.length ? "看練習結果" : "下一題";
+  return `<section class="support-call-result ${isSafe ? "is-safe" : "is-risk"}" role="status" aria-live="polite" aria-label="${isSafe ? "安全做法答對了" : "受騙警示與原因"}"><span class="support-call-result-icon" aria-hidden="true">${isSafe ? "✓" : "!"}</span><span class="support-call-result-kicker">${isSafe ? "安全做法" : "模擬來電結果"}</span><h2>${isSafe ? "答對了，做得好！" : "你被騙了！"}</h2><p>${isSafe ? "拒接可疑來電。LINE 官方客服不會來電要求你開啟螢幕共享。" : "假客服藉帳號異常製造恐慌，再騙你安裝視訊軟體、分享畫面，偷看驗證碼和銀行操作。"}</p><div class="support-call-result-tip"><b>${isSafe ? "記住這個方法" : "安全做法"}</b><span>${isSafe ? "立即掛斷；有疑慮時，請自行查 LINE 官方說明。" : "立即拒接並掛斷；不要分享畫面或提供驗證碼。"}</span></div><small>本機模擬，未接通、未啟用相機／麥克風，也未分享螢幕。</small><button class="primary support-call-result-next" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button></section>`;
+}
+
+function renderCallAvatar() {
+  return `<div class="support-call-avatar" aria-hidden="true"><svg viewBox="0 0 96 96"><circle cx="48" cy="48" r="47" fill="#252a33"/><path d="M20 79c2-17 13-25 28-25s26 8 28 25" fill="#f3d2b7"/><circle cx="48" cy="38" r="20" fill="#f1c6a8"/><path d="M28 38c0-19 9-27 22-27 14 0 22 10 20 27l-7-10c-9 5-21 5-29 0z" fill="#f2d75e"/><path d="M35 37h8m10 0h8" stroke="#342e2a" stroke-width="3" stroke-linecap="round"/><path d="M42 47q6 5 12 0" fill="none" stroke="#694639" stroke-width="2.5" stroke-linecap="round"/><path d="M25 37q-5-23 15-27m31 27q5-23-15-27" fill="none" stroke="#eee" stroke-width="5" stroke-linecap="round"/><rect x="20" y="35" width="10" height="18" rx="5" fill="#eee"/><rect x="66" y="35" width="10" height="18" rx="5" fill="#eee"/></svg></div>`;
+}
+
+function renderCallWave() {
+  return `<div class="support-call-wave" aria-label="模擬通話音波" role="img">${[6, 12, 19, 11, 25, 16, 31, 12, 22, 9, 17, 7].map((height, index) => `<i style="--wave-height:${height}px;--wave-delay:${index * 70}ms"></i>`).join("")}</div>`;
+}
+
+export function renderSupportCallStage(stage, question = null, session = {}) {
+  if (!question) return "";
+  const segments = getScenarioSegments(question);
+  const localNote = `<p class="support-call-local-note">本機模擬：不會接通真實電話，也不會啟用相機、麥克風或分享畫面。</p>`;
+
+  if (stage === "call-incoming") {
+    return `<section class="support-call-screen is-incoming" role="dialog" aria-modal="true" aria-label="模擬視訊來電" tabindex="-1">${renderCallStatusBar()}<div class="support-call-topline"><span class="support-call-sim-tag"><i aria-hidden="true"></i>本機防詐演練</span><span>第 ${(session.index ?? 0) + 1} / ${session.qs?.length ?? 1} 題</span></div><main class="support-call-main">${renderCallAvatar()}<h1>自稱 LINE 官方客服</h1><p class="support-call-caller-detail">陌生來電 · 尚未確認身分</p><p class="support-call-connection-status">模擬視訊來電中</p><p class="support-call-incoming-prompt">要接通這通視訊通話嗎？</p><p class="support-call-local-note">本機模擬：不會接通真實電話，也不會啟用相機、麥克風或分享畫面。</p></main><div class="support-call-incoming-actions" role="group" aria-label="選擇如何處理模擬視訊來電"><button class="support-call-incoming-action is-decline" type="button" data-scene-action="decline-call"><span><svg viewBox="0 0 24 24" aria-hidden="true">${callIcon.phone}</svg></span><strong>拒接</strong></button><button class="support-call-incoming-action is-answer" type="button" data-scene-action="answer-call"><span><svg viewBox="0 0 24 24" aria-hidden="true">${callIcon.phone}</svg></span><strong>通話</strong></button></div><div class="support-call-footer"><i class="support-call-home-indicator" aria-hidden="true"></i></div></section>`;
+  }
+
+  if (["call-active", "call-followup"].includes(stage)) {
+    const callStart = Number.isFinite(session.callStartedAt) ? session.callStartedAt : Date.now();
+    const controls = session.callControls || {};
+    return `<section class="support-call-screen is-active" role="dialog" aria-modal="true" aria-label="正在進行的模擬 LINE 客服通話">${renderCallStatusBar()}<div class="support-call-topline"><span class="support-call-sim-tag"><i aria-hidden="true"></i>本機模擬通話</span><span class="support-call-line-mark" aria-label="LINE 模擬介面">LINE</span></div><main class="support-call-main support-call-active-main">${renderCallAvatar()}<h1>自稱 LINE 官方客服</h1><p class="support-call-caller-detail">陌生來電 · 身分尚未驗證</p><time class="support-call-clock" data-call-clock data-call-start="${callStart}">00:00</time>${renderCallWave()}</main><div class="support-call-active-controls" role="group" aria-label="通話控制，僅供本機模擬">${callControl("toggle-mute", "關閉麥克風", callIcon.mute, controls.mute === true, "麥克風已關閉")}${callControl("toggle-video", "開始視訊", callIcon.video, controls.video === true, "視訊模擬開啟")}${callControl("toggle-speaker", "開啟揚聲器", callIcon.speaker, controls.speaker === true, "揚聲器已開啟")}</div><div class="support-call-active-footer"><button class="support-call-hangup support-call-hangup-fullscreen" type="button" data-scene-action="hangup-call" aria-label="結束通話並返回聊天室"><svg viewBox="0 0 24 24" aria-hidden="true">${callIcon.end}</svg><span>結束通話</span></button>${localNote}<button class="support-call-read" type="button" data-read data-idle-label="唸出來電內容與操作">唸來電提示</button><i class="support-call-home-indicator" aria-hidden="true"></i></div></section>`;
+  }
+
+  if (stage === "call-ended")
+    return `<div class="support-call-ended" role="status"><span aria-hidden="true">✓</span><div><strong>模擬通話已結束，已返回聊天室</strong><small>以下訊息和操作仍是本機情境練習。</small></div></div><div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">${escapeHtml(segments[0]?.label || "來電內容")}</span><div class="line-chat-incoming-bubble">${escapeHtml(segments[0]?.text || question.text)}</div><time>10:24</time></div><button class="support-call-next-line" type="button" data-scene-action="continue-support-call">查看對方接著提出的要求 <span aria-hidden="true">›</span></button>`;
+
+  if (["call-declined", "call-followup-declined", "call-followup-missed"].includes(stage)) {
+    const followup = stage !== "call-declined";
+    return `<div class="support-call-missed-call" role="status"><span aria-hidden="true">↙</span><div><strong>${stage === "call-followup-declined" ? "你已結束模擬通話並返回聊天室" : "你已不接通這通模擬來電"}</strong><small>以下訊息和操作都是本機模擬，不會接通或撥打真實電話。</small></div></div><div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">${followup ? "客服留下的訊息 · 接著提出要求" : "客服留下訊息"}</span><div class="line-chat-incoming-bubble">${escapeHtml(segments[followup ? 1 : 0]?.text || question.text)}</div><time>10:${followup ? "25" : "24"}</time></div>${followup ? `<div class="support-call-choices" role="group" aria-label="選擇如何處理可疑來電"><p>對方要求開啟螢幕共享，你會怎麼做？</p><button class="support-call-choice is-risk" type="button" data-scene-action="start-screen-share"><b>1</b><span>照對方指示，模擬開啟螢幕共享</span></button><button class="support-call-choice is-safe" type="button" data-answer="1"><b>2</b><span>不接通／拒絕共享畫面</span></button><button class="support-call-choice" type="button" data-answer="2"><b>3</b><span>先看員工證照片，再開啟螢幕共享</span></button></div>` : `<button class="support-call-next-line" type="button" data-scene-action="continue-support-call">查看對方接著留下的訊息 <span aria-hidden="true">›</span></button>`}`;
+  }
+
   if (stage === "screen-share")
-    return `<section class="line-chat-call-stage line-chat-call-share" aria-label="模擬螢幕共享畫面"><div class="line-chat-fake-address"><span aria-hidden="true">◉</span><span>螢幕共享 · 安全模擬</span><small>不會真的分享畫面</small></div><div class="line-chat-fake-content"><span class="line-chat-fake-label">你照對方指示開啟了共享</span><h2>你被騙了！！</h2><p>假客服可能趁螢幕共享時看見簡訊驗證碼、密碼和金融操作。</p><strong>這只是情境演練，沒有連線，也沒有分享你的手機畫面。</strong><button class="primary" type="button" data-scene-action="stop-screen-share">停止模擬並查看解析</button></div></section>`;
+    return `<section class="support-call-warning-card" aria-label="螢幕共享詐騙警示"><span class="support-call-warning-icon" aria-hidden="true">!</span><span class="support-call-warning-kicker">模擬螢幕共享 · 沒有真的分享</span><h2>你被騙了！！</h2><p>假客服可能趁螢幕共享時看見簡訊驗證碼、密碼和金融操作。</p><strong>這只是情境演練：沒有連線，也沒有分享你的手機畫面。</strong><button class="support-call-warning-stop" type="button" data-scene-action="stop-screen-share">停止模擬共享，查看作答結果</button><button class="support-call-warning-hangup" type="button" data-scene-action="confirm-hangup">安全掛斷，查看正確做法</button></section>`;
+
   if (stage === "hangup")
-    return `<section class="line-chat-call-stage line-chat-call-hangup" aria-label="模擬掛斷客服來電"><div class="line-chat-fake-address"><span aria-hidden="true">☎</span><span>LINE 語音通話 · 安全模擬</span><small>不會撥打或接聽電話</small></div><div class="line-chat-call-panel"><span class="line-chat-call-avatar" aria-hidden="true">☎</span><strong>自稱 LINE 官方客服</strong><p>對方仍在通話中。按下掛斷，結束這通模擬來電。</p><button class="line-chat-hangup-button" type="button" data-scene-action="confirm-hangup">掛斷電話</button></div></section>`;
+    return `<section class="support-call-warning-card" aria-label="已安全掛斷模擬來電"><span class="support-call-warning-icon is-safe" aria-hidden="true">✓</span><h2>已安全掛斷</h2><p>不要依照陌生來電者指示安裝軟體或分享手機畫面。</p><button class="support-call-warning-hangup" type="button" data-scene-action="confirm-hangup">查看答題結果</button></section>`;
   return "";
+}
+
+function renderSupportCallChat(stage, question, session) {
+  const contact = getLineContact(question.sender);
+  const segments = getScenarioSegments(question);
+  const isCallOverlay = ["call-incoming", "call-active", "call-followup"].includes(stage);
+  const chatStage = ["call-incoming", "call-active"].includes(stage) ? "call-ended" : stage === "call-followup" ? "call-followup-declined" : stage;
+  const combinedMessage = segments.map((segment) => segment.text).join("");
+  const chatContent = stage === "chat" || stage === "call-incoming"
+    ? `<div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">客服留下訊息</span><div class="line-chat-incoming-bubble">${escapeHtml(combinedMessage)}</div><time>10:24</time></div>`
+    : renderSupportCallStage(chatStage, question, session);
+  const callOverlay = isCallOverlay ? renderSupportCallStage(stage, question, session) : "";
+  const returnedNote = stage === "chat"
+    ? "以下為本機模擬訊息；5 秒後會出現模擬來電"
+    : stage === "call-declined"
+      ? "你已不接通來電並返回聊天室；以下都是本機模擬訊息，不會傳送真實訊息"
+      : stage === "call-ended" || isCallOverlay
+        ? "通話結束後會回到同一個模擬聊天室；訊息與後續互動都會保留"
+        : "以下都是本機模擬訊息，不會傳送真實訊息";
+  return `<div class="quiz-content line-question-layout line-chat-question"><section class="line-scenario-card" aria-label="模擬情境：${escapeHtml(question.title)}"><div class="line-scenario-topline"><span class="line-scenario-kicker">模擬情境</span><span class="line-scenario-count">${(session.index ?? 0) + 1} / ${session.qs?.length ?? 1}</span></div><h1>${escapeHtml(question.title)}</h1><div class="line-chat-device"><div class="line-chat-statusbar" aria-hidden="true"><time>10:24</time><span class="line-chat-status-icons"><span>●●●</span><span>◖</span><span class="line-chat-battery"><i></i></span></span></div><header class="line-chat-app-header"><span class="line-chat-back" aria-hidden="true">‹</span><span class="line-sim-avatar" aria-hidden="true">${escapeHtml(contact.avatar)}</span><span class="line-sim-contact"><strong>模擬聊天室</strong><small>自稱 LINE 官方客服 · 本機情境</small></span><span class="line-chat-header-actions" aria-hidden="true">☎</span></header><div class="line-chat-conversation support-call-conversation" role="log" aria-label="模擬聊天室中的單則訊息與後續互動"><div class="line-chat-safety-note"><span aria-hidden="true">練習</span> ${returnedNote}</div><div class="line-chat-date">今天　10:24</div>${chatContent}</div>${!session.answered && stage !== "chat" ? `<button class="secondary line-chat-read" type="button" data-read data-idle-label="唸出來電內容與操作">唸出來電內容與操作</button>` : ""}</section>${callOverlay}</div>`;
 }
 
 function renderChoices(question) {
@@ -163,6 +236,10 @@ function renderComposer(interactionStage) {
 }
 
 export function renderLineChatQuestion(question, session) {
+  if (question.interaction === "support-call") {
+    const stage = session.interactionStage || "chat";
+    return renderSupportCallChat(stage, question, session);
+  }
   const contact = getLineContact(question.sender);
   const step = session.index + 1;
   const total = session.qs.length;
@@ -186,7 +263,7 @@ export function renderLineChatQuestion(question, session) {
     question.interaction === "vote-link" && interactionStage === "fake-site"
       ? renderFakeSite()
       : question.interaction === "support-call"
-        ? renderSupportCallStage(interactionStage)
+        ? renderSupportCallStage(interactionStage, question)
         : question.interaction === "job-offer"
           ? ["job-payment", "job-payment-warning"].includes(interactionStage)
             ? renderJobOfferStage(interactionStage, { notice: session.jobMenuNotice })

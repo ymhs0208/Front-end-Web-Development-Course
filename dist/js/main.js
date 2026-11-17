@@ -2,7 +2,7 @@ import { toast } from "./components/notifications.js?v=job-9-4";
 import { loadState } from "./core/store.js?v=job-9-4";
 import { createRouter } from "./core/router.js?v=job-9-4";
 import { initAccessibility } from "./features/accessibility.js?v=job-9-4";
-import { createExerciseController } from "./features/exercise.js?v=job-9-4";
+import { createExerciseController } from "./features/exercise.js?v=q5-chat-first-2";
 import { initIntegration } from "./features/integration.js?v=job-9-4";
 import { exportProgress } from "./features/export.js?v=job-9-4";
 

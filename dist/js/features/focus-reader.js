@@ -1,6 +1,6 @@
 import { $ } from "../core/dom.js?v=job-9-4";
 import { compactOptions } from "../data/compact-options.js?v=job-9-4";
-import { escapeHtml, getLineContact, renderLineChatQuestion, renderSupportCallStage } from "./line-chat.js?v=job-9-4";
+import { escapeHtml, getLineContact, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-chat-first-2";
 
 export function focusText(session) {
   const q = session.qs[session.index];
@@ -87,10 +87,29 @@ export function renderFocusExercise(
   }
   const top = session.branchFlow
     ? `<div class="quiz-top focus-top line-focus-top"><span class="line-focus-contact"><span class="line-focus-avatar" aria-hidden="true">哲</span><span>模擬聊天 · 第 ${session.index + 1} 步</span></span><h1>${heading}</h1></div>${moneyMarkup}`
-    : lineChat
+    : lineChat && q.interaction === "support-call"
+      ? moneyMarkup
+      : lineChat
       ? `<div class="quiz-top focus-top line-reader-top"><span class="line-reader-contact"><span class="line-reader-avatar" aria-hidden="true">${escapeHtml(contact.avatar)}</span><span class="line-reader-identity"><strong>${escapeHtml(contact.name)}</strong><small>防詐情境演練 · ${step}</small></span></span><h1>${heading}</h1></div>${moneyMarkup}`
       : `<div class="quiz-top focus-top"><span>${step}</span><h1>${heading}</h1></div>${moneyMarkup}`;
+  if (lineChat && q.interaction === "support-call" && session.answered) {
+    $("#quizBody").innerHTML = `${top}${renderSupportCallResult(q, session)}${bankruptcyMarkup}`;
+    return;
+  }
   if (lineChat && q.interaction === "job-offer" && !session.answered) {
+    $("#quizBody").innerHTML = `${top}${renderLineChatQuestion(q, session)}${bankruptcyMarkup}`;
+    return;
+  }
+  if (lineChat && q.interaction === "support-call" && !session.answered) {
+    $("#quizBody").innerHTML = `${top}${renderLineChatQuestion(q, session)}${bankruptcyMarkup}`;
+    return;
+  }
+  if (
+    lineChat &&
+    !session.answered &&
+    q.interaction === "vote-link" &&
+    session.interactionStage === "chat"
+  ) {
     $("#quizBody").innerHTML = `${top}${renderLineChatQuestion(q, session)}${bankruptcyMarkup}`;
     return;
   }
@@ -110,15 +129,6 @@ export function renderFocusExercise(
     session.interactionStage === "compose"
   ) {
     $("#quizBody").innerHTML = `${top}<section class="focus-choices line-focus-regular-choices"><div class="line-focus-chat-note">${escapeHtml(q.title)} · 模擬聊天室</div><h2 class="choice-heading">訊息框已填入回覆</h2><div class="line-focus-compose-preview" role="textbox" aria-readonly="true">不了謝謝</div><p>按下傳送後，再用原本保存的電話確認阿明本人。</p><button class="primary line-focus-send" type="button" data-scene-action="send-safe-reply">傳送</button></section>${bankruptcyMarkup}`;
-    return;
-  }
-  if (
-    lineChat &&
-    q.interaction === "support-call" &&
-    !session.answered &&
-    ["screen-share", "hangup"].includes(session.interactionStage)
-  ) {
-    $("#quizBody").innerHTML = `${top}${renderSupportCallStage(session.interactionStage)}${bankruptcyMarkup}`;
     return;
   }
   if (!session.answered && session.questionView === "choose") {

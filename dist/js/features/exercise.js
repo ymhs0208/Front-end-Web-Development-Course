@@ -1,12 +1,12 @@
 import { completionCard } from "../components/completion.js?v=job-9-4";
-import { renderFocusExercise } from "./focus-reader.js?v=job-9-4";
+import { renderFocusExercise } from "./focus-reader.js?v=q5-chat-first-2";
 import {
   renderBankruptcyModal,
   renderBranchChat,
   renderBranchFeedback,
   renderMoneyBar,
 } from "./branch-chat.js?v=job-9-4";
-import { escapeHtml, renderJobBlockResult, renderLineChatQuestion } from "./line-chat.js?v=job-9-4";
+import { escapeHtml, renderJobBlockResult, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-chat-first-2";
 import { STARTING_MONEY, applyWrongAnswerPenalty } from "../core/money.js?v=job-9-4";
 import { compactOptions } from "../data/compact-options.js?v=job-9-4";
 import { $ } from "../core/dom.js?v=job-9-4";
@@ -17,11 +17,69 @@ import {
   recordScenarioResult,
 } from "../core/store.js?v=job-9-4";
 import { selectQuestions } from "../core/engine.js?v=job-9-4";
-import { restoreSession, saveSession } from "../core/session.js?v=job-9-4";
+import { restoreSession, saveSession } from "../core/session.js?v=q5-chat-first-2";
 import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=job-9-4";
 export function createExerciseController({ refresh }) {
   let session = restoreSession(bank);
   let lastFocusSpeech = "";
+  let callClockTimer = null;
+  let callIncomingTimer = null;
+  function clearCallIncomingTimer() {
+    if (callIncomingTimer !== null) {
+      window.clearTimeout?.(callIncomingTimer);
+      callIncomingTimer = null;
+    }
+  }
+  function syncCallIncomingTimer(question) {
+    if (question?.interaction !== "support-call" || session?.answered || session?.interactionStage !== "chat") {
+      clearCallIncomingTimer();
+      return;
+    }
+    if (callIncomingTimer !== null) return;
+    callIncomingTimer = window.setTimeout(() => {
+      callIncomingTimer = null;
+      if (!session || session.answered || session.qs[session.index]?.id !== question.id || session.interactionStage !== "chat") return;
+      session.interactionStage = "call-incoming";
+      saveSession(session);
+      renderQuestion();
+      window.scrollTo(0, 0);
+      $(".support-call-screen.is-incoming")?.focus({ preventScroll: true });
+    }, 5000);
+  }
+  function supportCallStageSpeech(question) {
+    if (!question || question.interaction !== "support-call" || session.answered)
+      return "";
+    const firstLine = question.segments?.[0]?.text || question.text;
+    const secondLine = question.segments?.[1]?.text || question.text;
+    if (session.interactionStage === "call-incoming")
+      return "收到一通自稱 LINE 官方客服的模擬視訊來電。請選擇拒接或通話；這不會啟動相機、麥克風或連接真實服務。";
+    if (session.interactionStage === "chat")
+      return "聊天室收到一則自稱 LINE 官方客服的訊息。五秒後會出現模擬視訊來電；所有操作都只在本機，不會連接真實服務。";
+    if (session.interactionStage === "call-active")
+      return `模擬通話進行中。對方說：${firstLine}。按結束通話會回到原聊天室，繼續查看訊息與後續選項。`;
+    if (session.interactionStage === "call-ended")
+      return `你已結束模擬通話並返回原聊天室。對方剛才說：${firstLine}。你可以查看對方接著提出的要求。`;
+    if (["call-followup", "call-declined", "call-followup-declined", "call-followup-missed"].includes(session.interactionStage))
+      return `${session.interactionStage === "call-declined" ? "你已不接通來電，回到聊天室。" : "客服接著說："}${session.interactionStage === "call-declined" ? firstLine : secondLine}。${["call-followup-declined", "call-followup-missed"].includes(session.interactionStage) ? "你可以拒絕螢幕共享，或查看其他做法。" : session.interactionStage === "call-followup" ? "你可以模擬開啟螢幕共享、查看員工證，或按結束通話返回聊天室。" : "按下方按鈕查看對方留下的訊息。"}`;
+    if (session.interactionStage === "screen-share")
+      return "你被騙了！這是螢幕共享情境模擬，沒有分享手機畫面。假客服可能看見驗證碼、密碼和金融操作。你可以停止模擬共享查看結果，或安全掛斷。";
+    return "你已安全掛斷模擬來電。";
+  }
+  function syncCallClock() {
+    if (callClockTimer !== null) {
+      window.clearInterval(callClockTimer);
+      callClockTimer = null;
+    }
+    const clock = $(`[data-call-clock]`);
+    if (!clock) return;
+    const startedAt = Number(clock.dataset.callStart);
+    const tick = () => {
+      const seconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+      clock.textContent = `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+    };
+    tick();
+    callClockTimer = window.setInterval(tick, 1000);
+  }
   function jobStageSpeech() {
     const question = session?.qs[session.index];
     if (session?.answered || question?.interaction !== "job-offer") return "";
@@ -40,6 +98,7 @@ export function createExerciseController({ refresh }) {
     return "";
   }
   function start(mode, id) {
+    clearCallIncomingTimer();
     const qs = selectQuestions(bank, getState().attempts, mode, id);
     if (!qs.length) return;
     session = {
@@ -54,6 +113,7 @@ export function createExerciseController({ refresh }) {
       selectedAnswer: null,
       branchPath: [],
       interactionStage: "chat",
+      callStartedAt: null,
       sentMessage: "",
       money: STARTING_MONEY,
       bankruptAcknowledged: false,
@@ -81,6 +141,24 @@ export function createExerciseController({ refresh }) {
   }
   function renderQuestion() {
     const q = session.qs[session.index];
+    const callOverlayOpen =
+      q.interaction === "support-call" &&
+      !session.answered &&
+      ["call-incoming", "call-active", "call-followup"].includes(session.interactionStage);
+    document.body.classList.toggle(
+      "support-call-screen-open",
+      callOverlayOpen,
+    );
+    document.body.classList.toggle(
+      "support-call-chat-open",
+      q.interaction === "support-call" && !session.answered && !callOverlayOpen,
+    );
+    if (q.interaction === "support-call") {
+      if (["call-active", "call-followup"].includes(session.interactionStage))
+        session.callStartedAt ||= Date.now();
+      else session.callStartedAt = null;
+    } else session.callStartedAt = null;
+    syncCallIncomingTimer(q);
     document.body.classList.toggle(
       "line-job-menu-open",
       q.interaction === "job-offer" && !session.answered && session.interactionStage === "job-menu",
@@ -98,7 +176,10 @@ export function createExerciseController({ refresh }) {
             ? renderBankruptcyModal()
             : "",
       });
-      const speech = jobStageSpeech() || (
+      syncCallClock();
+      if (callOverlayOpen)
+        $(session.interactionStage === "call-incoming" ? ".support-call-screen.is-incoming" : '[data-scene-action="hangup-call"]')?.focus({ preventScroll: true });
+      const speech = jobStageSpeech() || supportCallStageSpeech(q) || (
         session.questionView === "choose" && !session.answered
           ? compactOptions[q.id].map((o, i) => i + 1 + "，" + o).join("。")
           : $(".reading-copy")?.textContent);
@@ -116,6 +197,7 @@ export function createExerciseController({ refresh }) {
       $("#quizBody").innerHTML = `${renderBranchChat(session)}${session.answered ? renderBranchFeedback(q, session) : ""}${bankrupt}`;
       const chatLog = $(".line-chat-log");
       if (chatLog) chatLog.scrollTop = chatLog.scrollHeight;
+      syncCallClock();
       if (!session.answered) {
         say(
           q.title +
@@ -138,10 +220,18 @@ export function createExerciseController({ refresh }) {
       session.interactionStage === "job-blocked"
     ) {
       $("#quizBody").innerHTML = `${renderMoneyBar(session, "quiz-money")}${renderLineChatQuestion(q, session)}${feedback(q, true, { includeBlockResult: false })}${bankrupt}`;
+      syncCallClock();
+      return;
+    }
+    if (session.answered && q.interaction === "support-call") {
+      clearCallIncomingTimer();
+      $("#quizBody").innerHTML = `${renderMoneyBar(session, "quiz-money")}${renderSupportCallResult(q, session)}${bankrupt}`;
+      syncCallClock();
       return;
     }
     if (session.answered) {
       $("#quizBody").innerHTML = `${renderMoneyBar(session, "quiz-money")}${feedback(q, session.correct)}${bankrupt}`;
+      syncCallClock();
       if (q.branchResponses?.[session.selectedAnswer]) {
         const outcome = document.createElement("section");
         outcome.className = "safe-action";
@@ -163,7 +253,10 @@ export function createExerciseController({ refresh }) {
     }
     $("#quizBody").innerHTML =
       `${renderMoneyBar(session, "quiz-money")}<div class="quiz-top"><span>${types[q.type].name}</span><span>第 ${session.index + 1} / ${session.qs.length} 題</span></div><div class="exercise-progress" aria-label="目前第 ${session.index + 1} 題，共 ${session.qs.length} 題"><i style="width:${((session.index + 1) / session.qs.length) * 100}%"></i></div>${renderLineChatQuestion(q, session)}${bankrupt}`;
-    say(jobStageSpeech() || (
+    syncCallClock();
+    if (callOverlayOpen)
+      $(session.interactionStage === "call-incoming" ? ".support-call-screen.is-incoming" : '[data-scene-action="hangup-call"]')?.focus({ preventScroll: true });
+    say(jobStageSpeech() || supportCallStageSpeech(q) || (
       q.title +
         "。" +
         q.text +
@@ -173,6 +266,7 @@ export function createExerciseController({ refresh }) {
   }
   function answer(i) {
     if (!session || session.answered || session.complete) return;
+    clearCallIncomingTimer();
     const q = session.qs[session.index];
     if (!Number.isInteger(i) || i < 0 || i >= q.options.length) return;
     if (q.interaction === "job-offer" && i === q.answer && session.interactionStage !== "job-blocked") return;
@@ -202,7 +296,7 @@ export function createExerciseController({ refresh }) {
     recordResult({ questionId: q.id, correct: session.correct });
     saveSession(session);
     renderQuestion();
-    if (moneyLoss) animateMoneyLoss(moneyLoss);
+    if (moneyLoss && q.interaction !== "support-call") animateMoneyLoss(moneyLoss);
     document.title = "作答解說｜金庫防爆特攻隊";
     window.scrollTo(0, 0);
     const modalDismiss = $("[data-bankrupt-dismiss]");
@@ -266,6 +360,8 @@ export function createExerciseController({ refresh }) {
       session.index++;
       session.answered = false;
       session.interactionStage = "chat";
+      clearCallIncomingTimer();
+      session.callStartedAt = null;
       session.sentMessage = "";
       session.questionView = "read";
       session.readerOffset = 0;
@@ -326,22 +422,40 @@ export function createExerciseController({ refresh }) {
     else if (action === "send-safe-reply") {
       session.sentMessage = "不了謝謝";
       answer(1);
-    } else if (action === "start-screen-share" && question.interaction === "support-call") {
+    } else if (action === "answer-call" && question.interaction === "support-call" && session.interactionStage === "call-incoming") {
+      session.interactionStage = "call-result-risk";
+      answer(0);
+    } else if (action === "decline-call" && question.interaction === "support-call" && session.interactionStage === "call-incoming") {
+      session.interactionStage = "call-result-safe";
+      answer(1);
+    } else if (action === "continue-support-call" && question.interaction === "support-call" && ["call-ended", "call-active", "call-declined"].includes(session.interactionStage)) {
+      session.interactionStage = session.interactionStage === "call-declined" ? "call-followup-missed" : session.interactionStage === "call-ended" ? "call-followup-declined" : "call-followup";
+      saveSession(session);
+      renderQuestion();
+      $(session.interactionStage === "call-followup" ? "[data-scene-action='start-screen-share']" : "[data-answer='1']")?.focus({ preventScroll: true });
+    } else if (["toggle-mute", "toggle-video", "toggle-speaker"].includes(action) && question.interaction === "support-call" && ["call-active", "call-followup"].includes(session.interactionStage)) {
+      const control = action.replace("toggle-", "");
+      session.callControls ||= { mute: false, video: false, speaker: false };
+      session.callControls[control] = !session.callControls[control];
+      renderQuestion();
+      $(`[data-scene-action="${action}"]`)?.focus({ preventScroll: true });
+    } else if (action === "start-screen-share" && question.interaction === "support-call" && ["call-followup", "call-followup-declined", "call-followup-missed"].includes(session.interactionStage)) {
       session.interactionStage = "screen-share";
       saveSession(session);
       renderQuestion();
       window.scrollTo(0, 0);
       $(`[data-scene-action="stop-screen-share"]`)?.focus({ preventScroll: true });
-    } else if (action === "start-hangup" && question.interaction === "support-call") {
-      session.interactionStage = "hangup";
+    } else if (action === "hangup-call" && question.interaction === "support-call" && ["call-active", "call-followup"].includes(session.interactionStage)) {
+      session.interactionStage = "call-ended";
+      session.callStartedAt = null;
       saveSession(session);
       renderQuestion();
       window.scrollTo(0, 0);
-      $(`[data-scene-action="confirm-hangup"]`)?.focus({ preventScroll: true });
+      $(`[data-scene-action="continue-support-call"]`)?.focus({ preventScroll: true });
+    } else if (["start-hangup", "confirm-hangup"].includes(action) && question.interaction === "support-call") {
+      answer(1);
     } else if (action === "stop-screen-share" && question.interaction === "support-call") {
       answer(0);
-    } else if (action === "confirm-hangup" && question.interaction === "support-call") {
-      answer(1);
     } else if (action === "join-job-chat" && question.interaction === "job-offer" && session.interactionStage === "chat") {
       session.interactionStage = "job-contact";
       saveSession(session);
@@ -403,6 +517,9 @@ export function createExerciseController({ refresh }) {
   }
   function closeQuiz() {
     stopSpeech();
+    clearCallIncomingTimer();
+    document.body.classList.remove("support-call-screen-open");
+    document.body.classList.remove("support-call-chat-open");
     document.body.classList.remove("line-job-menu-open");
     session = null;
     saveSession(null);
@@ -419,13 +536,19 @@ export function createExerciseController({ refresh }) {
     }
     const question = session?.qs[session.index];
     if (!question) return;
-    const stageSpeech = jobStageSpeech();
+    const stageSpeech = jobStageSpeech() || supportCallStageSpeech(question);
     if (stageSpeech) {
       say(stageSpeech, true);
       return;
     }
     if (getState().settings.fontLevel >= 2) {
-      const text = !session.answered && session.interactionStage === "hangup"
+      const liveChatSpeech =
+        !session.answered &&
+        session.interactionStage === "chat" &&
+        ["vote-link", "support-call"].includes(question.interaction)
+          ? `${question.interaction === "support-call" ? "模擬 LINE 語音來電，對方說：" : "模擬聊天室收到訊息："}${question.text}。${question.interaction === "support-call" ? "你會怎麼處理這通來電？" : "你會怎麼回覆？"}${compactOptions[question.id].map((option, index) => `${index + 1}，${option}`).join("。")}`
+          : "";
+      const text = liveChatSpeech || (!session.answered && session.interactionStage === "hangup"
         ? "模擬來電仍在通話中。按下掛斷電話，結束這通可疑來電。這只是練習，不會撥打或接聽真實電話。"
         : !session.answered && session.interactionStage === "screen-share"
           ? "你被騙了！這是螢幕共享情境模擬，沒有分享手機畫面。不要讓假客服看到驗證碼或金融操作。"
@@ -437,7 +560,7 @@ export function createExerciseController({ refresh }) {
           ? compactOptions[question.id]
               .map((o, i) => i + 1 + "，" + o)
               .join("。")
-          : document.querySelector(".reading-copy")?.textContent;
+          : document.querySelector(".reading-copy")?.textContent);
       if (text) say(text, true);
       return;
     }

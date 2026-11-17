@@ -134,9 +134,10 @@ export function validateDraft(draft, questions) {
       : [],
     interactionStage: draft.interactionStage === "job-refusal"
       ? "job-block-ready"
-      : ["compose", "fake-site", "screen-share", "hangup", "job-contact", "job-payment", "job-payment-warning", "job-block-ready", "job-menu", "job-blocked"].includes(draft.interactionStage)
+      : ["compose", "fake-site", "screen-share", "hangup", "call-incoming", "call-active", "call-followup", "call-ended", "call-declined", "call-followup-declined", "call-followup-missed", "call-result-risk", "call-result-safe", "job-contact", "job-payment", "job-payment-warning", "job-block-ready", "job-menu", "job-blocked"].includes(draft.interactionStage)
       ? draft.interactionStage
       : "chat",
+    callStartedAt: Number.isFinite(draft.callStartedAt) ? draft.callStartedAt : null,
     sentMessage: typeof draft.sentMessage === "string" ? draft.sentMessage : "",
   };
 }
@@ -170,6 +171,7 @@ export function saveSession(session) {
           readerOffset: session.readerOffset,
           readerHistory: session.readerHistory,
           interactionStage: session.interactionStage,
+          callStartedAt: session.callStartedAt ?? null,
           sentMessage: session.sentMessage,
         }),
       );
