@@ -28,6 +28,8 @@ document.addEventListener("click", (event) => {
   else if (button.hasAttribute("data-reader-back")) exercise.reader("back");
   else if (button.hasAttribute("data-reader-previous"))
     exercise.reader("previous");
+  else if (button.hasAttribute("data-wrong-answer-dismiss"))
+    exercise.dismissWrongAnswer();
   else if (button.hasAttribute("data-bankrupt-dismiss"))
     exercise.dismissBankruptcy();
   else if (button.dataset.sceneAction)
@@ -42,3 +44,27 @@ document.addEventListener("click", (event) => {
   } else if (button.hasAttribute("data-read")) exercise.read();
   else if (button.id === "exportBtn") exportProgress();
 });
+
+document.addEventListener("input", (event) => {
+  if (event.target.matches?.("[data-chat-input]"))
+    exercise.setChatDraft(event.target.value);
+});
+
+document.addEventListener("submit", (event) => {
+  const form = event.target.closest?.("[data-chat-compose-form]");
+  if (!form) return;
+  event.preventDefault();
+  exercise.sendChatMessage(form.querySelector("[data-chat-input]")?.value || "");
+});
+
+document.addEventListener("keydown", (event) => {
+  const modal = document.querySelector("[data-wrong-answer-modal]");
+  if (!modal) return;
+  if (event.key === "Escape") {
+    event.preventDefault();
+    event.stopPropagation();
+  } else if (event.key === "Tab") {
+    event.preventDefault();
+    modal.querySelector("[data-wrong-answer-dismiss]")?.focus({ preventScroll: true });
+  }
+}, true);

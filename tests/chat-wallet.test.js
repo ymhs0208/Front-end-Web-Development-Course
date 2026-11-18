@@ -8,8 +8,9 @@ import {
   renderBankruptcyModal,
   renderBranchChat,
   renderMoneyBar,
+  renderWrongAnswerModal,
 } from "../dist/js/features/branch-chat.js";
-import { renderJobBlockResult, renderJobOfferStage, renderLineChatQuestion, renderSupportCallResult, renderSupportCallStage } from "../dist/js/features/line-chat.js";
+import { isSafeRefusalMessage, renderJobBlockResult, renderJobOfferStage, renderLineChatQuestion, renderSupportCallResult, renderSupportCallStage } from "../dist/js/features/line-chat.js";
 import { focusText, renderFocusExercise } from "../dist/js/features/focus-reader.js";
 import { createExerciseController } from "../dist/js/features/exercise.js";
 import { getState, updateSettings } from "../dist/js/core/store.js";
@@ -100,7 +101,7 @@ test("each wrong branch answer deducts 100 without taking the balance below zero
   });
 });
 
-test("saved branch money and bankruptcy acknowledgement survive a session restore", () => {
+test("saved money and both prompt states survive a session restore", () => {
   const previous = Object.getOwnPropertyDescriptor(globalThis, "sessionStorage");
   const values = new Map();
   Object.defineProperty(globalThis, "sessionStorage", {
@@ -112,11 +113,21 @@ test("saved branch money and bankruptcy acknowledgement survive a session restor
     },
   });
   try {
-    const initial = validateDraft({ ...branchStart, money: 0, bankruptAcknowledged: true }, bank);
+    const initial = validateDraft({
+      ...branchStart,
+      money: 0,
+      wrongAnswerAcknowledged: true,
+      wrongActionPending: true,
+      wrongActionReason: "不應選擇錯誤操作。",
+      bankruptAcknowledged: false,
+    }, bank);
     saveSession(initial);
     const restored = restoreSession(bank);
     assert.equal(restored.money, 0);
-    assert.equal(restored.bankruptAcknowledged, true);
+    assert.equal(restored.wrongAnswerAcknowledged, true);
+    assert.equal(restored.wrongActionPending, true);
+    assert.equal(restored.wrongActionReason, "不應選擇錯誤操作。");
+    assert.equal(restored.bankruptAcknowledged, false);
   } finally {
     if (previous) Object.defineProperty(globalThis, "sessionStorage", previous);
     else delete globalThis.sessionStorage;
@@ -149,20 +160,19 @@ test("only LINE questions 1, 5, and 9 are active; question 9 uses chat actions i
     const html = renderLineChatQuestion(question, { index, qs: questions });
     assert.ok(question.segments.length >= 2, `${question.id} should have multiple scene segments`);
     assert.equal(question.segments.map((segment) => segment.text).join(""), question.text);
+    assert.match(html, /line-chat-message-avatar/);
+    assert.doesNotMatch(html, /line-chat-safety-note|line-chat-segment-label|分段呈現|先看情境/);
     if (question.interaction === "support-call") {
       assert.doesNotMatch(html, /support-call-screen is-incoming/);
       assert.doesNotMatch(html, /data-scene-action="answer-call"|data-scene-action="decline-call"/);
-      assert.match(html, /5 秒後會出現模擬來電/);
       assert.match(html, /line-chat-device/);
       assert.equal(html.includes(question.text), true);
-      assert.equal((html.match(/class="line-chat-incoming line-chat-segment"/g) ?? []).length, 1);
+      assert.equal((html.match(/class="line-chat-incoming line-chat-segment[^"]*"/g) ?? []).length, 1);
     } else {
       assert.match(html, /line-chat-device/);
       assert.match(html, /line-chat-conversation/);
-      assert.match(html, /以下為(?:防詐)?模擬對話/);
-      assert.match(html, /分段呈現/);
       assert.equal(
-        (html.match(/class="line-chat-incoming line-chat-segment"/g) ?? []).length,
+        (html.match(/class="line-chat-incoming line-chat-segment[^"]*"/g) ?? []).length,
         question.interaction === "job-offer" ? 1 : question.segments.length,
       );
     }
@@ -172,6 +182,13 @@ test("only LINE questions 1, 5, and 9 are active; question 9 uses chat actions i
       assert.equal((html.match(/class="line-chat-reply"/g) ?? []).length, 0);
       assert.match(html, /data-scene-action="join-job-chat"/);
       assert.doesNotMatch(html, /data-answer=/);
+    } else if (question.interaction === "vote-link") {
+      assert.equal((html.match(/class="line-chat-reply"/g) ?? []).length, 0);
+      assert.doesNotMatch(html, /你會怎麼回覆|data-answer=|line-chat-reply-divider/);
+      assert.match(html, /data-chat-compose-form/);
+      assert.match(html, /data-chat-input/);
+      assert.match(html, /type="submit"/);
+      assert.match(html, /唸出聊天訊息給我聽/);
     } else {
       assert.equal((html.match(/class="line-chat-reply"/g) ?? []).length, 3);
     }
@@ -180,7 +197,7 @@ test("only LINE questions 1, 5, and 9 are active; question 9 uses chat actions i
       assert.doesNotMatch(html, /line-chat-read|唸出來電內容/);
     } else {
       assert.match(html, /line-chat-composer/);
-      assert.match(html, question.interaction === "job-offer" ? /唸出聊天情境和操作提示/ : /唸出訊息和回覆選項/);
+      assert.match(html, question.interaction === "job-offer" ? /唸出聊天情境和操作提示/ : question.interaction === "vote-link" ? /唸出聊天訊息給我聽/ : /唸出訊息和回覆選項/);
     }
     assert.doesNotMatch(html, /line-question-actions/);
     assert.doesNotMatch(html, /line-chat-call-badge|可疑來電|求職風險|徵才貼文|詐騙情境：|高薪求職詐騙模擬/);
@@ -189,27 +206,245 @@ test("only LINE questions 1, 5, and 9 are active; question 9 uses chat actions i
   }
 });
 
-test("question 1 opens a simulated scam site or prepares a safe reply that must be sent", () => {
+test("question 1 uses a local editable composer, no reply choices, and renders the refusal exchange", () => {
   const question = bank.find((item) => item.id === "line-scam-1");
   const qs = [question];
-  const site = renderLineChatQuestion(question, { index: 0, qs, interactionStage: "fake-site" });
-  assert.match(site, /你被騙了！！/);
-  assert.match(site, /不會連到網路/);
-  assert.match(site, /不要輸入驗證碼/);
-  assert.doesNotMatch(site, /防詐模擬網站|這是假網站演練/);
-  assert.match(site, /data-scene-action="submit-phishing"/);
+  const initial = renderLineChatQuestion(question, { index: 0, qs, interactionStage: "chat" });
+  assert.match(initial, /data-scene-action="open-fake-site"/);
+  assert.match(initial, /pet-vote-gift\.example/);
+  assert.match(initial, /data-chat-compose-form/);
+  assert.match(initial, /data-chat-input/);
+  assert.match(initial, /type="submit"/);
+  assert.match(initial, /line-chat-message-avatar/);
+  assert.doesNotMatch(initial, /line-chat-safety-note|line-chat-segment-label|先看情境/);
+  assert.doesNotMatch(initial, /你會怎麼回覆|data-answer=|line-chat-reply-divider|href="https?:/);
 
-  const reply = renderLineChatQuestion(question, { index: 0, qs, interactionStage: "compose" });
-  assert.match(reply, /不了謝謝/);
-  assert.match(reply, /data-scene-action="send-safe-reply"/);
-  assert.match(reply, /傳送/);
+  const exchange = renderLineChatQuestion(question, { index: 0, qs }, {
+    messages: [
+      { direction: "outgoing", text: "我不提供手機號碼和驗證碼" },
+      { direction: "incoming", text: "好的，抱歉打擾了" },
+    ],
+  });
+  assert.match(exchange, /我不提供手機號碼和驗證碼/);
+  assert.match(exchange, /好的，抱歉打擾了/);
+});
+
+test("question 1 recognizes varied refusals to share data or open the link", () => {
+  for (const message of [
+    "我不提供手機號碼和簡訊驗證碼，謝謝",
+    "我不想把驗證碼給你",
+    "我不點這個連結",
+    "不要輸入個人資料",
+    "不了謝謝",
+  ]) assert.equal(isSafeRefusalMessage(message), true, message);
+  for (const message of [
+    "我可以提供手機號碼",
+    "這個連結是真的嗎？",
+    "驗證碼是多少？",
+    "   ",
+  ]) assert.equal(isSafeRefusalMessage(message), false, message);
+});
+
+test("question 1 controller handles refusal, fake-link results, large text, and keeps messages in memory", () => {
+  const globalNames = ["window", "document", "location", "sessionStorage", "localStorage", "CustomEvent"];
+  const descriptors = Object.fromEntries(globalNames.map((key) => [key, Object.getOwnPropertyDescriptor(globalThis, key)]));
+  const previousSettings = getState().settings;
+  const sessionValues = new Map();
+  const localValues = new Map();
+  const timers = new Map();
+  let nextTimerId = 0;
+  const quizBody = { innerHTML: "" };
+  const input = { value: "", focus() {} };
+  const conversation = { scrollTop: 0, scrollHeight: 100 };
+  const main = { focus() {} };
+  Object.defineProperty(globalThis, "sessionStorage", {
+    configurable: true,
+    value: {
+      getItem: (key) => sessionValues.get(key) ?? null,
+      setItem: (key, value) => sessionValues.set(key, String(value)),
+      removeItem: (key) => sessionValues.delete(key),
+    },
+  });
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: {
+      getItem: (key) => localValues.get(key) ?? null,
+      setItem: (key, value) => localValues.set(key, String(value)),
+    },
+  });
+  Object.defineProperty(globalThis, "location", { configurable: true, value: { hash: "" } });
+  Object.defineProperty(globalThis, "document", {
+    configurable: true,
+    value: {
+      title: "",
+      body: { classList: { toggle() {}, remove() {} } },
+      querySelectorAll: () => [],
+      querySelector: (selector) => selector === "#quizBody" ? quizBody
+        : selector === "[data-chat-input]" ? input
+          : selector === ".line-chat-conversation" ? conversation
+            : selector === "#main" ? main : null,
+    },
+  });
+  Object.defineProperty(globalThis, "CustomEvent", {
+    configurable: true,
+    value: class CustomEvent {
+      constructor(type, options = {}) { this.type = type; this.detail = options.detail; }
+    },
+  });
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: {
+      innerWidth: 390,
+      innerHeight: 844,
+      visualViewport: null,
+      addEventListener() {},
+      setTimeout: (callback, delay) => {
+        const id = ++nextTimerId;
+        timers.set(id, { callback, delay });
+        return id;
+      },
+      clearTimeout: (id) => timers.delete(id),
+      setInterval: () => 1,
+      clearInterval() {},
+      dispatchEvent() {},
+      scrollTo() {},
+    },
+  });
+
+  try {
+    updateSettings({ fontLevel: 0, voice: false });
+    const exercise = createExerciseController({ refresh() {} });
+    const questionId = "line-scam-1";
+    exercise.start(null, questionId);
+    exercise.render();
+    assert.match(quizBody.innerHTML, /data-chat-compose-form/);
+    assert.match(quizBody.innerHTML, /data-chat-input/);
+    assert.doesNotMatch(quizBody.innerHTML, /你會怎麼回覆|data-answer=/);
+
+    exercise.setChatDraft("這個投票網址安全嗎？");
+    exercise.sendChatMessage();
+    assert.equal(exercise.getSession().answered, false);
+    assert.match(quizBody.innerHTML, /這個投票網址安全嗎？/);
+    assert.equal([...timers.values()].some((timer) => timer.delay === 1000), false);
+
+    const refusal = "我不會提供手機號碼與簡訊驗證碼";
+    exercise.setChatDraft(refusal);
+    exercise.sendChatMessage();
+    assert.equal(exercise.getSession().answered, false);
+    assert.match(quizBody.innerHTML, new RegExp(refusal));
+    assert.match(quizBody.innerHTML, /好的，抱歉打擾了/);
+    assert.equal(exercise.getSession().answered, false, "the result waits until the reply is complete");
+    const safeTimerEntry = [...timers.entries()].find(([, timer]) => timer.delay === 1000);
+    assert.ok(safeTimerEntry, "a one-second result delay is scheduled");
+    const storageKey = "vault-training-v1";
+    assert.equal(JSON.parse(localValues.get(storageKey)).attempts.some((attempt) => attempt.id === questionId), false);
+    let persisted = JSON.stringify([...sessionValues.values(), ...localValues.values()]);
+    assert.equal(persisted.includes(refusal), false, "typed messages are not written to storage");
+    timers.delete(safeTimerEntry[0]);
+    safeTimerEntry[1].callback();
+    assert.equal(exercise.getSession().answered, true);
+    assert.equal(exercise.getSession().correct, true);
+    assert.match(quizBody.innerHTML, /答對了/);
+    assert.match(quizBody.innerHTML, /安全的做法/);
+    assert.match(quizBody.innerHTML, new RegExp(bank.find((item) => item.id === questionId).explain));
+    assert.equal(JSON.parse(localValues.get(storageKey)).attempts.some((attempt) => attempt.id === questionId && attempt.correct), true);
+
+    exercise.start(null, questionId);
+    exercise.render();
+    exercise.sceneAction("open-fake-site");
+    assert.equal(exercise.getSession().answered, true);
+    assert.equal(exercise.getSession().correct, false);
+    assert.match(quizBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(quizBody.innerHTML, /你的錢被騙走了/);
+    assert.match(quizBody.innerHTML, /知道了，查看解析/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-bankrupt-modal/);
+    assert.match(quizBody.innerHTML, /wrong-answer-explanation/);
+    assert.match(quizBody.innerHTML, new RegExp(bank.find((item) => item.id === questionId).explain));
+    assert.doesNotMatch(quizBody.innerHTML, /安全的做法|話術陷阱|仿冒投票網站/);
+    exercise.next();
+    assert.equal(exercise.getSession().complete, false, "the result cannot be skipped before acknowledging the prompt");
+    exercise.dismissWrongAnswer();
+    exercise.render();
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(quizBody.innerHTML, /為什麼錯/);
+    assert.doesNotMatch(quizBody.innerHTML, /安全的做法|trap-details|仿冒投票網站/);
+    assert.doesNotMatch(quizBody.innerHTML, /href="https?:|<form|<input/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-bankrupt-modal/);
+
+    updateSettings({ fontLevel: 2, voice: false });
+    exercise.start(null, questionId);
+    exercise.render();
+    assert.match(quizBody.innerHTML, /data-chat-input/);
+    exercise.setChatDraft("不了謝謝");
+    exercise.sendChatMessage();
+    assert.match(quizBody.innerHTML, /好的，抱歉打擾了/);
+    const largeSafeTimerEntry = [...timers.entries()].find(([, timer]) => timer.delay === 1000);
+    assert.ok(largeSafeTimerEntry);
+    timers.delete(largeSafeTimerEntry[0]);
+    largeSafeTimerEntry[1].callback();
+    assert.match(quizBody.innerHTML, /line-chat-q1-focus-result/);
+    assert.match(quizBody.innerHTML, /答對了/);
+    assert.match(quizBody.innerHTML, /安全的做法/);
+
+    exercise.start(null, questionId);
+    exercise.render();
+    exercise.sceneAction("open-fake-site");
+    assert.match(quizBody.innerHTML, /line-chat-q1-focus-result/);
+    assert.match(quizBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(quizBody.innerHTML, /知道了，查看解析/);
+    exercise.dismissWrongAnswer();
+    exercise.render();
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(quizBody.innerHTML, /為什麼錯/);
+    assert.doesNotMatch(quizBody.innerHTML, /安全的做法|trap-details/);
+
+    updateSettings({ fontLevel: 0, voice: false });
+    exercise.start(null, questionId);
+    exercise.getSession().money = 100;
+    exercise.sceneAction("open-fake-site");
+    assert.equal(exercise.getSession().money, 0);
+    assert.equal(exercise.getSession().lastMoneyLoss, 100);
+    const wrongAttemptsAfterDebit = JSON.parse(localValues.get(storageKey)).attempts
+      .filter((attempt) => attempt.id === questionId && !attempt.correct).length;
+    assert.match(quizBody.innerHTML, /data-bankrupt-modal/);
+    assert.match(quizBody.innerHTML, /你的現金被騙光了！！/);
+    assert.match(quizBody.innerHTML, /assets\/bankrupt-meme\.png/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal|−NT\$100/);
+
+    exercise.dismissBankruptcy();
+    exercise.render();
+    assert.match(quizBody.innerHTML, /wrong-answer-explanation/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal|data-bankrupt-modal/);
+    assert.doesNotMatch(quizBody.innerHTML, /安全的做法|trap-details/);
+    exercise.next();
+    assert.equal(exercise.getSession().complete, true, "the bankruptcy button reveals the explanation before continuing");
+    assert.equal(exercise.getSession().money, 0, "dismissing either prompt never applies another deduction");
+    assert.equal(JSON.parse(localValues.get(storageKey)).attempts
+      .filter((attempt) => attempt.id === questionId && !attempt.correct).length, wrongAttemptsAfterDebit);
+
+    persisted = JSON.stringify([...sessionValues.values(), ...localValues.values()]);
+    assert.equal(persisted.includes(refusal), false);
+    assert.equal(persisted.includes("不了謝謝"), false);
+    assert.equal(JSON.parse(localValues.get(storageKey)).attempts.some((attempt) => attempt.id === questionId && !attempt.correct), true);
+  } finally {
+    for (const [key, descriptor] of Object.entries(descriptors)) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+      else delete globalThis[key];
+    }
+    updateSettings({
+      fontLevel: previousSettings.fontLevel,
+      voice: previousSettings.voice,
+      speechLanguage: previousSettings.speechLanguage,
+    });
+  }
 });
 
 test("question 5 begins in chat with one merged message and no choices; question 9 still begins as a chat job ad", () => {
   const call = bank.find((item) => item.id === "line-scam-5");
   const initial = renderLineChatQuestion(call, { index: 0, qs: [call], interactionStage: "chat" });
   assert.match(initial, /line-chat-device/);
-  assert.match(initial, /客服留下訊息/);
+  assert.match(initial, /line-chat-message-avatar/);
+  assert.doesNotMatch(initial, /客服留下訊息|line-chat-safety-note|line-chat-segment-label|先看情境/);
   assert.match(initial, /你接到一通 LINE 語音電話，對方聲稱你的帳號涉及異常交易與糾紛，需要你下載指定的視訊軟體/);
   assert.equal((initial.match(/line-chat-incoming-bubble/g) || []).length, 1);
   assert.doesNotMatch(initial, /data-scene-action="answer-call"|data-scene-action="decline-call"|data-answer=|class="line-chat-reply"/);
@@ -224,6 +459,8 @@ test("question 5 begins in chat with one merged message and no choices; question
 
   const job = bank.find((item) => item.id === "line-scam-9");
   const html = renderLineChatQuestion(job, { index: 0, qs: [job] });
+  assert.match(html, /line-chat-message-avatar/);
+  assert.doesNotMatch(html, /line-chat-safety-note|line-chat-segment-label|先看情境/);
   assert.match(html, /居家打字／點讚員/);
   assert.match(html, /時薪 500 元/);
   assert.match(html, /加入 LINE 聯絡/);
@@ -301,6 +538,116 @@ test("question 9 opens a full-screen menu that replaces the chat and contains on
   assert.doesNotMatch(menu, /line-chat-device|close-job-menu|data-answer=/);
 });
 
+test("question 9 menu mistakes use mutually exclusive prompts and preserve the block exercise", () => {
+  const descriptors = Object.fromEntries(
+    ["window", "document", "location", "sessionStorage", "localStorage"].map((key) => [
+      key,
+      Object.getOwnPropertyDescriptor(globalThis, key),
+    ]),
+  );
+  const previousSettings = getState().settings;
+  const sessionValues = new Map();
+  const localValues = new Map();
+  const quizBody = { innerHTML: "" };
+  const main = { focus() {} };
+  Object.defineProperty(globalThis, "sessionStorage", {
+    configurable: true,
+    value: {
+      getItem: (key) => sessionValues.get(key) ?? null,
+      setItem: (key, value) => sessionValues.set(key, String(value)),
+      removeItem: (key) => sessionValues.delete(key),
+    },
+  });
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    value: { getItem: (key) => localValues.get(key) ?? null, setItem: (key, value) => localValues.set(key, String(value)) },
+  });
+  Object.defineProperty(globalThis, "location", { configurable: true, value: { hash: "#exercise" } });
+  Object.defineProperty(globalThis, "document", {
+    configurable: true,
+    value: {
+      title: "",
+      body: { classList: { toggle() {}, remove() {} } },
+      querySelectorAll: () => [],
+      querySelector: (selector) => selector === "#quizBody" ? quizBody : selector === "#main" ? main : null,
+    },
+  });
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: {
+      innerWidth: 390,
+      innerHeight: 844,
+      visualViewport: null,
+      addEventListener() {},
+      setTimeout: (callback) => { callback(); return 1; },
+      clearTimeout() {},
+      setInterval: () => 1,
+      clearInterval() {},
+      dispatchEvent() {},
+      scrollTo() {},
+    },
+  });
+  try {
+    updateSettings({ fontLevel: 0, voice: false });
+    const exercise = createExerciseController({ refresh() {} });
+    const openMenu = (money) => {
+      exercise.start(null, "line-scam-9");
+      exercise.getSession().money = money;
+      exercise.render();
+      exercise.sceneAction("join-job-chat");
+      exercise.sceneAction("open-job-payment");
+      exercise.sceneAction("refuse-job-payment");
+      exercise.sceneAction("open-job-menu");
+    };
+
+    openMenu(300);
+    const storageKey = "vault-training-v1";
+    const attemptsBefore = JSON.parse(localValues.get(storageKey)).attempts
+      .filter((attempt) => attempt.id === "line-scam-9").length;
+    exercise.sceneAction("job-menu-mute");
+    assert.equal(exercise.getSession().money, 200);
+    assert.equal(exercise.getSession().lastMoneyLoss, 100);
+    assert.match(quizBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(quizBody.innerHTML, /−NT\$100/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-bankrupt-modal/);
+    exercise.dismissWrongAnswer();
+    exercise.render();
+    assert.match(quizBody.innerHTML, /為什麼錯/);
+    assert.match(quizBody.innerHTML, /關閉提醒/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal|data-bankrupt-modal|安全的做法|trap-details/);
+    exercise.sceneAction("resume-after-wrong-menu-action");
+    assert.equal(exercise.getSession().interactionStage, "job-block-ready");
+    assert.equal(exercise.getSession().answered, false);
+
+    openMenu(100);
+    exercise.sceneAction("job-menu-mute");
+    assert.equal(exercise.getSession().money, 0);
+    assert.equal(exercise.getSession().lastMoneyLoss, 100);
+    assert.match(quizBody.innerHTML, /data-bankrupt-modal/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal|−NT\$100/);
+    exercise.dismissBankruptcy();
+    exercise.render();
+    assert.match(quizBody.innerHTML, /為什麼錯/);
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal|data-bankrupt-modal|安全的做法|trap-details/);
+    exercise.sceneAction("resume-after-wrong-menu-action");
+    assert.equal(exercise.getSession().interactionStage, "job-block-ready");
+    assert.equal(exercise.getSession().money, 0);
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal|data-bankrupt-modal/);
+    assert.equal(JSON.parse(localValues.get(storageKey)).attempts
+      .filter((attempt) => attempt.id === "line-scam-9").length, attemptsBefore);
+  } finally {
+    for (const [key, descriptor] of Object.entries(descriptors)) {
+      if (descriptor) Object.defineProperty(globalThis, key, descriptor);
+      else delete globalThis[key];
+    }
+    updateSettings({
+      fontLevel: previousSettings.fontLevel,
+      voice: previousSettings.voice,
+      speechLanguage: previousSettings.speechLanguage,
+    });
+  }
+});
+
 test("question 9 returns to its chat with a correct block result and no lingering reply controls", () => {
   const question = bank.find((item) => item.id === "line-scam-9");
   const html = renderLineChatQuestion(question, {
@@ -326,14 +673,13 @@ test("question 9 safe block completion is simulated and does not block a real LI
   assert.doesNotMatch(result, /data-answer=/);
 });
 
-test("question 5 answer and decline each show the intended local result card", () => {
+test("question 5 wrong answer shows only its reason while the safe answer keeps its result card", () => {
   const question = bank.find((item) => item.id === "line-scam-5");
   const risk = renderSupportCallResult(question, { correct: false, index: 0, qs: [question] });
-  assert.match(risk, /你被騙了！/);
-  assert.match(risk, /帳號異常/);
-  assert.match(risk, /驗證碼和銀行操作/);
-  assert.match(risk, /立即拒接並掛斷/);
-  assert.match(risk, /未接通、未啟用相機／麥克風/);
+  assert.match(risk, /為什麼錯/);
+  assert.match(risk, new RegExp(question.explain));
+  assert.doesNotMatch(risk, /安全做法|立即拒接|未接通|帳號異常/);
+  assert.match(risk, /data-next/);
   assert.doesNotMatch(risk, /data-scene-action|data-answer=|getUserMedia|getDisplayMedia/);
 
   const safe = renderSupportCallResult(question, { correct: true, index: 0, qs: [question] });
@@ -421,8 +767,17 @@ test("question 5 controller shows chat for five seconds, then opens the call cho
     assert.equal(exercise.getSession().answered, true);
     assert.equal(exercise.getSession().correct, false);
     assert.equal(exercise.getSession().interactionStage, "call-result-risk");
-    assert.match(quizBody.innerHTML, /你被騙了！/);
-    assert.match(quizBody.innerHTML, /分享畫面/);
+    assert.match(quizBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(quizBody.innerHTML, /你的錢被騙走了/);
+    assert.match(quizBody.innerHTML, /知道了，查看解析/);
+    assert.match(quizBody.innerHTML, /為什麼錯/);
+    assert.doesNotMatch(quizBody.innerHTML, /安全做法|話術陷阱|立即拒接並掛斷/);
+    exercise.next();
+    assert.equal(exercise.getSession().complete, false);
+    exercise.dismissWrongAnswer();
+    exercise.render();
+    assert.doesNotMatch(quizBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(quizBody.innerHTML, /為什麼錯/);
     assert.doesNotMatch(quizBody.innerHTML, /support-call-screen is-active|data-scene-action="toggle-video"/);
 
     exercise.start(null, "line-scam-5");
@@ -525,6 +880,18 @@ test("bankruptcy reminder displays the supplied meme from the local assets folde
   assert.match(html, /我破產了/);
   assert.match(html, /知道了，繼續練習/);
   assert.match(html, /data-bankrupt-dismiss/);
+});
+
+test("wrong-answer prompt uses the cropped local image and shows the deduction beside it", () => {
+  assert.ok(existsSync(new URL("../dist/assets/wrong-answer-meme.png", import.meta.url)));
+  const html = renderWrongAnswerModal(100);
+  assert.match(html, /data-wrong-answer-modal role="dialog" aria-modal="true"/);
+  assert.match(html, /你的錢被騙走了/);
+  assert.match(html, /assets\/wrong-answer-meme\.png/);
+  assert.match(html, /wrong-answer-image-row/);
+  assert.match(html, /data-money-flight[^>]*>💸 −NT\$100/);
+  assert.match(html, /知道了，查看解析/);
+  assert.match(html, /data-wrong-answer-dismiss/);
 });
 
 

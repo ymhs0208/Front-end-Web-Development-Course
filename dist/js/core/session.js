@@ -1,5 +1,5 @@
 // Keep an in-progress exercise through refreshes without recording answers twice.
-import { STARTING_MONEY } from "./money.js?v=job-9-4";
+import { STARTING_MONEY, WRONG_ANSWER_PENALTY } from "./money.js?v=job-9-4";
 import { activeLineQuestionIds } from "../data/questions.js?v=job-9-4";
 const KEY = "vault-exercise-v1";
 export function validateDraft(draft, questions) {
@@ -122,6 +122,12 @@ export function validateDraft(draft, questions) {
     branchFlow,
     branchScenario,
     money: draft.money ?? STARTING_MONEY,
+    lastMoneyLoss: Number.isInteger(draft.lastMoneyLoss) && draft.lastMoneyLoss >= 0 && draft.lastMoneyLoss <= WRONG_ANSWER_PENALTY
+      ? draft.lastMoneyLoss
+      : 0,
+    wrongAnswerAcknowledged: draft.wrongAnswerAcknowledged === true,
+    wrongActionPending: draft.wrongActionPending === true,
+    wrongActionReason: typeof draft.wrongActionReason === "string" ? draft.wrongActionReason.slice(0, 240) : "",
     bankruptAcknowledged: draft.bankruptAcknowledged === true,
     nextId: typeof draft.nextId === "string" ? draft.nextId : null,
     questionView: draft.questionView === "choose" ? "choose" : "read",
@@ -165,6 +171,10 @@ export function saveSession(session) {
           branchPath: session.branchPath,
           branchFlow: session.branchFlow,
           money: session.money,
+          lastMoneyLoss: session.lastMoneyLoss ?? 0,
+          wrongAnswerAcknowledged: session.wrongAnswerAcknowledged === true,
+          wrongActionPending: session.wrongActionPending === true,
+          wrongActionReason: session.wrongActionReason ?? "",
           bankruptAcknowledged: session.bankruptAcknowledged,
           nextId: session.nextId,
           questionView: session.questionView,

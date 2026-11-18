@@ -5,8 +5,9 @@ import {
   renderBranchChat,
   renderBranchFeedback,
   renderMoneyBar,
+  renderWrongAnswerModal,
 } from "./branch-chat.js?v=job-9-4";
-import { escapeHtml, renderJobBlockResult, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-chat-first-2";
+import { escapeHtml, isSafeRefusalMessage, renderJobBlockResult, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-chat-first-2";
 import { STARTING_MONEY, applyWrongAnswerPenalty } from "../core/money.js?v=job-9-4";
 import { compactOptions } from "../data/compact-options.js?v=job-9-4";
 import { $ } from "../core/dom.js?v=job-9-4";
@@ -24,6 +25,51 @@ export function createExerciseController({ refresh }) {
   let lastFocusSpeech = "";
   let callClockTimer = null;
   let callIncomingTimer = null;
+  let chatReplyTimer = null;
+  let chatDraft = "";
+  let chatMessages = [];
+  let chatReplyPending = false;
+  function clearChatReplyTimer() {
+    if (chatReplyTimer !== null) {
+      window.clearTimeout?.(chatReplyTimer);
+      chatReplyTimer = null;
+    }
+  }
+  function resetChatComposer() {
+    clearChatReplyTimer();
+    chatDraft = "";
+    chatMessages = [];
+    chatReplyPending = false;
+  }
+  function chatViewState(question = session?.qs[session.index]) {
+    return question?.interaction === "vote-link" && question.id === "line-scam-1"
+      ? { draft: chatDraft, messages: chatMessages, pending: chatReplyPending }
+      : {};
+  }
+  function renderMoneyModal() {
+    if (!session) return "";
+    if (session.wrongActionPending) {
+      if (session.money === 0) {
+        if (!session.bankruptAcknowledged) return renderBankruptcyModal();
+        if (session.lastMoneyLoss > 0) return "";
+      }
+      return !session.wrongAnswerAcknowledged
+        ? renderWrongAnswerModal(session.lastMoneyLoss)
+        : "";
+    }
+    if (session.answered && session.correct === false) {
+      if (session.money === 0) {
+        if (!session.bankruptAcknowledged) return renderBankruptcyModal();
+        if (session.lastMoneyLoss > 0) return "";
+      }
+      return !session.wrongAnswerAcknowledged
+        ? renderWrongAnswerModal(session.lastMoneyLoss)
+        : "";
+    }
+    return session.money === 0 && !session.bankruptAcknowledged
+      ? renderBankruptcyModal()
+      : "";
+  }
   function clearCallIncomingTimer() {
     if (callIncomingTimer !== null) {
       window.clearTimeout?.(callIncomingTimer);
@@ -99,6 +145,7 @@ export function createExerciseController({ refresh }) {
   }
   function start(mode, id) {
     clearCallIncomingTimer();
+    resetChatComposer();
     const qs = selectQuestions(bank, getState().attempts, mode, id);
     if (!qs.length) return;
     session = {
@@ -116,6 +163,10 @@ export function createExerciseController({ refresh }) {
       callStartedAt: null,
       sentMessage: "",
       money: STARTING_MONEY,
+      lastMoneyLoss: 0,
+      wrongAnswerAcknowledged: false,
+      wrongActionPending: false,
+      wrongActionReason: "",
       bankruptAcknowledged: false,
     };
     saveSession(session);
@@ -123,8 +174,15 @@ export function createExerciseController({ refresh }) {
     else location.hash = "exercise";
   }
   function feedback(q, correct, { includeBlockResult = true } = {}) {
-    const sceneResult = session.sceneResult || q.sceneOutcomes?.[session.selectedAnswer]
-      ? `<p class="line-scene-result${correct ? " is-safe" : ""}" role="status">${escapeHtml(session.sceneResult || q.sceneOutcomes?.[session.selectedAnswer])}</p>`
+    if (!correct) {
+      const nextLabel = session.index + 1 === session.qs.length ? "看練習結果" : "下一題";
+      return `<div class="quiz-top"><span>${types[q.type].name}</span><span>第 ${session.index + 1} / ${session.qs.length} 題</span></div><section class="quiz-content answer-page wrong-answer-explanation" aria-labelledby="wrong-answer-explanation-title"><h2 id="wrong-answer-explanation-title">為什麼錯</h2><p class="answer-explanation">${escapeHtml(q.explain)}</p><div class="answer-actions"><button class="primary" data-next>${nextLabel} <span aria-hidden="true">→</span></button></div></section>`;
+    }
+    const outcomeText = q.interaction === "vote-link"
+      ? ""
+      : session.sceneResult || q.sceneOutcomes?.[session.selectedAnswer] || "";
+    const sceneResult = outcomeText
+      ? `<p class="line-scene-result${correct ? " is-safe" : ""}" role="status">${escapeHtml(outcomeText)}</p>`
       : "";
     const sentMessage = session.sentMessage
       ? `<p class="line-scene-result is-safe" role="status">你已在模擬聊天室送出：「${escapeHtml(session.sentMessage)}」</p>`
@@ -132,14 +190,14 @@ export function createExerciseController({ refresh }) {
     const blockResult = includeBlockResult && q.interaction === "job-offer" && correct && session.interactionStage === "job-blocked"
       ? renderJobBlockResult()
       : "";
+    const clickedVoteLink = q.interaction === "vote-link" && session.interactionStage === "fake-site";
     const fakeSiteWarning =
-      (q.interaction === "vote-link" && session.interactionStage === "fake-site") ||
-      (q.interaction === "support-call" && session.interactionStage === "screen-share")
-        ? `<p class="line-scene-result" role="alert"><strong>你被騙了！！</strong> 這是防詐情境演練，沒有連到外部網站，也沒有分享手機畫面。</p>`
+      clickedVoteLink || (q.interaction === "support-call" && session.interactionStage === "screen-share")
+        ? `<p class="line-scene-result" role="alert">${clickedVoteLink ? "點擊的投票頁是仿冒網站，會藉由索取手機號碼和簡訊驗證碼盜取帳號。" : "你被騙了！！這是防詐情境演練，沒有分享手機畫面。"}</p>`
         : "";
-    return `<div class="quiz-top"><span>${types[q.type].name}</span><span>第 ${session.index + 1} / ${session.qs.length} 題</span></div><div class="quiz-content answer-page"><span class="answer-label">${correct ? "✓ 答對了" : "我們一起再看一次"}</span><h1>${correct ? "做得好，記住這個方法。" : "下次可以這樣做。"}</h1>${blockResult}${fakeSiteWarning}${sentMessage}${sceneResult}<section class="safe-action"><h2>安全的做法</h2><p>${q.options[q.answer]}</p></section><p class="answer-explanation">${q.explain}</p><details class="trap-details"><summary>為什麼要小心？</summary><p>${q.trap}</p></details><div class="answer-actions"><button class="primary" data-next>${session.index + 1 === session.qs.length ? "看練習結果" : "下一題"} <span aria-hidden="true">→</span></button><button class="secondary" data-read data-idle-label="唸解說給我聽">唸解說給我聽</button></div></div>`;
+    return `<div class="quiz-top"><span>${types[q.type].name}</span><span>第 ${session.index + 1} / ${session.qs.length} 題</span></div><div class="quiz-content answer-page"><span class="answer-label">${clickedVoteLink ? "情境結果" : correct ? "✓ 答對了" : "我們一起再看一次"}</span><h1>${clickedVoteLink ? "你被騙了" : correct ? "做得好，記住這個方法。" : "下次可以這樣做。"}</h1>${blockResult}${fakeSiteWarning}${sentMessage}${sceneResult}<section class="safe-action"><h2>安全的做法</h2><p>${q.options[q.answer]}</p></section><p class="answer-explanation">${q.explain}</p><details class="trap-details"><summary>為什麼要小心？</summary><p>${q.trap}</p></details><div class="answer-actions"><button class="primary" data-next>${session.index + 1 === session.qs.length ? "看練習結果" : "下一題"} <span aria-hidden="true">→</span></button><button class="secondary" data-read data-idle-label="唸解說給我聽">唸解說給我聽</button></div></div>`;
   }
-  function renderQuestion() {
+  function renderQuestion({ suppressSpeech = false } = {}) {
     const q = session.qs[session.index];
     const callOverlayOpen =
       q.interaction === "support-call" &&
@@ -165,35 +223,37 @@ export function createExerciseController({ refresh }) {
     );
     document.title =
       (session.answered ? "作答解說" : "正在練習") + "｜金庫防爆特攻隊";
+    if (session.wrongActionPending) {
+      const explanation = `<section class="quiz-content answer-page wrong-answer-explanation" aria-labelledby="wrong-action-explanation-title"><h2 id="wrong-action-explanation-title">為什麼錯</h2><p class="answer-explanation">${escapeHtml(session.wrongActionReason)}</p><div class="answer-actions"><button class="primary" type="button" data-scene-action="resume-after-wrong-menu-action">知道了，回聊天室</button></div></section>`;
+      $("#quizBody").innerHTML = `${renderMoneyBar(session, "quiz-money")}${explanation}${renderMoneyModal()}`;
+      return;
+    }
     if (getState().settings.fontLevel >= 2) {
       renderFocusExercise(session, {
         moneyMarkup: renderMoneyBar(
           session,
           session.branchFlow ? "focus-money" : "quiz-money",
         ),
-        bankruptcyMarkup:
-          session.money === 0 && !session.bankruptAcknowledged
-            ? renderBankruptcyModal()
-            : "",
+        bankruptcyMarkup: renderMoneyModal(),
+        chatViewState: chatViewState(q),
       });
       syncCallClock();
       if (callOverlayOpen)
         $(session.interactionStage === "call-incoming" ? ".support-call-screen.is-incoming" : '[data-scene-action="hangup-call"]')?.focus({ preventScroll: true });
       const speech = jobStageSpeech() || supportCallStageSpeech(q) || (
-        session.questionView === "choose" && !session.answered
+        q.interaction === "vote-link" && !session.answered && session.interactionStage === "chat"
+          ? `${q.title}。${q.text}。看完訊息後，請在下方輸入回覆並按傳送。`
+          : session.questionView === "choose" && !session.answered
           ? compactOptions[q.id].map((o, i) => i + 1 + "，" + o).join("。")
           : $(".reading-copy")?.textContent);
-      if (getState().settings.voice && speech && speech !== lastFocusSpeech) {
+      if (!suppressSpeech && getState().settings.voice && speech && speech !== lastFocusSpeech) {
         lastFocusSpeech = speech;
         say(speech);
       }
       return;
     }
     if (session.branchFlow) {
-      const bankrupt =
-        session.money === 0 && !session.bankruptAcknowledged
-          ? renderBankruptcyModal()
-          : "";
+      const bankrupt = renderMoneyModal();
       $("#quizBody").innerHTML = `${renderBranchChat(session)}${session.answered ? renderBranchFeedback(q, session) : ""}${bankrupt}`;
       const chatLog = $(".line-chat-log");
       if (chatLog) chatLog.scrollTop = chatLog.scrollHeight;
@@ -209,17 +269,14 @@ export function createExerciseController({ refresh }) {
       }
       return;
     }
-    const bankrupt =
-      session.money === 0 && !session.bankruptAcknowledged
-        ? renderBankruptcyModal()
-        : "";
+    const bankrupt = renderMoneyModal();
     if (
       session.answered &&
       q.interaction === "job-offer" &&
       session.correct &&
       session.interactionStage === "job-blocked"
     ) {
-      $("#quizBody").innerHTML = `${renderMoneyBar(session, "quiz-money")}${renderLineChatQuestion(q, session)}${feedback(q, true, { includeBlockResult: false })}${bankrupt}`;
+      $("#quizBody").innerHTML = `${renderMoneyBar(session, "quiz-money")}${renderLineChatQuestion(q, session, chatViewState(q))}${feedback(q, true, { includeBlockResult: false })}${bankrupt}`;
       syncCallClock();
       return;
     }
@@ -252,20 +309,22 @@ export function createExerciseController({ refresh }) {
       return;
     }
     $("#quizBody").innerHTML =
-      `${renderMoneyBar(session, "quiz-money")}<div class="quiz-top"><span>${types[q.type].name}</span><span>第 ${session.index + 1} / ${session.qs.length} 題</span></div><div class="exercise-progress" aria-label="目前第 ${session.index + 1} 題，共 ${session.qs.length} 題"><i style="width:${((session.index + 1) / session.qs.length) * 100}%"></i></div>${renderLineChatQuestion(q, session)}${bankrupt}`;
+      `${renderMoneyBar(session, "quiz-money")}<div class="quiz-top"><span>${types[q.type].name}</span><span>第 ${session.index + 1} / ${session.qs.length} 題</span></div><div class="exercise-progress" aria-label="目前第 ${session.index + 1} 題，共 ${session.qs.length} 題"><i style="width:${((session.index + 1) / session.qs.length) * 100}%"></i></div>${renderLineChatQuestion(q, session, chatViewState(q))}${bankrupt}`;
     syncCallClock();
     if (callOverlayOpen)
       $(session.interactionStage === "call-incoming" ? ".support-call-screen.is-incoming" : '[data-scene-action="hangup-call"]')?.focus({ preventScroll: true });
-    say(jobStageSpeech() || supportCallStageSpeech(q) || (
-      q.title +
-        "。" +
-        q.text +
-        "。你會怎麼做？" +
-        q.options.map((o, i) => i + 1 + "，" + o).join("。")),
+    if (!suppressSpeech) say(jobStageSpeech() || supportCallStageSpeech(q) || (
+      q.interaction === "vote-link"
+        ? `${q.title}。${q.text}。看完訊息後，請在下方輸入回覆並按傳送。`
+        : q.title + "。" + q.text + "。你會怎麼做？" + q.options.map((o, i) => i + 1 + "，" + o).join("。")),
     );
   }
   function answer(i) {
     if (!session || session.answered || session.complete) return;
+    clearChatReplyTimer();
+    chatReplyPending = false;
+    chatDraft = "";
+    chatMessages = [];
     clearCallIncomingTimer();
     const q = session.qs[session.index];
     if (!Number.isInteger(i) || i < 0 || i >= q.options.length) return;
@@ -276,13 +335,17 @@ export function createExerciseController({ refresh }) {
     session.selectedAnswer = i;
     session.nextId = session.branchFlow ? q.next[i] ?? null : null;
     session.correct = i === q.answer;
-    session.sceneResult = q.sceneOutcomes?.[i] || "";
+    session.lastMoneyLoss = 0;
+    session.wrongActionPending = false;
+    session.wrongActionReason = "";
+    session.sceneResult = q.interaction === "vote-link" ? "" : q.sceneOutcomes?.[i] || "";
     let moneyLoss = 0;
     if (!session.correct) {
       const debit = applyWrongAnswerPenalty(session.money ?? STARTING_MONEY);
       session.money = debit.money;
       moneyLoss = debit.loss;
-      if (debit.reachedZero) session.bankruptAcknowledged = false;
+      session.lastMoneyLoss = debit.loss;
+      session.wrongAnswerAcknowledged = false;
     }
     if (session.correct) session.score++;
     if (session.branchFlow)
@@ -296,10 +359,10 @@ export function createExerciseController({ refresh }) {
     recordResult({ questionId: q.id, correct: session.correct });
     saveSession(session);
     renderQuestion();
-    if (moneyLoss && q.interaction !== "support-call") animateMoneyLoss(moneyLoss);
+    if (moneyLoss && session.money > 0) animateMoneyLoss(moneyLoss);
     document.title = "作答解說｜金庫防爆特攻隊";
     window.scrollTo(0, 0);
-    const modalDismiss = $("[data-bankrupt-dismiss]");
+    const modalDismiss = $("[data-wrong-answer-dismiss], [data-bankrupt-dismiss]");
     if (modalDismiss) modalDismiss.focus({ preventScroll: true });
     else $("#main").focus({ preventScroll: true });
     if (getState().settings.fontLevel < 2)
@@ -312,8 +375,56 @@ export function createExerciseController({ refresh }) {
           q.explain,
       );
   }
+  function setChatDraft(value = "") {
+    const question = session?.qs[session.index];
+    if (!question || question.id !== "line-scam-1" || session.answered || chatReplyPending)
+      return;
+    chatDraft = String(value).slice(0, 500);
+  }
+  function sendChatMessage(message = "") {
+    const question = session?.qs[session.index];
+    if (
+      !question ||
+      question.id !== "line-scam-1" ||
+      question.interaction !== "vote-link" ||
+      session.answered ||
+      session.complete ||
+      chatReplyPending
+    ) return;
+    const text = String(message || chatDraft).trim().slice(0, 500);
+    if (!text) {
+      $("[data-chat-input]")?.focus({ preventScroll: true });
+      return;
+    }
+    chatDraft = "";
+    chatMessages.push({ direction: "outgoing", text });
+    if (isSafeRefusalMessage(text)) {
+      chatMessages.push({ direction: "incoming", text: "好的，抱歉打擾了" });
+      chatReplyPending = true;
+    }
+    renderQuestion({ suppressSpeech: true });
+    const chatLog = $(".line-chat-conversation");
+    if (chatLog) chatLog.scrollTop = chatLog.scrollHeight;
+    if (!chatReplyPending) {
+      $("[data-chat-input]")?.focus({ preventScroll: true });
+      return;
+    }
+    const replySession = session;
+    clearChatReplyTimer();
+    chatReplyTimer = window.setTimeout(() => {
+      chatReplyTimer = null;
+      if (session !== replySession || session?.answered || session?.complete) return;
+      chatReplyPending = false;
+      answer(1);
+    }, 1000);
+  }
   function next() {
     if (!session?.answered || session.complete) return;
+    if (session.correct === false) {
+      const bankruptcyDismissed = session.money === 0 && session.lastMoneyLoss > 0;
+      if (bankruptcyDismissed ? !session.bankruptAcknowledged : !session.wrongAnswerAcknowledged)
+        return;
+    }
     if (session.branchFlow) {
       const nextQuestion = session.nextId
         ? bank.find(
@@ -329,6 +440,11 @@ export function createExerciseController({ refresh }) {
         session.correct = undefined;
         session.selectedAnswer = null;
         session.nextId = null;
+        session.lastMoneyLoss = 0;
+        session.wrongAnswerAcknowledged = false;
+        session.wrongActionPending = false;
+        session.wrongActionReason = "";
+        session.bankruptAcknowledged = session.money === 0;
         session.questionView = "read";
         session.readerOffset = 0;
         session.readerHistory = [];
@@ -359,6 +475,12 @@ export function createExerciseController({ refresh }) {
     if (session.index + 1 < session.qs.length) {
       session.index++;
       session.answered = false;
+      session.correct = undefined;
+      session.lastMoneyLoss = 0;
+      session.wrongAnswerAcknowledged = false;
+      session.wrongActionPending = false;
+      session.wrongActionReason = "";
+      session.bankruptAcknowledged = session.money === 0;
       session.interactionStage = "chat";
       clearCallIncomingTimer();
       session.callStartedAt = null;
@@ -383,6 +505,12 @@ export function createExerciseController({ refresh }) {
     $("#quizBody").innerHTML = `${renderMoneyBar(session, "branch-result-money")}${completionCard(session.qs.length)}`;
   }
   function animateMoneyLoss(amount) {
+    const imageRow = $(".wrong-answer-image-row");
+    const flightLabel = imageRow?.querySelector("[data-money-flight]");
+    if (flightLabel) {
+      flightLabel.textContent = `💸 −NT$${amount}`;
+      return;
+    }
     const wallet = $(".bankrupt-dialog") || $(".branch-money");
     if (!wallet) return;
     const animation = document.createElement("span");
@@ -400,29 +528,42 @@ export function createExerciseController({ refresh }) {
     session.bankruptAcknowledged = true;
     saveSession(session);
     $(`[data-bankrupt-modal]`)?.remove();
-    $("#quizBody [data-next], #quizBody [data-reader-next]")?.focus({ preventScroll: true });
+    $("#quizBody .wrong-answer-explanation, #quizBody [data-next], #quizBody [data-reader-next]")?.focus({ preventScroll: true });
+  }
+  function dismissWrongAnswer() {
+    if (!session || session.wrongAnswerAcknowledged || !(session.wrongActionPending || (session.answered && session.correct === false)))
+      return;
+    session.wrongAnswerAcknowledged = true;
+    saveSession(session);
+    $(`[data-wrong-answer-modal]`)?.remove();
+    const explanation = $("#quizBody .wrong-answer-explanation");
+    if (explanation) {
+      explanation.setAttribute("tabindex", "-1");
+      explanation.focus({ preventScroll: true });
+    }
   }
   function sceneAction(action) {
     if (!session || session.answered || session.complete) return;
     const question = session.qs[session.index];
     if (!question || !["vote-link", "support-call", "job-offer"].includes(question.interaction))
       return;
-    if (action === "open-fake-site") {
-      session.interactionStage = "fake-site";
+    if (action === "resume-after-wrong-menu-action" && question.interaction === "job-offer" && session.wrongActionPending && session.wrongAnswerAcknowledged) {
+      session.wrongActionPending = false;
+      session.wrongActionReason = "";
       saveSession(session);
       renderQuestion();
-      window.scrollTo(0, 0);
-      $("[data-scene-action='submit-phishing']")?.focus({ preventScroll: true });
+      $(`[data-scene-action="open-job-menu"]`)?.focus({ preventScroll: true });
+    } else if (action === "open-fake-site") {
+      session.interactionStage = "fake-site";
+      answer(0);
     } else if (action === "prepare-safe-reply") {
       session.interactionStage = "compose";
       saveSession(session);
       renderQuestion();
       $("[data-scene-action='send-safe-reply']")?.focus({ preventScroll: true });
     } else if (action === "submit-phishing") answer(0);
-    else if (action === "send-safe-reply") {
-      session.sentMessage = "不了謝謝";
-      answer(1);
-    } else if (action === "answer-call" && question.interaction === "support-call" && session.interactionStage === "call-incoming") {
+    else if (action === "send-safe-reply") sendChatMessage("不了謝謝");
+    else if (action === "answer-call" && question.interaction === "support-call" && session.interactionStage === "call-incoming") {
       session.interactionStage = "call-result-risk";
       answer(0);
     } else if (action === "decline-call" && question.interaction === "support-call" && session.interactionStage === "call-incoming") {
@@ -501,13 +642,17 @@ export function createExerciseController({ refresh }) {
       }[action];
       const debit = applyWrongAnswerPenalty(session.money ?? STARTING_MONEY);
       session.money = debit.money;
+      session.lastMoneyLoss = debit.loss;
+      session.wrongAnswerAcknowledged = false;
+      session.wrongActionPending = true;
+      session.wrongActionReason = `「${actionName}」不會封鎖對方，詐騙帳號仍可繼續聯絡你；應選「封鎖」完成處理。`;
       if (debit.reachedZero) session.bankruptAcknowledged = false;
       session.interactionStage = "job-block-ready";
       session.jobMenuNotice = `已模擬${actionName}；尚未封鎖，請再次選擇「封鎖」。`;
       saveSession(session);
       renderQuestion();
       window.scrollTo(0, 0);
-      if (debit.loss) animateMoneyLoss(debit.loss);
+      if (debit.loss && session.money > 0) animateMoneyLoss(debit.loss);
       $(`[data-scene-action="open-job-menu"]`)?.focus({ preventScroll: true });
     } else if (action === "confirm-job-block" && question.interaction === "job-offer" && session.interactionStage === "job-menu") {
       session.interactionStage = "job-blocked";
@@ -518,6 +663,7 @@ export function createExerciseController({ refresh }) {
   function closeQuiz() {
     stopSpeech();
     clearCallIncomingTimer();
+    resetChatComposer();
     document.body.classList.remove("support-call-screen-open");
     document.body.classList.remove("support-call-chat-open");
     document.body.classList.remove("line-job-menu-open");
@@ -546,7 +692,9 @@ export function createExerciseController({ refresh }) {
         !session.answered &&
         session.interactionStage === "chat" &&
         ["vote-link", "support-call"].includes(question.interaction)
-          ? `${question.interaction === "support-call" ? "模擬 LINE 語音來電，對方說：" : "模擬聊天室收到訊息："}${question.text}。${question.interaction === "support-call" ? "你會怎麼處理這通來電？" : "你會怎麼回覆？"}${compactOptions[question.id].map((option, index) => `${index + 1}，${option}`).join("。")}`
+          ? question.interaction === "vote-link"
+            ? `模擬聊天室收到訊息：${question.text}。看完訊息後，請在下方輸入回覆並按傳送。`
+            : `模擬 LINE 語音來電，對方說：${question.text}。你會怎麼處理這通來電？${compactOptions[question.id].map((option, index) => `${index + 1}，${option}`).join("。")}`
           : "";
       const text = liveChatSpeech || (!session.answered && session.interactionStage === "hangup"
         ? "模擬來電仍在通話中。按下掛斷電話，結束這通可疑來電。這只是練習，不會撥打或接聽真實電話。"
@@ -585,6 +733,8 @@ export function createExerciseController({ refresh }) {
       say("訊息框已填入：不了謝謝。按傳送後，還要用原本保存的電話確認阿明本人。", true);
     else if (session.interactionStage === "fake-site")
       say("你被騙了！這是假網站模擬。不要輸入手機號碼或簡訊驗證碼。", true);
+    else if (question.interaction === "vote-link")
+      say(`${question.title}。${question.text}。看完訊息後，請在下方輸入回覆並按傳送。`, true);
     else
       say(
         jobStageSpeech() ||
@@ -640,8 +790,11 @@ export function createExerciseController({ refresh }) {
     reader,
     start,
     answer,
+    setChatDraft,
+    sendChatMessage,
     sceneAction,
     next,
+    dismissWrongAnswer,
     dismissBankruptcy,
     close: closeQuiz,
     read,

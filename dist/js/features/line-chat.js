@@ -8,6 +8,16 @@ export function escapeHtml(value = "") {
   })[character]);
 }
 
+export function isSafeRefusalMessage(message = "") {
+  const normalized = String(message).normalize("NFKC").replace(/[\s　]/gu, "");
+  if (!normalized) return false;
+  const shortRefusal = /^(?:不了|不用|不用了|不必|不必了|不需要|不方便|謝謝不用|謝謝不必|不了謝謝|拒絕)(?:謝謝|喔|哦)?[。！!～~]*$/u;
+  if (shortRefusal.test(normalized)) return true;
+  const refusal = /(?:不(?:會|想|願意|能|可以|方便|肯|要)?(?:提供|給|傳|交出|透露|填|輸入|回傳)|(?:不會|不想|不願意|不肯|不要|別)[^，。！？!]{0,12}(?:提供|給|傳|交出|透露|填|輸入|回傳)|不(?:會|想|要|打算)?點(?:擊)?(?:這個)?(?:連結|網址)|拒絕|謝絕)/u;
+  const sensitiveRequest = /(?:手機|電話|號碼|簡訊|驗證|資料|個資|密碼|填|輸入|提供|傳|連結|網址|點擊|投票)/u;
+  return refusal.test(normalized) && sensitiveRequest.test(normalized);
+}
+
 export function getLineContact(sender = "LINE 聯絡人") {
   const [name, ...details] = String(sender)
     .split(/\s*[·｜]\s*/u)
@@ -35,6 +45,14 @@ function getScenarioSegments(question) {
   return validSegments
     ? segments
     : [{ label: "收到的訊息", text: String(question.text ?? "") }];
+}
+
+const avatarQuestionIds = new Set(["line-scam-1", "line-scam-5", "line-scam-9"]);
+
+function renderIncomingMessage(question, text, time, { label = "", showLabel = true } = {}) {
+  const showAvatar = avatarQuestionIds.has(question.id);
+  const avatar = getLineContact(question.sender).avatar;
+  return `<div class="line-chat-incoming line-chat-segment${showAvatar ? " has-message-avatar" : ""}">${showAvatar ? `<span class="line-chat-message-avatar" aria-hidden="true">${escapeHtml(avatar)}</span>` : ""}<div class="line-chat-message-body">${showLabel && label ? `<span class="line-chat-segment-label">${escapeHtml(label)}</span>` : ""}<div class="line-chat-incoming-bubble">${escapeHtml(text)}</div><time>10:${time}</time></div></div>`;
 }
 
 function renderSceneCard(question) {
@@ -91,11 +109,13 @@ function renderJobConversation(question, session, stage) {
   const linkAction = hasReturned
     ? '<button type="button" disabled>已退出</button>'
     : '<button type="button" data-scene-action="open-job-payment" aria-label="開啟本機模擬報到付款連結">開啟連結</button>';
+  const incomingMessage = hasJoined
+    ? renderIncomingMessage(question, requestText, "26", { label: "加入 LINE 後，對方提出要求", showLabel: false })
+    : renderIncomingMessage(question, adText, "24", { label: "收到高薪徵才廣告", showLabel: false });
   return `<div class="line-chat-conversation line-job-conversation" role="log" aria-label="高薪求職情境模擬聊天流程">
-    <div class="line-chat-safety-note"><span aria-hidden="true">練習</span> 以下為模擬對話，分段呈現並逐步發展，不會加入真實 LINE 或傳送訊息</div>
     <div class="line-chat-date">今天　10:24</div>
     <div class="line-chat-scene-card line-chat-job-scene" aria-label="模擬高薪居家工作廣告"><span class="line-chat-job-icon" aria-hidden="true">職</span><div><strong>居家打字／點讚員</strong><p>${escapeHtml(adText)}</p></div></div>
-    ${hasJoined ? `<div class="line-chat-outgoing"><div class="line-chat-outgoing-bubble">你好，我想了解居家打字／點讚員工作。</div><time>10:25</time></div><div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">加入 LINE 後，對方提出要求</span><div class="line-chat-incoming-bubble">${escapeHtml(requestText)}</div><time>10:26</time></div><div class="line-chat-link-preview line-job-link-preview"><span aria-hidden="true">↗</span><div><strong>居家工作報到付款</strong><small>job-onboard-pay.example · 本機模擬連結</small></div>${linkAction}</div><p class="line-chat-sim-note">連結只會開啟本機仿電子支付頁，不連到外部網站。</p>` : `<div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">收到高薪徵才廣告</span><div class="line-chat-incoming-bubble">${escapeHtml(adText)}</div><time>10:24</time></div><div class="line-chat-job-action"><p>按下方按鈕，模擬加入 LINE 聯絡。</p><button class="primary" type="button" data-scene-action="join-job-chat">加入 LINE 聯絡</button><small>本機情境互動，不會開啟或加入真實帳號</small></div>`}
+    ${hasJoined ? `<div class="line-chat-outgoing"><div class="line-chat-outgoing-bubble">你好，我想了解居家打字／點讚員工作。</div><time>10:25</time></div>${incomingMessage}<div class="line-chat-link-preview line-job-link-preview"><span aria-hidden="true">↗</span><div><strong>居家工作報到付款</strong><small>job-onboard-pay.example · 本機模擬連結</small></div>${linkAction}</div><p class="line-chat-sim-note">連結只會開啟本機仿電子支付頁，不連到外部網站。</p>` : `${incomingMessage}<div class="line-chat-job-action"><p>按下方按鈕，模擬加入 LINE 聯絡。</p><button class="primary" type="button" data-scene-action="join-job-chat">加入 LINE 聯絡</button><small>本機情境互動，不會開啟或加入真實帳號</small></div>`}
     ${hasReturned ? `<div class="line-chat-outgoing"><div class="line-chat-outgoing-bubble">我拒絕付款，並退出連結。</div><time>10:27</time></div><div class="line-chat-system-note" role="status">${escapeHtml(stage === "job-blocked" ? "已在本機模擬封鎖，沒有操作真實 LINE。" : session.jobMenuNotice || "已拒付並返回聊天室。請開啟右上角「選單」，再按「封鎖」完成練習。")}</div>` : ""}
   </div>`;
 }
@@ -119,6 +139,8 @@ function renderCallStatusBar() {
 export function renderSupportCallResult(question, session) {
   const isSafe = session.correct === true;
   const nextLabel = session.index + 1 === session.qs.length ? "看練習結果" : "下一題";
+  if (!isSafe)
+    return `<section class="support-call-result is-risk wrong-answer-explanation" aria-labelledby="support-call-wrong-title"><h2 id="support-call-wrong-title">為什麼錯</h2><p>${escapeHtml(question.explain)}</p><button class="primary support-call-result-next" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button></section>`;
   return `<section class="support-call-result ${isSafe ? "is-safe" : "is-risk"}" role="status" aria-live="polite" aria-label="${isSafe ? "安全做法答對了" : "受騙警示與原因"}"><span class="support-call-result-icon" aria-hidden="true">${isSafe ? "✓" : "!"}</span><span class="support-call-result-kicker">${isSafe ? "安全做法" : "模擬來電結果"}</span><h2>${isSafe ? "答對了，做得好！" : "你被騙了！"}</h2><p>${isSafe ? "拒接可疑來電。LINE 官方客服不會來電要求你開啟螢幕共享。" : "假客服藉帳號異常製造恐慌，再騙你安裝視訊軟體、分享畫面，偷看驗證碼和銀行操作。"}</p><div class="support-call-result-tip"><b>${isSafe ? "記住這個方法" : "安全做法"}</b><span>${isSafe ? "立即掛斷；有疑慮時，請自行查 LINE 官方說明。" : "立即拒接並掛斷；不要分享畫面或提供驗證碼。"}</span></div><small>本機模擬，未接通、未啟用相機／麥克風，也未分享螢幕。</small><button class="primary support-call-result-next" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button></section>`;
 }
 
@@ -133,6 +155,7 @@ function renderCallWave() {
 export function renderSupportCallStage(stage, question = null, session = {}) {
   if (!question) return "";
   const segments = getScenarioSegments(question);
+  const hideSegmentLabels = avatarQuestionIds.has(question.id);
   const localNote = `<p class="support-call-local-note">本機模擬：不會接通真實電話，也不會啟用相機、麥克風或分享畫面。</p>`;
 
   if (stage === "call-incoming") {
@@ -146,11 +169,11 @@ export function renderSupportCallStage(stage, question = null, session = {}) {
   }
 
   if (stage === "call-ended")
-    return `<div class="support-call-ended" role="status"><span aria-hidden="true">✓</span><div><strong>模擬通話已結束，已返回聊天室</strong><small>以下訊息和操作仍是本機情境練習。</small></div></div><div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">${escapeHtml(segments[0]?.label || "來電內容")}</span><div class="line-chat-incoming-bubble">${escapeHtml(segments[0]?.text || question.text)}</div><time>10:24</time></div><button class="support-call-next-line" type="button" data-scene-action="continue-support-call">查看對方接著提出的要求 <span aria-hidden="true">›</span></button>`;
+    return `<div class="support-call-ended" role="status"><span aria-hidden="true">✓</span><div><strong>模擬通話已結束，已返回聊天室</strong><small>以下訊息和操作仍是本機情境練習。</small></div></div>${renderIncomingMessage(question, segments[0]?.text || question.text, "24", { label: segments[0]?.label || "來電內容", showLabel: !hideSegmentLabels })}<button class="support-call-next-line" type="button" data-scene-action="continue-support-call">查看對方接著提出的要求 <span aria-hidden="true">›</span></button>`;
 
   if (["call-declined", "call-followup-declined", "call-followup-missed"].includes(stage)) {
     const followup = stage !== "call-declined";
-    return `<div class="support-call-missed-call" role="status"><span aria-hidden="true">↙</span><div><strong>${stage === "call-followup-declined" ? "你已結束模擬通話並返回聊天室" : "你已不接通這通模擬來電"}</strong><small>以下訊息和操作都是本機模擬，不會接通或撥打真實電話。</small></div></div><div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">${followup ? "客服留下的訊息 · 接著提出要求" : "客服留下訊息"}</span><div class="line-chat-incoming-bubble">${escapeHtml(segments[followup ? 1 : 0]?.text || question.text)}</div><time>10:${followup ? "25" : "24"}</time></div>${followup ? `<div class="support-call-choices" role="group" aria-label="選擇如何處理可疑來電"><p>對方要求開啟螢幕共享，你會怎麼做？</p><button class="support-call-choice is-risk" type="button" data-scene-action="start-screen-share"><b>1</b><span>照對方指示，模擬開啟螢幕共享</span></button><button class="support-call-choice is-safe" type="button" data-answer="1"><b>2</b><span>不接通／拒絕共享畫面</span></button><button class="support-call-choice" type="button" data-answer="2"><b>3</b><span>先看員工證照片，再開啟螢幕共享</span></button></div>` : `<button class="support-call-next-line" type="button" data-scene-action="continue-support-call">查看對方接著留下的訊息 <span aria-hidden="true">›</span></button>`}`;
+    return `<div class="support-call-missed-call" role="status"><span aria-hidden="true">↙</span><div><strong>${stage === "call-followup-declined" ? "你已結束模擬通話並返回聊天室" : "你已不接通這通模擬來電"}</strong><small>以下訊息和操作都是本機模擬，不會接通或撥打真實電話。</small></div></div>${renderIncomingMessage(question, segments[followup ? 1 : 0]?.text || question.text, followup ? "25" : "24", { label: followup ? "客服留下的訊息 · 接著提出要求" : "客服留下訊息", showLabel: !hideSegmentLabels })}${followup ? `<div class="support-call-choices" role="group" aria-label="選擇如何處理可疑來電"><p>對方要求開啟螢幕共享，你會怎麼做？</p><button class="support-call-choice is-risk" type="button" data-scene-action="start-screen-share"><b>1</b><span>照對方指示，模擬開啟螢幕共享</span></button><button class="support-call-choice is-safe" type="button" data-answer="1"><b>2</b><span>不接通／拒絕共享畫面</span></button><button class="support-call-choice" type="button" data-answer="2"><b>3</b><span>先看員工證照片，再開啟螢幕共享</span></button></div>` : `<button class="support-call-next-line" type="button" data-scene-action="continue-support-call">查看對方接著留下的訊息 <span aria-hidden="true">›</span></button>`}`;
   }
 
   if (stage === "screen-share")
@@ -168,17 +191,10 @@ function renderSupportCallChat(stage, question, session) {
   const chatStage = ["call-incoming", "call-active"].includes(stage) ? "call-ended" : stage === "call-followup" ? "call-followup-declined" : stage;
   const combinedMessage = segments.map((segment) => segment.text).join("");
   const chatContent = stage === "chat" || stage === "call-incoming"
-    ? `<div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">客服留下訊息</span><div class="line-chat-incoming-bubble">${escapeHtml(combinedMessage)}</div><time>10:24</time></div>`
+    ? renderIncomingMessage(question, combinedMessage, "24", { label: "客服留下訊息", showLabel: false })
     : renderSupportCallStage(chatStage, question, session);
   const callOverlay = isCallOverlay ? renderSupportCallStage(stage, question, session) : "";
-  const returnedNote = stage === "chat"
-    ? "以下為本機模擬訊息；5 秒後會出現模擬來電"
-    : stage === "call-declined"
-      ? "你已不接通來電並返回聊天室；以下都是本機模擬訊息，不會傳送真實訊息"
-      : stage === "call-ended" || isCallOverlay
-        ? "通話結束後會回到同一個模擬聊天室；訊息與後續互動都會保留"
-        : "以下都是本機模擬訊息，不會傳送真實訊息";
-  return `<div class="quiz-content line-question-layout line-chat-question"><section class="line-scenario-card" aria-label="模擬情境：${escapeHtml(question.title)}"><div class="line-scenario-topline"><span class="line-scenario-kicker">模擬情境</span><span class="line-scenario-count">${(session.index ?? 0) + 1} / ${session.qs?.length ?? 1}</span></div><h1>${escapeHtml(question.title)}</h1><div class="line-chat-device"><div class="line-chat-statusbar" aria-hidden="true"><time>10:24</time><span class="line-chat-status-icons"><span>●●●</span><span>◖</span><span class="line-chat-battery"><i></i></span></span></div><header class="line-chat-app-header"><span class="line-chat-back" aria-hidden="true">‹</span><span class="line-sim-avatar" aria-hidden="true">${escapeHtml(contact.avatar)}</span><span class="line-sim-contact"><strong>模擬聊天室</strong><small>自稱 LINE 官方客服 · 本機情境</small></span><span class="line-chat-header-actions" aria-hidden="true">☎</span></header><div class="line-chat-conversation support-call-conversation" role="log" aria-label="模擬聊天室中的單則訊息與後續互動"><div class="line-chat-safety-note"><span aria-hidden="true">練習</span> ${returnedNote}</div><div class="line-chat-date">今天　10:24</div>${chatContent}</div>${!session.answered && stage !== "chat" ? `<button class="secondary line-chat-read" type="button" data-read data-idle-label="唸出來電內容與操作">唸出來電內容與操作</button>` : ""}</section>${callOverlay}</div>`;
+  return `<div class="quiz-content line-question-layout line-chat-question"><section class="line-scenario-card" aria-label="模擬情境：${escapeHtml(question.title)}"><div class="line-scenario-topline"><span class="line-scenario-kicker">模擬情境</span><span class="line-scenario-count">${(session.index ?? 0) + 1} / ${session.qs?.length ?? 1}</span></div><h1>${escapeHtml(question.title)}</h1><div class="line-chat-device"><div class="line-chat-statusbar" aria-hidden="true"><time>10:24</time><span class="line-chat-status-icons"><span>●●●</span><span>◖</span><span class="line-chat-battery"><i></i></span></span></div><header class="line-chat-app-header"><span class="line-chat-back" aria-hidden="true">‹</span><span class="line-sim-avatar" aria-hidden="true">${escapeHtml(contact.avatar)}</span><span class="line-sim-contact"><strong>模擬聊天室</strong><small>自稱 LINE 官方客服 · 本機情境</small></span><span class="line-chat-header-actions" aria-hidden="true">☎</span></header><div class="line-chat-conversation support-call-conversation" role="log" aria-label="模擬聊天室中的單則訊息與後續互動"><div class="line-chat-date">今天　10:24</div>${chatContent}</div>${!session.answered && stage !== "chat" ? `<button class="secondary line-chat-read" type="button" data-read data-idle-label="唸出來電內容與操作">唸出來電內容與操作</button>` : ""}</section>${callOverlay}</div>`;
 }
 
 function renderChoices(question) {
@@ -229,13 +245,17 @@ function renderChoices(question) {
     .join("");
 }
 
-function renderComposer(interactionStage) {
+function renderComposer(interactionStage, chatState = {}) {
+  if (chatState.enabled) {
+    const isPending = chatState.pending === true;
+    return `<form class="line-chat-composer line-chat-composer-editable" data-chat-compose-form aria-label="傳送聊天室訊息"><span class="line-chat-composer-icon" aria-hidden="true">＋</span><input class="line-chat-text-input" type="text" data-chat-input aria-label="輸入訊息" placeholder="輸入訊息" autocomplete="off" maxlength="500" value="${escapeHtml(chatState.draft || "")}"${isPending ? " disabled" : ""}><button class="line-chat-send" type="submit"${isPending ? " disabled" : ""}>傳送</button></form>`;
+  }
   if (interactionStage === "compose")
     return `<div class="line-chat-composer line-chat-composer-ready" aria-label="訊息已預填，請按傳送"><span class="line-chat-composer-icon" aria-hidden="true">＋</span><span class="line-chat-composer-input" role="textbox" aria-readonly="true">不了謝謝</span><button class="line-chat-send" type="button" data-scene-action="send-safe-reply">傳送</button></div>`;
   return `<div class="line-chat-composer" aria-label="訊息輸入列，請選擇上方回覆"><span class="line-chat-composer-icon" aria-hidden="true">＋</span><span class="line-chat-composer-input">輸入訊息</span><span class="line-chat-composer-icon" aria-hidden="true">☺</span><span class="line-chat-composer-icon line-chat-mic" aria-hidden="true">●</span></div>`;
 }
 
-export function renderLineChatQuestion(question, session) {
+export function renderLineChatQuestion(question, session, chatState = {}) {
   if (question.interaction === "support-call") {
     const stage = session.interactionStage || "chat";
     return renderSupportCallChat(stage, question, session);
@@ -252,12 +272,17 @@ export function renderLineChatQuestion(question, session) {
     : "";
   const messages = segments
     .map(
-      (segment, index) => `<div class="line-chat-incoming line-chat-segment"><span class="line-chat-segment-label">第 ${index + 1} 段｜${escapeHtml(segment.label)}</span><div class="line-chat-incoming-bubble">${escapeHtml(segment.text)}</div><time>10:${String(24 + index).padStart(2, "0")}</time></div>`,
+      (segment, index) => renderIncomingMessage(question, segment.text, String(24 + index).padStart(2, "0"), { label: `第 ${index + 1} 段｜${segment.label}`, showLabel: !avatarQuestionIds.has(question.id) }),
     )
     .join("");
+  const transcript = question.interaction === "vote-link"
+    ? (chatState.messages || []).map((message, index) => message.direction === "outgoing"
+      ? `<div class="line-chat-outgoing"><div class="line-chat-outgoing-bubble">${escapeHtml(message.text)}</div><time>10:${String(26 + index).padStart(2, "0")}</time></div>`
+      : renderIncomingMessage(question, message.text, String(26 + index).padStart(2, "0"), { showLabel: false })).join("")
+    : "";
   const voteLink =
     question.interaction === "vote-link"
-      ? `<div class="line-chat-link-preview"><span aria-hidden="true">↗</span><div><strong>寵物比賽投票頁</strong><small>pet-vote-gift.example · 模擬網址</small></div><button type="button" data-scene-action="open-fake-site" aria-label="開啟模擬投票網址 pet-vote-gift.example">開啟網址</button></div><p class="line-chat-sim-note">這是安全演練連結，不會連到外部網站。</p>`
+      ? `<div class="line-chat-link-preview"><span aria-hidden="true">↗</span><div><strong>寵物比賽投票頁</strong><small>pet-vote-gift.example · 模擬網址</small></div><button type="button" data-scene-action="open-fake-site" aria-label="開啟模擬投票網址 pet-vote-gift.example"${chatState.pending ? " disabled" : ""}>開啟網址</button></div>`
       : "";
   const stageView =
     question.interaction === "vote-link" && interactionStage === "fake-site"
@@ -272,21 +297,28 @@ export function renderLineChatQuestion(question, session) {
   const jobConversation = question.interaction === "job-offer"
     ? renderJobConversation(question, session, interactionStage)
     : "";
-  const choices =
-    interactionStage === "compose"
+  const choices = question.interaction === "vote-link"
+    ? ""
+    : interactionStage === "compose"
       ? `<div class="line-chat-reply-divider"><span>訊息已填好</span><small>檢查後按「傳送」送出</small></div>`
       : session.answered ? "" : `<div class="line-chat-reply-divider"><span>${question.interaction === "support-call" ? "你會怎麼處理這通來電？" : question.interaction === "job-offer" ? "你會怎麼回應這則求職訊息？" : "你會怎麼回覆？"}</span><small>選擇下一步，看看情境會怎麼發展</small></div><div class="line-chat-replies">${renderChoices(question)}</div>`;
   const conversation =
     stageView || jobConversation ||
-    `<div class="line-chat-conversation" role="log" aria-label="${escapeHtml(contact.name)} 傳來的模擬訊息，共 ${segments.length} 段，及可選做法"><div class="line-chat-safety-note"><span aria-hidden="true">練習</span> 以下為防詐模擬對話，分段呈現，不會傳送真實訊息</div><div class="line-chat-date">今天　10:24</div>${renderSceneCard(question)}${messages}${voteLink}${choices}</div>`;
+    `<div class="line-chat-conversation" role="log" aria-live="polite" aria-label="${escapeHtml(contact.name)} 傳來的模擬訊息，共 ${segments.length} 段"><div class="line-chat-date">今天　10:24</div>${renderSceneCard(question)}${messages}${voteLink}${transcript}${choices}</div>`;
 
   const headerActions = question.interaction === "job-offer" && ["job-block-ready", "job-menu"].includes(interactionStage)
     ? renderJobMenuToggle(interactionStage)
     : '<span class="line-chat-header-actions" aria-hidden="true"><span>⌕</span><span>☰</span></span>';
   const composer = !stageView && !session.answered
-    ? renderComposer(interactionStage)
+    ? renderComposer(interactionStage, {
+      enabled: question.interaction === "vote-link",
+      draft: chatState.draft,
+      pending: chatState.pending,
+    })
     : "";
-  const readLabel = question.interaction === "job-offer"
+  const readLabel = question.interaction === "vote-link"
+    ? "唸出聊天訊息給我聽"
+    : question.interaction === "job-offer"
     ? "唸出聊天情境和操作提示"
     : "唸出訊息和回覆選項給我聽";
   return `<div class="quiz-content line-question-layout line-chat-question"><section class="line-scenario-card" aria-label="模擬情境：${escapeHtml(question.title)}"><div class="line-scenario-topline"><span class="line-scenario-kicker">模擬情境</span><span class="line-scenario-count">${step} / ${total}</span></div><h1>${escapeHtml(question.title)}</h1>${blockSuccess}<div class="line-chat-device"><div class="line-chat-statusbar" aria-hidden="true"><time>10:24</time><span class="line-chat-status-icons"><span>●●●</span><span>◖</span><span class="line-chat-battery"><i></i></span></span></div><header class="line-chat-app-header"><span class="line-chat-back" aria-hidden="true">‹</span><span class="line-sim-avatar" aria-hidden="true">${escapeHtml(contact.avatar)}</span><span class="line-sim-contact"><strong>${escapeHtml(contact.name)}</strong><small>${escapeHtml(contact.detail)} · 模擬情境</small></span>${headerActions}</header>${conversation}${composer}</div>${session.answered ? "" : `<button class="secondary line-chat-read" type="button" data-read data-idle-label="${readLabel}">${readLabel}</button>`}</section></div>`;

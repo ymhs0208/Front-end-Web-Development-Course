@@ -411,6 +411,55 @@
   width: 100%;
   font-size: 17px;
 }
+.wrong-answer-dialog {
+  width: min(100%, 560px);
+}
+.wrong-answer-image-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  margin: 2px auto 17px;
+}
+.wrong-answer-image-row img {
+  flex: 1 1 auto;
+  width: calc(100% - 99px);
+  max-width: 470px;
+  min-width: 0;
+  margin: 0;
+  object-fit: contain;
+}
+.bankrupt-dialog .wrong-answer-image-row .money-flight {
+  position: relative;
+  top: auto;
+  right: auto;
+  flex: 0 0 92px;
+  width: 92px;
+  max-width: 92px;
+  box-sizing: border-box;
+  padding: 6px 4px;
+  font-size: 12px;
+  text-align: center;
+  animation: wrong-answer-money-arrives 650ms cubic-bezier(.2,.7,.25,1) 120ms both;
+}
+@keyframes wrong-answer-money-arrives {
+  0% { opacity: 0; transform: translateY(8px) scale(.8); }
+  65% { opacity: 1; transform: translateY(-3px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.wrong-answer-overlay .bankrupt-dialog button {
+  min-height: 56px;
+  font-size: 18px;
+}
+@media (max-width: 600px) {
+  .wrong-answer-dialog { padding: 18px 15px; }
+  .wrong-answer-image-row .money-flight { flex-basis: 92px; width: 92px; max-width: 92px; padding: 5px 3px; font-size: 12px; }
+  .wrong-answer-overlay .bankrupt-dialog h2 { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wrong-answer-image-row .money-flight { animation: none; }
+}
 .focus-money {
   width: min(100%, 700px);
   margin: 0 auto 12px;
@@ -1063,6 +1112,39 @@ body[data-text-size] .line-question-actions .option {
   align-items: flex-start;
   gap: 4px;
 }
+.line-chat-incoming.has-message-avatar {
+  width: 100%;
+  max-width: 100%;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+}
+.line-chat-message-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #d4e9df, #a8d7c1);
+  box-shadow: 0 0 0 1px #b8d1c4;
+  color: #2f6250;
+  font-size: 16px;
+  font-weight: 800;
+}
+.line-chat-message-body {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.line-chat-incoming.has-message-avatar .line-chat-message-body {
+  max-width: calc(100% - 42px);
+}
 .line-chat-segment-label {
   padding: 0 5px;
   color: #40596d;
@@ -1083,7 +1165,8 @@ body[data-text-size] .line-question-actions .option {
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
-.line-chat-incoming > time {
+.line-chat-incoming > time,
+.line-chat-message-body > time {
   padding: 0 5px;
   color: #536a7c;
   font-size: 11px;
@@ -1634,6 +1717,18 @@ body[data-text-size] .line-chat-call-transcript {
   }
   .line-chat-incoming {
     max-width: 94%;
+  }
+  .line-chat-incoming.has-message-avatar {
+    max-width: 100%;
+  }
+  .line-chat-message-avatar {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+    font-size: 15px;
+  }
+  .line-chat-message-body {
+    max-width: calc(100% - 38px);
   }
   .line-chat-incoming-bubble {
     padding: 11px 12px;
@@ -2858,4 +2953,71 @@ body.support-call-chat-open .line-chat-question .line-chat-segment-label {
 
 .support-call-screen.is-incoming .support-call-main .support-call-local-note {
   margin: 8px 0 0;
+}
+
+/* Editable, local-only composer for question 1. */
+.line-chat-composer-editable {
+  min-height: 62px;
+  gap: 9px;
+}
+.line-chat-text-input {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  flex: 1;
+  padding: 9px 14px;
+  border: 1px solid #d6e0e7;
+  border-radius: 24px;
+  outline: none;
+  background: #f7f9fa;
+  color: #18222b;
+  font: inherit;
+  font-size: 18px;
+}
+.line-chat-text-input::placeholder { color: #687987; opacity: 1; }
+.line-chat-text-input:focus-visible { border-color: #2764a4; outline: 3px solid #9ac7ef; outline-offset: 1px; }
+.line-chat-send:disabled { background: #718079; cursor: default; }
+body[data-text-size] .line-chat-text-input,
+body[data-text-size] .line-chat-composer-editable .line-chat-send {
+  font-size: var(--choice-font);
+}
+body[data-text-size="3"] .line-chat-text-input { min-height: 58px; }
+@media (max-width: 600px) {
+  .line-chat-composer-editable { min-height: 60px; padding: 7px 9px; }
+  .line-chat-text-input { min-height: 48px; padding: 8px 12px; font-size: 17px; }
+  .line-chat-composer-editable .line-chat-send { min-width: 68px; min-height: 48px; padding: 8px 10px; font-size: 16px; }
+}
+
+.line-chat-q1-focus-result {
+  width: min(100%, 700px);
+  margin: 0 auto 18px;
+  padding: 22px 24px;
+  border: 1px solid #d7e3ec;
+  border-radius: 18px;
+  background: #fff;
+  color: #26323d;
+}
+.line-chat-q1-result-label { display: inline-block; margin-bottom: 4px; color: #187040; font-size: 18px; font-weight: 850; }
+.line-chat-q1-result-label.is-risk { color: #b32920; }
+.line-chat-q1-focus-result > h2 { margin: 0 0 10px; font-size: 28px; line-height: 1.3; }
+.line-chat-q1-focus-result > p { margin: 0 0 14px; font-size: 19px; line-height: 1.65; }
+.line-chat-q1-focus-result .safe-action { margin: 0 0 14px; padding: 15px 17px; border-radius: 13px; background: #eef8f0; }
+.line-chat-q1-focus-result .safe-action h3 { margin: 0 0 6px; font-size: 19px; }
+.line-chat-q1-focus-result .safe-action p,
+.line-chat-q1-focus-result .answer-explanation,
+.line-chat-q1-focus-result .trap-details p { margin: 0; font-size: 18px; line-height: 1.65; }
+.line-chat-q1-focus-result .answer-explanation { margin-bottom: 14px; }
+.line-chat-q1-focus-result .trap-details { margin-bottom: 17px; }
+.line-chat-q1-focus-result .trap-details summary { font-size: 18px; font-weight: 750; cursor: pointer; }
+.line-chat-q1-focus-result .answer-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.line-chat-q1-focus-result .answer-actions button { min-height: 54px; font-size: 18px; }
+@media (max-width: 600px) {
+  .line-chat-q1-focus-result { padding: 18px 15px; border-radius: 15px; }
+  .line-chat-q1-focus-result > h2 { font-size: 25px; }
+  .line-chat-q1-focus-result > p,
+  .line-chat-q1-focus-result .safe-action p,
+  .line-chat-q1-focus-result .answer-explanation,
+  .line-chat-q1-focus-result .trap-details p { font-size: 17px; }
+  .line-chat-q1-focus-result .answer-actions { flex-direction: column; }
+  .line-chat-q1-focus-result .answer-actions button { width: 100%; min-height: 56px; }
 }
