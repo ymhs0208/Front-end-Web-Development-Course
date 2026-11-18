@@ -1,3 +1,8 @@
+import {
+  activeLineQuestionIds,
+  branchScenarios,
+} from "../data/questions.js?v=job-9-4";
+
 export function shuffle(a) {
   const out = [...a];
   for (let i = out.length - 1; i > 0; i--) {
@@ -37,9 +42,16 @@ export function selectReview(
     .map((entry) => entry.question);
 }
 export function selectQuestions(questions, attempts, mode, questionId) {
-  if (questionId) return questions.filter((q) => q.id === questionId);
-  if (mode === "review") return selectReview(questions, attempts);
+  const regularQuestions = questions.filter(
+    (q) => !q.branchScenario && activeLineQuestionIds.includes(q.id),
+  );
+  if (questionId) return regularQuestions.filter((q) => q.id === questionId);
+  const scenario = branchScenarios.find((item) => item.mode === mode);
+  if (scenario)
+    return questions.filter((q) => q.id === scenario.startId).slice(0, 1);
+  if (mode === "review") return selectReview(regularQuestions, attempts);
+  if (mode === "all" || mode === "line") return shuffle(regularQuestions);
   return shuffle(
-    questions.filter((q) => mode === "random" || q.type === mode),
+    regularQuestions.filter((q) => mode === "random" || q.type === mode),
   ).slice(0, 3);
 }

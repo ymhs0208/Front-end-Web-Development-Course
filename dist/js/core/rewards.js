@@ -1,15 +1,24 @@
+import { activeLineQuestionIds } from "../data/questions.js?v=job-9-4";
+
 // Each saved, valid attempt earns one star, including repeat practice and mistakes.
 export function getRewards(attempts, questions) {
   const validIds = new Set(questions.map((q) => q.id));
+  const regularQuestions = questions.filter(
+    (q) => !q.branchScenario && activeLineQuestionIds.includes(q.id),
+  );
   const validAttempts = attempts.filter(
     (a) => a && validIds.has(a.id) && typeof a.correct === "boolean",
   );
-  const completed = new Set(validAttempts.map((a) => a.id));
-  const categories = new Set(
-    questions.filter((q) => completed.has(q.id)).map((q) => q.type),
+  const completed = new Set(
+    validAttempts
+      .filter((a) => regularQuestions.some((q) => q.id === a.id))
+      .map((a) => a.id),
   );
-  const categoryTotal = new Set(questions.map((q) => q.type)).size;
-  const total = questions.length;
+  const categories = new Set(
+    regularQuestions.filter((q) => completed.has(q.id)).map((q) => q.type),
+  );
+  const categoryTotal = new Set(regularQuestions.map((q) => q.type)).size;
+  const total = regularQuestions.length;
   const completedCount = completed.size;
   const stars = validAttempts.length;
   const badges = [
@@ -53,10 +62,11 @@ export function getRewards(attempts, questions) {
 
 // The companion grows with participation stars; collection continues after the crown.
 export function getCompanion(stars, total) {
-  const complete = total > 0 && stars >= total;
+  const crownStars = 9;
+  const complete = stars >= crownStars;
   const grown = stars >= 3;
   const next =
-    stars < 1 ? Math.min(1, total) : stars < 3 ? Math.min(3, total) : total;
+    stars < 1 ? 1 : stars < 3 ? 3 : crownStars;
   return {
     stage: complete ? "guardian" : grown ? "helper" : "friend",
     title: complete ? "安心守護隊長" : grown ? "勇敢防詐夥伴" : "小小安心夥伴",
