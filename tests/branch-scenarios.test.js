@@ -18,6 +18,7 @@ import {
 } from "../dist/js/core/store.js";
 import { practice } from "../dist/js/pages/practice.js";
 import { initIntegration } from "../dist/js/features/integration.js";
+import { renderLineChatQuestion } from "../dist/js/features/line-chat.js";
 
 const branchNodes = bank.filter((question) => question.branchScenario);
 const byId = new Map(branchNodes.map((question) => [question.id, question]));
@@ -104,8 +105,35 @@ test("the replacement quiz contains the nine supplied LINE scam scenarios", () =
   assert.deepEqual(regular.map((question) => question.id).sort(), Array.from({ length: 9 }, (_, i) => `line-scam-${i + 1}`).sort());
   assert.ok(regular.every((question) => question.type === "line" && question.options.length === 3));
   assert.deepEqual(new Set(regular.map((question) => question.answer)), new Set([1]));
-  assert.match(regular[0].text, /寵物攝影比賽/);
-  assert.match(regular[8].text, /1,000 元保證金/);
+  assert.match(regular[0].text, /差幾票進決賽/);
+  assert.ok(regular[0].text.length <= 24, "Q1 stays concise on large-text mobile screens");
+  assert.match(regular[8].text, /NT\$1,000 保證金/);
+});
+
+test("questions 1, 5, and 9 lead with one direct message and no scenario heading", () => {
+  const question1 = bank.find((question) => question.id === "line-scam-1");
+  assert.equal(question1.sender, "陌生人 · LINE 聯絡人");
+  assert.equal(question1.interaction, "vote-link");
+  assert.equal(question1.segments.length, 1);
+  assert.doesNotMatch(question1.text, /阿明|好友|朋友/);
+
+  const question5 = bank.find((question) => question.id === "line-scam-5");
+  assert.equal(question5.interaction, "support-call");
+  assert.equal(question5.segments.length, 2);
+  assert.match(question5.segments[0].text, /LINE 官方客服/);
+  assert.match(question5.segments[1].text, /螢幕共享/);
+
+  const question9 = bank.find((question) => question.id === "line-scam-9");
+  assert.equal(question9.interaction, "job-offer");
+  assert.match(question9.segments[1].text, /正式上工前請先繳 NT\$1,000 保證金/);
+  assert.doesNotMatch(question9.segments[1].text, /你回覆後|對方表示/);
+
+  for (const question of [question1, question5, question9]) {
+    const html = renderLineChatQuestion(question, { index: 0, qs: [question] });
+    assert.ok(!html.includes(`<h1>${question.title}</h1>`));
+    assert.match(html, /aria-label="模擬對話"/);
+    assert.equal((html.match(/class="line-chat-incoming-bubble"/g) || []).length, 1);
+  }
 });
 
 test("question 5 retains the safe hang-up answer and explicit scam warning", () => {

@@ -1,6 +1,6 @@
 import { $ } from "../core/dom.js?v=job-9-4";
 import { compactOptions } from "../data/compact-options.js?v=job-9-4";
-import { escapeHtml, getLineContact, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-chat-first-2";
+import { escapeHtml, getLineContact, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-repeat-call-2";
 
 export function focusText(session) {
   const q = session.qs[session.index];
@@ -50,7 +50,7 @@ export function fitTextPage(text, offset, element, availableHeight) {
 
 export function renderFocusExercise(
   session,
-  { moneyMarkup = "", bankruptcyMarkup = "" } = {},
+  { moneyMarkup = "", bankruptcyMarkup = "", chatViewState = {} } = {},
 ) {
   const q = session.qs[session.index];
   const heading =
@@ -81,8 +81,8 @@ export function renderFocusExercise(
     session.correct &&
     session.interactionStage === "job-blocked"
   ) {
-    const nextLabel = session.index + 1 === session.qs.length ? "看練習結果" : "下一題";
-    $("#quizBody").innerHTML = `${moneyMarkup}${renderLineChatQuestion(q, session)}<section class="line-job-focus-result" aria-label="封鎖操作答對解說"><strong>✓ 答對了</strong><h2>做得好，記住這個方法。</h2><p><b>安全做法：</b>${escapeHtml(compactOptions[q.id][q.answer])}</p><p>${escapeHtml(q.explain)}</p><button class="primary" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button></section>${bankruptcyMarkup}`;
+    // The controller owns the standalone explanation route after a correct block.
+    $("#quizBody").innerHTML = `${moneyMarkup}${renderLineChatQuestion(q, session)}${bankruptcyMarkup}`;
     return;
   }
   const top = session.branchFlow
@@ -90,8 +90,24 @@ export function renderFocusExercise(
     : lineChat && q.interaction === "support-call"
       ? moneyMarkup
       : lineChat
-      ? `<div class="quiz-top focus-top line-reader-top"><span class="line-reader-contact"><span class="line-reader-avatar" aria-hidden="true">${escapeHtml(contact.avatar)}</span><span class="line-reader-identity"><strong>${escapeHtml(contact.name)}</strong><small>防詐情境演練 · ${step}</small></span></span><h1>${heading}</h1></div>${moneyMarkup}`
-      : `<div class="quiz-top focus-top"><span>${step}</span><h1>${heading}</h1></div>${moneyMarkup}`;
+      ? `<div class="quiz-top focus-top line-reader-top"><span class="line-reader-contact"><span class="line-reader-avatar" aria-hidden="true">${escapeHtml(contact.avatar)}</span><span class="line-reader-identity"><strong>${escapeHtml(contact.name)}</strong><small>防詐情境演練 · ${step}</small></span></span>${["先看情境", "一起記住"].includes(heading) ? "" : `<h1>${heading}</h1>`}</div>${moneyMarkup}`
+    : `<div class="quiz-top focus-top"><span>${step}</span><h1>${heading}</h1></div>${moneyMarkup}`;
+  if (lineChat && session.answered && !session.correct && q.interaction !== "support-call") {
+    const nextLabel = session.index + 1 === session.qs.length ? "看練習結果" : "下一題";
+    const explanation = session.wrongActionReason || q.explain;
+    $("#quizBody").innerHTML = `${top}<section class="line-chat-q1-focus-result wrong-answer-explanation" aria-labelledby="wrong-answer-explanation-title"><h2 id="wrong-answer-explanation-title">為什麼錯</h2><p class="answer-explanation">${escapeHtml(explanation)}</p><div class="answer-actions"><button class="primary" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button></div></section>${bankruptcyMarkup}`;
+    return;
+  }
+  if (lineChat && q.interaction === "vote-link" && session.answered) {
+    const clickedLink = session.interactionStage === "fake-site";
+    const nextLabel = session.index + 1 === session.qs.length ? "看練習結果" : "下一題";
+    const safeOption = "拒絕提供手機號碼和簡訊驗證碼，並封鎖可疑帳號、向 LINE 官方查證。";
+    const result = clickedLink
+      ? `<span class="line-chat-q1-result-label is-risk">情境結果</span><h2>你被騙了</h2><p>仿冒投票網站會藉由索取手機號碼和簡訊驗證碼盜取 LINE 帳號。</p>`
+      : `<span class="line-chat-q1-result-label">✓ 答對了</span><h2>做得好，記住這個方法。</h2><p>你拒絕提供手機號碼和簡訊驗證碼；接著可封鎖這個陌生帳號。</p>`;
+    $("#quizBody").innerHTML = `${top}<section class="line-chat-q1-focus-result" role="status" aria-live="polite">${result}<section class="safe-action"><h3>安全的做法</h3><p>${escapeHtml(safeOption)}</p></section><p class="answer-explanation">${escapeHtml(q.explain)}</p><details class="trap-details"><summary>為什麼要小心？</summary><p>${escapeHtml(q.trap)}</p></details><div class="answer-actions"><button class="primary" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button><button class="secondary" type="button" data-read data-idle-label="唸解說給我聽">唸解說給我聽</button></div></section>${bankruptcyMarkup}`;
+    return;
+  }
   if (lineChat && q.interaction === "support-call" && session.answered) {
     $("#quizBody").innerHTML = `${top}${renderSupportCallResult(q, session)}${bankruptcyMarkup}`;
     return;
@@ -108,9 +124,9 @@ export function renderFocusExercise(
     lineChat &&
     !session.answered &&
     q.interaction === "vote-link" &&
-    session.interactionStage === "chat"
+    ["chat", "compose"].includes(session.interactionStage)
   ) {
-    $("#quizBody").innerHTML = `${top}${renderLineChatQuestion(q, session)}${bankruptcyMarkup}`;
+    $("#quizBody").innerHTML = `${top}${renderLineChatQuestion(q, session, chatViewState)}${bankruptcyMarkup}`;
     return;
   }
   if (
@@ -128,7 +144,7 @@ export function renderFocusExercise(
     !session.answered &&
     session.interactionStage === "compose"
   ) {
-    $("#quizBody").innerHTML = `${top}<section class="focus-choices line-focus-regular-choices"><div class="line-focus-chat-note">${escapeHtml(q.title)} · 模擬聊天室</div><h2 class="choice-heading">訊息框已填入回覆</h2><div class="line-focus-compose-preview" role="textbox" aria-readonly="true">不了謝謝</div><p>按下傳送後，再用原本保存的電話確認阿明本人。</p><button class="primary line-focus-send" type="button" data-scene-action="send-safe-reply">傳送</button></section>${bankruptcyMarkup}`;
+    $("#quizBody").innerHTML = `${top}<section class="focus-choices line-focus-regular-choices"><div class="line-focus-chat-note">${escapeHtml(q.title)} · 模擬聊天室</div><h2 class="choice-heading">訊息框已填入回覆</h2><div class="line-focus-compose-preview" role="textbox" aria-readonly="true">不了謝謝</div><p>按下傳送後，請封鎖陌生帳號並向 LINE 官方查證。</p><button class="primary line-focus-send" type="button" data-scene-action="send-safe-reply">傳送</button></section>${bankruptcyMarkup}`;
     return;
   }
   if (!session.answered && session.questionView === "choose") {

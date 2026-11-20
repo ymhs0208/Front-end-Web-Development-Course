@@ -13,13 +13,20 @@ export function createRouter(exercise) {
       history.replaceState(null, "", "#rewards");
       key = "rewards";
     }
+    if (key === "explanation" && !exercise.canShowExplanation()) {
+      history.replaceState(null, "", "#practice");
+      key = "practice";
+    }
     if (key === "exercise" && !session) {
       history.replaceState(null, "", "#practice");
       key = "practice";
     }
-    document.body.classList.toggle("is-exercising", key === "exercise");
+    document.body.classList.toggle(
+      "is-exercising",
+      key === "exercise" || key === "explanation",
+    );
     document.body.classList.toggle("is-home", key === "home");
-    $("#backBar").hidden = key === "home";
+    $("#backBar").hidden = key === "home" || key === "explanation";
     const pages = {
       home,
       practice,
@@ -27,7 +34,7 @@ export function createRouter(exercise) {
       rewards: rewardsPage,
       guide,
     };
-    if (key === "exercise") {
+    if (key === "exercise" || key === "explanation") {
       $("#main").innerHTML =
         `<section class="exercise-page"><div class="exercise-shell" id="quizBody"></div></section>`;
       exercise.render();
@@ -38,7 +45,7 @@ export function createRouter(exercise) {
       const active =
         a.hash ===
         "#" +
-          (key === "exercise"
+          (key === "exercise" || key === "explanation"
             ? "practice"
             : key === "mistakes"
               ? "rewards"
@@ -52,6 +59,7 @@ export function createRouter(exercise) {
         home: "安心學防詐",
         practice: "情境練習",
         exercise: session?.complete ? "練習成果" : "正在練習",
+        explanation: "作答解析",
         mistakes: "錯題筆記",
         rewards: "我的獎勵",
         guide: "使用說明",

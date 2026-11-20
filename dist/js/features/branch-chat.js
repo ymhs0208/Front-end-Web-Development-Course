@@ -42,9 +42,16 @@ export function renderBranchChat(session) {
 
 export function renderBranchFeedback(question, session) {
   const nextLabel = session.nextId ? "下一步" : "看練習結果";
+  if (!session.correct)
+    return `<section class="branch-feedback wrong-answer-explanation"><span class="answer-label">答錯了</span><h2>為什麼錯</h2><p class="answer-explanation">${escapeHtml(question.explain)}</p><div class="answer-actions"><button class="primary" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button></div></section>`;
   return `<section class="branch-feedback"><span class="answer-label">${session.correct ? "✓ 答對了" : "我們一起再看一次"}</span><h2>${session.correct ? "做得好，記住這個安全方法。" : "沒關係，這次一起學會怎麼保護自己。"}</h2><section class="safe-action"><h3>安全的做法</h3><p>${escapeHtml(question.options[question.answer])}</p></section><p class="answer-explanation">${escapeHtml(question.explain)}</p><details class="trap-details"><summary>為什麼要小心？</summary><p>${escapeHtml(question.trap)}</p></details><div class="answer-actions"><button class="primary" type="button" data-next>${nextLabel} <span aria-hidden="true">→</span></button><button class="secondary" type="button" data-read data-idle-label="唸解說給我聽">唸解說給我聽</button></div></section>`;
 }
 
 export function renderBankruptcyModal() {
-  return `<div class="bankrupt-overlay" data-bankrupt-modal role="dialog" aria-modal="true" aria-labelledby="bankrupt-title"><section class="bankrupt-dialog"><p class="bankrupt-kicker">錢包提醒</p><h2 id="bankrupt-title">你的現金被騙光了！！</h2><img src="assets/bankrupt-meme.png" alt="海綿寶寶和派大星，字幕寫著：我破產了" /><button class="primary" type="button" data-bankrupt-dismiss>知道了，繼續練習</button></section></div>`;
+  return `<div class="bankrupt-overlay" data-bankrupt-modal role="dialog" aria-modal="true" aria-labelledby="bankrupt-title"><section class="bankrupt-dialog"><p class="bankrupt-kicker">錢包提醒</p><h2 id="bankrupt-title">你的現金被騙光了！！</h2><img src="assets/bankrupt-meme.png" alt="海綿寶寶和派大星，字幕寫著：我破產了" /><button class="primary" type="button" data-bankrupt-dismiss>知道了，返回大廳</button></section></div>`;
+}
+
+export function renderWrongAnswerModal(loss = WRONG_ANSWER_PENALTY) {
+  const safeLoss = Number.isInteger(loss) && loss >= 0 ? loss : WRONG_ANSWER_PENALTY;
+  return `<div class="bankrupt-overlay wrong-answer-overlay" data-wrong-answer-modal role="dialog" aria-modal="true" aria-labelledby="wrong-answer-title"><section class="bankrupt-dialog wrong-answer-dialog"><p class="bankrupt-kicker">錢包提醒</p><h2 id="wrong-answer-title">你的錢被騙走了</h2><div class="wrong-answer-image-row"><img src="assets/wrong-answer-meme.png" alt="派大星拿鈔票給魚，字幕寫著：拿去，我的錢給你" /><span class="money-flight" data-money-flight aria-hidden="true">💸 −NT$${safeLoss}</span></div><button class="primary" type="button" data-wrong-answer-dismiss>知道了，查看解析</button></section></div>`;
 }
