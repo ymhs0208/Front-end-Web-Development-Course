@@ -1,11 +1,11 @@
 import { $ } from "./dom.js?v=job-9-4";
 import { home } from "../pages/home.js?v=job-9-4";
-import { practice } from "../pages/practice.js?v=job-9-4";
+import { practice } from "../pages/practice.js?v=shop-1";
 import { mistakePage } from "../pages/mistakes.js?v=job-9-4";
 import { rewardsPage } from "../pages/rewards.js?v=job-9-4";
 import { guide } from "../pages/guide.js?v=job-9-4";
 import { stopSpeech } from "../features/accessibility.js?v=job-9-4";
-export function createRouter(exercise) {
+export function createRouter(exercise, shop) {
   function render() {
     const session = exercise.getSession();
     let key = location.hash.slice(1) || "home";
@@ -26,6 +26,7 @@ export function createRouter(exercise) {
       key === "exercise" || key === "explanation",
     );
     document.body.classList.toggle("is-home", key === "home");
+    document.body.classList.toggle("is-shopping", key === "shop");
     $("#backBar").hidden = key === "home" || key === "explanation";
     const pages = {
       home,
@@ -38,6 +39,10 @@ export function createRouter(exercise) {
       $("#main").innerHTML =
         `<section class="exercise-page"><div class="exercise-shell" id="quizBody"></div></section>`;
       exercise.render();
+    } else if (key === "shop" && shop) {
+      $("#main").innerHTML =
+        `<section class="exercise-page shop-page"><div class="exercise-shell" id="shopBody"></div></section>`;
+      shop.render();
     } else {
       $("#main").innerHTML = (pages[key] || home)();
     }
@@ -45,7 +50,7 @@ export function createRouter(exercise) {
       const active =
         a.hash ===
         "#" +
-          (key === "exercise" || key === "explanation"
+          (key === "exercise" || key === "explanation" || key === "shop"
             ? "practice"
             : key === "mistakes"
               ? "rewards"
@@ -60,6 +65,7 @@ export function createRouter(exercise) {
         practice: "情境練習",
         exercise: session?.complete ? "練習成果" : "正在練習",
         explanation: "作答解析",
+        shop: "假購物網站找碴",
         mistakes: "錯題筆記",
         rewards: "我的獎勵",
         guide: "使用說明",
@@ -73,7 +79,7 @@ export function createRouter(exercise) {
       $("#main").focus({ preventScroll: true });
     });
     window.addEventListener("vault:result-saved", () => {
-      if (location.hash !== "#exercise") render();
+      if (!["#exercise", "#shop"].includes(location.hash)) render();
     });
     render();
   }

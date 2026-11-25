@@ -1,5 +1,5 @@
-import { types } from "../data/questions.js?v=job-9-4";
-import { getState, getMistakes } from "../core/store.js?v=job-9-4";
+import { types } from "../data/questions.js?v=shop-1";
+import { getState, getMistakes } from "../core/store.js?v=shop-1";
 import { moduleArt } from "./illustrations.js?v=job-9-4";
 export function moduleCards(filter = "all") {
   return `<div class="cards">${Object.entries(types)

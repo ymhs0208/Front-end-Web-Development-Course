@@ -1,5 +1,5 @@
 import { $ } from "../core/dom.js?v=job-9-4";
-import { compactOptions } from "../data/compact-options.js?v=job-9-4";
+import { compactOptions } from "../data/compact-options.js?v=shop-1";
 import { escapeHtml, getLineContact, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-repeat-call-2";
 
 export function focusText(session) {

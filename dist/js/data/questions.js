@@ -5,7 +5,16 @@ export const types = {
     tag: "模擬對話情境",
     label: "LINE 情境 · 安全模擬",
   },
+  shop: {
+    name: "假購物網站找碴",
+    desc: "在虛構的購物網站和簡訊中，點出可疑的地方。",
+    tag: "虛構購物網站",
+    label: "購物情境 · 安全模擬",
+  },
 };
+// Shopping scenes live in shop-scenarios.js; they run in their own #shop flow,
+// not in LINE or random practice.
+export const activeShopQuestionIds = ["shop-scam-1", "shop-scam-2", "shop-scam-3"];
 export const branchScenarios = [
   {
     id: "familiar-new-account",
@@ -365,5 +374,50 @@ export const bank = [
     trap: "交出驗證碼或網銀資料後，對方再用退款或解凍費安撫、施壓，可能造成更多損失。",
     explain:
       "立即從銀行官方管道聯絡銀行，說明提供了哪些資料並請銀行處理帳戶安全；同時撥 165 諮詢或報案，保存對話、帳戶與交易紀錄。不要再提供驗證碼或付款。",
+  },
+  {
+    id: "shop-scam-1",
+    type: "shop",
+    title: "mama 名牌包只要 990？",
+    sender: "虛構購物網站 mama · 臉書廣告",
+    text: "臉書廣告連到 mama，名牌包 990 元，只能 ATM 轉帳。",
+    options: [
+      "先轉帳，搶便宜",
+      "不買，自己開 App 查",
+      "加 LINE 問客服",
+    ],
+    answer: 1,
+    trap: "假冒 mama，用超低價和倒數讓你衝動轉帳。",
+    explain: "網址不是 mama 官網，是假網站。想買，自己打開 mama App 搜尋，不要點廣告連結。",
+  },
+  {
+    id: "shop-scam-2",
+    type: "shop",
+    title: "嗨皮賣家叫你私下匯款",
+    sender: "虛構購物網站 嗨皮 · 聊聊",
+    text: "賣家要你加 LINE、匯款到個人帳戶，就再打 9 折。",
+    options: [
+      "加 LINE 匯款，拿折扣",
+      "只在嗨皮付款，並檢舉",
+      "先匯一半訂金",
+    ],
+    answer: 1,
+    trap: "用折扣騙你離開平台。",
+    explain: "在嗨皮付款，錢會等你收到貨才給賣家。私下匯款，被騙就追不回來。",
+  },
+  {
+    id: "shop-scam-3",
+    type: "shop",
+    title: "嗨皮賣家說要「金流認證」",
+    sender: "虛構購物網站 嗨皮 · 聊聊",
+    text: "賣家說你不能下單，要你點連結，輸入卡號和驗證碼。",
+    options: [
+      "點連結，完成認證",
+      "不點，在嗨皮 App 下單",
+      "照客服說的去 ATM",
+    ],
+    answer: 1,
+    trap: "用「不能下單」騙你點假客服連結。",
+    explain: "購物平台不會要你做「金流認證」。不點聊天裡的連結，不給卡號和驗證碼。有疑問，打 165。",
   },
 ];

@@ -100,7 +100,7 @@ test("branch mode starts at the root while LINE and random practice use only que
 });
 
 test("the replacement quiz contains the nine supplied LINE scam scenarios", () => {
-  const regular = bank.filter((question) => !question.branchScenario);
+  const regular = bank.filter((question) => !question.branchScenario && question.type === "line");
   assert.equal(regular.length, 9);
   assert.deepEqual(regular.map((question) => question.id).sort(), Array.from({ length: 9 }, (_, i) => `line-scam-${i + 1}`).sort());
   assert.ok(regular.every((question) => question.type === "line" && question.options.length === 3));

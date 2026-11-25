@@ -33,6 +33,7 @@
 | 整站易讀樣式 | `dist/css/low-vision.css` |
 | 紀錄與設定 | `dist/js/core/store.js` |
 | 模組串接 | `dist/js/features/integration.js` |
+| 假購物網站找碴 | `dist/js/data/shop-scenarios.js`、`dist/js/core/shop-engine.js`、`dist/js/features/fake-shop.js`、`dist/css/fake-shop.css` |
 
 ## 首頁
 
@@ -60,6 +61,7 @@
 - `#rewards`：我的獎勵；舊 `#review` 自動轉到此頁。
 - `#mistakes`：保留的錯題筆記路由。
 - `#guide`：使用說明。
+- `#shop`：假購物網站找碴，進度存在 `sessionStorage` 的 `vault-shop-session-v1`，結果存在 `localStorage` 的 `vault-shop-results-v1`。
 
 練習優先排序為錯題、未練習、較少練習。最近一次答對的題目會移出錯題清單。每筆有效作答紀錄都獲得一顆安心星，答錯及重複同題也計入；星星沒有題庫數量上限。勳章仍以不同情境及類型判斷。夥伴在 3 顆星時披上披風，9 顆星時戴上皇冠，之後仍可繼續收星。既有紀錄直接重新計算，不做寫入遷移。成長規則在 `core/rewards.js`，插圖在 `components/companion.js`，動畫尊重減少動態效果設定。
 

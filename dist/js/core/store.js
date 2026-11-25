@@ -1,7 +1,10 @@
-import { bank, branchScenarios } from "../data/questions.js?v=job-9-4";
+import { bank, branchScenarios } from "../data/questions.js?v=shop-1";
 import { findMistakes } from "./engine.js?v=job-9-4";
+import { flagIds, shopScenes } from "../data/shop-scenarios.js?v=shop-1";
 const STORAGE_KEY = "vault-training-v1";
 const SCENARIO_RESULTS_KEY = "vault-scenario-results-v1";
+const SHOP_RESULTS_KEY = "vault-shop-results-v1";
+const SHOP_RESULTS_LIMIT = 100;
 const DEFAULT_SETTINGS = {
   large: true,
   voice: false,
@@ -10,12 +13,14 @@ const DEFAULT_SETTINGS = {
 };
 let state = { attempts: [], settings: { ...DEFAULT_SETTINGS } };
 let scenarioResults = [];
+let shopResults = [];
 let storageOK = true;
 let notifyWarning = () => {};
 export function loadState(onWarning = () => {}) {
   notifyWarning = onWarning;
   state = { attempts: [], settings: { ...DEFAULT_SETTINGS } };
   scenarioResults = [];
+  shopResults = [];
   storageOK = true;
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
@@ -59,6 +64,13 @@ export function loadState(onWarning = () => {}) {
     if (storageOK)
       notifyWarning("目前無法讀取情境紀錄，本次仍可練習。");
   }
+  try {
+    const savedShop = JSON.parse(localStorage.getItem(SHOP_RESULTS_KEY));
+    if (Array.isArray(savedShop))
+      shopResults = savedShop.map(normalizeShopResult).filter(Boolean);
+  } catch {
+    if (storageOK) notifyWarning("目前無法讀取購物練習紀錄，本次仍可練習。");
+  }
   if (!storageOK) notifyWarning("目前無法讀取儲存空間，本次仍可練習。");
 }
 function persist() {
@@ -74,6 +86,9 @@ export function getState() {
 }
 export function getScenarioResults() {
   return structuredClone(scenarioResults);
+}
+export function getShopResults() {
+  return structuredClone(shopResults);
 }
 export function updateSettings(patch) {
   if (["mandarin", "taigi", "hakka"].includes(patch.speechLanguage))
@@ -193,5 +208,51 @@ export function recordScenarioResult(payload) {
   window.dispatchEvent(
     new CustomEvent("vault:scenario-result-saved", { detail }),
   );
+  return detail;
+}
+
+// Fake-shop results: which suspicious spots were found, missed or tapped as safe.
+function normalizeShopResult(payload) {
+  const scene = shopScenes[payload?.questionId];
+  const question = bank.find((q) => q.id === payload?.questionId);
+  if (!scene || !question || question.type !== "shop") return null;
+  if (
+    !Number.isInteger(payload.optionIndex) ||
+    payload.optionIndex < 0 ||
+    payload.optionIndex >= question.options.length
+  )
+    return null;
+  const flags = flagIds(scene);
+  const ids = (value, allowed) =>
+    Array.isArray(value) && value.every((id) => allowed(id)) ? [...new Set(value)] : null;
+  const foundFlags = ids(payload.foundFlags, (id) => flags.includes(id));
+  const safeTaps = ids(payload.safeTaps, (id) => scene.spots[id]?.flag === false);
+  if (!foundFlags || !safeTaps) return null;
+  const correct = payload.optionIndex === question.answer;
+  if (payload.correct !== correct) return null;
+  return {
+    questionId: question.id,
+    correct,
+    optionIndex: payload.optionIndex,
+    foundFlags: flags.filter((id) => foundFlags.includes(id)),
+    missedFlags: flags.filter((id) => !foundFlags.includes(id)),
+    safeTaps,
+    hintsUsed:
+      Number.isInteger(payload.hintsUsed) && payload.hintsUsed >= 0 ? payload.hintsUsed : 0,
+    completedAt: Number.isFinite(payload.completedAt) ? payload.completedAt : Date.now(),
+  };
+}
+
+export function recordShopResult(payload) {
+  const result = normalizeShopResult(payload);
+  if (!result) throw new Error("購物練習結果的題目、選項或可疑處不符合題庫設定");
+  shopResults = [...shopResults, result].slice(-SHOP_RESULTS_LIMIT);
+  try {
+    localStorage.setItem(SHOP_RESULTS_KEY, JSON.stringify(shopResults));
+  } catch {
+    notifyWarning("瀏覽器無法儲存購物練習紀錄，目前只保留在本次開啟期間。");
+  }
+  const detail = structuredClone(result);
+  window.dispatchEvent(new CustomEvent("vault:shop-result-saved", { detail }));
   return detail;
 }
