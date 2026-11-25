@@ -1,11 +1,11 @@
 import { toast } from "./components/notifications.js?v=job-9-4";
-import { loadState } from "./core/store.js?v=shop-1";
-import { createRouter } from "./core/router.js?v=shop-1";
+import { loadState } from "./core/store.js?v=shop-2";
+import { createRouter } from "./core/router.js?v=shop-2";
 import { initAccessibility } from "./features/accessibility.js?v=job-9-4";
 import { createExerciseController } from "./features/exercise.js?v=job-payment-popup-1";
-import { initIntegration } from "./features/integration.js?v=shop-1";
+import { initIntegration } from "./features/integration.js?v=shop-2";
 import { exportProgress } from "./features/export.js?v=job-9-4";
-import { createShopController } from "./features/fake-shop.js?v=shop-1";
+import { createShopController } from "./features/fake-shop.js?v=shop-2";
 
 loadState(toast);
 let router;

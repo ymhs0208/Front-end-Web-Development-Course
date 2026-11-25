@@ -11,10 +11,10 @@ import {
   tapSpot,
   useHint,
   validateShopSession,
-} from "../core/shop-engine.js?v=shop-1";
-import { activeShopQuestionIds, bank, types } from "../data/questions.js?v=shop-1";
-import { flagIds, shopPlatforms } from "../data/shop-scenarios.js?v=shop-1";
-import { getState, recordResult, recordShopResult } from "../core/store.js?v=shop-1";
+} from "../core/shop-engine.js?v=shop-2";
+import { activeShopQuestionIds, bank, types } from "../data/questions.js?v=shop-2";
+import { flagIds, shopPlatforms } from "../data/shop-scenarios.js?v=shop-2";
+import { getState, recordResult, recordShopResult } from "../core/store.js?v=shop-2";
 import { renderMoneyBar } from "./branch-chat.js?v=q9-payment-return-1";
 import { escapeHtml } from "./line-chat.js?v=q5-repeat-call-2";
 import { isSpeaking, say, stopSpeech } from "./accessibility.js?v=job-9-4";
@@ -57,8 +57,15 @@ const zoneOf = (kind) => ZONE[kind] || (BELOW.has(kind) ? "below" : "info");
 
 function partBody(part) {
   const text = escapeHtml(part.text);
+  const art = ART[part.art] || ART.bag;
   if (part.kind === "url")
     return `<span class="shop-url-lock" aria-hidden="true">🔒</span><span class="shop-url-text">${text}</span>`;
+  if (part.kind === "image")
+    return `<span class="shop-media-main" role="img" aria-label="${text}">${art}</span><span class="shop-thumbs" aria-hidden="true"><span class="is-active">${art}</span><span>${art}</span><span>${art}</span></span>`;
+  if (part.kind === "buttons")
+    return `<span class="shop-buy-buttons"><span class="shop-buy-cart">🛒 加入購物車</span><span class="shop-buy-now">直接購買</span></span>`;
+  if (part.kind === "seller")
+    return `<span class="shop-seller-avatar" aria-hidden="true">🏪</span><span class="shop-seller-text"><strong>${escapeHtml(part.name)}</strong><small>${text}</small></span>`;
   if (part.kind === "chat")
     return `<span class="shop-chat-who">${escapeHtml(part.who)}</span><span>${text}</span>`;
   if (part.kind === "row")
@@ -70,11 +77,6 @@ function partBody(part) {
 
 function renderPart(part, scene, session, interactive) {
   if (part.kind === "section") return `<p class="shop-part-section">${escapeHtml(part.text)}</p>`;
-  if (part.kind === "image")
-    return `<div class="shop-media-main" role="img" aria-label="${escapeHtml(part.text)}">${ART[part.art] || ART.bag}</div><div class="shop-thumbs" aria-hidden="true"><span class="is-active">${ART[part.art] || ART.bag}</span><span>${ART[part.art] || ART.bag}</span><span>${ART[part.art] || ART.bag}</span></div>`;
-  if (part.kind === "buttons")
-    return `<div class="shop-buy-buttons" aria-hidden="true"><span class="shop-buy-cart">🛒 加入購物車</span><span class="shop-buy-now">直接購買</span></div>`;
-  if (part.kind === "name") return `<h2 class="shop-part-name">${escapeHtml(part.text)}</h2>`;
   const spot = scene.spots[part.spot];
   if (!spot || !interactive)
     return `<div class="shop-spot shop-part-${part.kind}">${partBody(part)}</div>`;
@@ -109,7 +111,7 @@ function renderFeedback(session, scene) {
 function renderFind(session, question, scene) {
   const total = flagIds(scene).length;
   const done = allFlagsFound(session);
-  return `<section class="shop-task" data-shop-speech><h1 tabindex="-1">${escapeHtml(question.title)}</h1><p>點出怪怪的地方</p><p class="shop-counter"><strong>找到 ${session.found.length} / ${total}</strong></p></section>${renderFeedback(session, scene)}${renderScene(scene, session)}<div class="shop-actions">${done ? `<p class="shop-all-found" role="status">全部找到了！</p>` : ""}<button type="button" class="${done ? "primary" : "secondary"}" data-shop-action="decide">下一步 <span aria-hidden="true">→</span></button>${done ? "" : `<button type="button" class="secondary" data-shop-action="hint">提示</button>`}<button type="button" class="secondary" data-shop-action="read">唸給我聽</button></div>`;
+  return `<section class="shop-task" data-shop-speech><h1 tabindex="-1">${escapeHtml(question.title)}</h1><p>每個地方都能點，找出怪怪的地方</p><p class="shop-counter"><strong>找到 ${session.found.length} / ${total}</strong></p></section>${renderFeedback(session, scene)}${renderScene(scene, session)}<div class="shop-actions">${done ? `<p class="shop-all-found" role="status">全部找到了！</p>` : ""}<button type="button" class="${done ? "primary" : "secondary"}" data-shop-action="decide">下一步 <span aria-hidden="true">→</span></button>${done ? "" : `<button type="button" class="secondary" data-shop-action="hint">提示</button>`}<button type="button" class="secondary" data-shop-action="read">唸給我聽</button></div>`;
 }
 
 function renderDecide(session, question) {

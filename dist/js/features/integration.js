@@ -1,10 +1,10 @@
-import { bank } from "../data/questions.js?v=shop-1";
+import { bank } from "../data/questions.js?v=shop-2";
 import {
   getState,
   getScenarioResults,
   getShopResults,
   recordResult,
-} from "../core/store.js?v=shop-1";
+} from "../core/store.js?v=shop-2";
 import { toast } from "../components/notifications.js?v=job-9-4";
 // Public compatibility boundary shared by the three team modules.
 export function initIntegration(exercise, shop) {

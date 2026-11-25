@@ -1,6 +1,6 @@
 // Keep an in-progress exercise through refreshes without recording answers twice.
 import { STARTING_MONEY, WRONG_ANSWER_PENALTY } from "./money.js?v=job-9-4";
-import { activeLineQuestionIds } from "../data/questions.js?v=shop-1";
+import { activeLineQuestionIds } from "../data/questions.js?v=shop-2";
 const KEY = "vault-exercise-v1";
 export function validateDraft(draft, questions) {
   const maxQuestions = draft?.branchFlow === true ? 8 : 3;

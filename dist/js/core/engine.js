@@ -1,7 +1,7 @@
 import {
   activeLineQuestionIds,
   branchScenarios,
-} from "../data/questions.js?v=shop-1";
+} from "../data/questions.js?v=shop-2";
 
 export function shuffle(a) {
   const out = [...a];

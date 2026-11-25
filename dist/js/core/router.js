@@ -1,6 +1,6 @@
 import { $ } from "./dom.js?v=job-9-4";
 import { home } from "../pages/home.js?v=job-9-4";
-import { practice } from "../pages/practice.js?v=shop-1";
+import { practice } from "../pages/practice.js?v=shop-2";
 import { mistakePage } from "../pages/mistakes.js?v=job-9-4";
 import { rewardsPage } from "../pages/rewards.js?v=job-9-4";
 import { guide } from "../pages/guide.js?v=job-9-4";

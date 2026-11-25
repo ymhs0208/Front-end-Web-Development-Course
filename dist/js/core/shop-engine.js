@@ -1,5 +1,5 @@
 import { STARTING_MONEY, applyWrongAnswerPenalty } from "./money.js?v=job-9-4";
-import { flagIds, shopScenes } from "../data/shop-scenarios.js?v=shop-1";
+import { flagIds, shopScenes } from "../data/shop-scenarios.js?v=shop-2";
 
 // Pure state transitions for the fake-shop module: no DOM or storage access.
 // Stages: "find" (spot suspicious details) → "decide" (choose an action) → "result".

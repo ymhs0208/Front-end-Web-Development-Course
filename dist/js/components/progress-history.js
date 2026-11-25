@@ -1,5 +1,5 @@
-import { bank, types } from "../data/questions.js?v=shop-1";
-import { getState } from "../core/store.js?v=shop-1";
+import { bank, types } from "../data/questions.js?v=shop-2";
+import { getState } from "../core/store.js?v=shop-2";
 import { stats } from "./learning.js?v=job-9-4";
 export function learningHistory({ before = "" } = {}) {
   const data = getState();

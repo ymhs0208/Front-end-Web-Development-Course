@@ -153,11 +153,11 @@ test("tapping, hints, decisions and the wallet follow the find → decide → re
   assert.equal(session.stage, "find");
   assert.equal(session.money, 300);
   session = goDecide(tapSpot(session, "offplatform"));
-  const right = decide(session, questionOf("shop-scam-2"), 1);
+  const right = decide(session, questionOf("shop-scam-2"), 0);
   assert.equal(right.session.money, 300);
   assert.equal(right.session.modalOpen, false);
   assert.deepEqual(right.result.foundFlags, ["offplatform"]);
-  assert.deepEqual(right.result.missedFlags, ["account", "rush"]);
+  assert.deepEqual(right.result.missedFlags, ["seller", "account"]);
 
   session = nextScene(right.session);
   session = decide(goDecide(session), questionOf("shop-scam-3"), 1).session;
@@ -187,13 +187,13 @@ test("shop results are validated, saved locally, announced and earn stars", asyn
       questionId: "shop-scam-2",
       correct: false,
       optionIndex: 0,
-      foundFlags: ["rush", "offplatform"],
+      foundFlags: ["offplatform", "seller"],
       safeTaps: ["notice"],
       hintsUsed: 2,
       completedAt: 1,
     };
     const saved = store.recordShopResult(payload);
-    assert.deepEqual(saved.foundFlags, ["offplatform", "rush"]);
+    assert.deepEqual(saved.foundFlags, ["seller", "offplatform"]);
     assert.deepEqual(saved.missedFlags, ["account"]);
     assert.equal(stubs.events.at(-1).type, "vault:shop-result-saved");
     assert.equal(JSON.parse(stubs.localValues.get("vault-shop-results-v1")).length, 1);
@@ -213,7 +213,7 @@ test("the controller renders the fake site, records the answer and shows the wal
   const stubs = installBrowserStubs();
   try {
     // Same specifier the browser modules use, so the test shares their store instance.
-    const store = await import("../dist/js/core/store.js?v=shop-1");
+    const store = await import("../dist/js/core/store.js?v=shop-2");
     store.loadState();
     const shopBefore = store.getShopResults().length;
     const { createShopController } = await import("../dist/js/features/fake-shop.js");
@@ -221,11 +221,11 @@ test("the controller renders the fake site, records the answer and shows the wal
     shop.start();
     assert.match(stubs.shopBody.innerHTML, /練習用・假網站/);
     assert.match(stubs.shopBody.innerHTML, /data-spot="url"/);
-    assert.match(stubs.shopBody.innerHTML, /找到 0 \/ 4/);
+    assert.match(stubs.shopBody.innerHTML, /找到 0 \/ 5/);
     assert.doesNotMatch(stubs.shopBody.innerHTML, /<input|<form/, "no real input fields on fake pages");
     shop.action("tap", { spot: "price" });
     assert.match(stubs.shopBody.innerHTML, /⚠ 價格太便宜/);
-    assert.match(stubs.shopBody.innerHTML, /找到 1 \/ 4/);
+    assert.match(stubs.shopBody.innerHTML, /找到 1 \/ 5/);
     shop.action("decide");
     assert.match(stubs.shopBody.innerHTML, /你會怎麼做？/);
     shop.action("choose", { option: "0" });
@@ -242,4 +242,17 @@ test("the controller renders the fake site, records the answer and shows the wal
   } finally {
     stubs.restore();
   }
+});
+
+test("suspicious spots are spread across the page and answers vary in position", () => {
+  const below = new Set(["section", "chat", "system", "form"]);
+  for (const id of activeShopQuestionIds) {
+    const scene = shopScenes[id];
+    const tappable = scene.parts.filter((part) => part.spot).length;
+    assert.ok(tappable >= 8, `${id}: at least 8 tappable parts`);
+    const upperFlags = scene.parts.filter((part) => part.spot && scene.spots[part.spot].flag && !below.has(part.kind));
+    assert.ok(upperFlags.length >= 1, `${id}: at least one suspicious spot above the chat`);
+  }
+  const answers = new Set(activeShopQuestionIds.map((id) => questionOf(id).answer));
+  assert.ok(answers.size >= 2, "correct answers are not always in the same slot");
 });

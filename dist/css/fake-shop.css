@@ -504,3 +504,88 @@ button.shop-spot:hover {
     display: none;
   }
 }
+
+/* Product photo, title, seller card and buy buttons are tappable spots too. */
+.shop-spot.shop-part-image {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px;
+  background: #fff;
+}
+.shop-part-image .shop-spot-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+.shop-spot.shop-part-name {
+  border-color: transparent;
+  font-weight: 800;
+}
+.shop-part-seller {
+  flex-wrap: nowrap;
+  background: #fafafa;
+}
+.shop-seller-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand-soft, #eee);
+  font-size: 28px;
+}
+.shop-seller-text {
+  display: grid;
+  min-width: 0;
+}
+.shop-seller-text small {
+  color: #555;
+  font-size: max(20px, calc(var(--read-font, 26px) * 0.85));
+}
+.shop-spot.shop-part-review {
+  background: #fffbea;
+}
+.shop-spot.shop-part-buttons {
+  padding: 8px;
+}
+.shop-part-buttons .shop-buy-buttons {
+  flex: 1 1 100%;
+}
+.shop-part-buttons .shop-spot-badge {
+  margin-left: 0;
+}
+
+/* A small "pop" when a spot is revealed, so every tap feels answered. */
+.shop-spot.is-flag .shop-spot-badge,
+.shop-spot.is-ok .shop-spot-badge {
+  animation: shop-pop 0.35s ease-out;
+}
+.shop-spot.is-flag {
+  animation: shop-shake 0.4s ease-in-out;
+}
+@keyframes shop-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes shop-shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shop-spot.is-flag,
+  .shop-spot.is-flag .shop-spot-badge,
+  .shop-spot.is-ok .shop-spot-badge {
+    animation: none;
+  }
+}
