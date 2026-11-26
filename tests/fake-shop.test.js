@@ -213,7 +213,7 @@ test("the controller renders the fake site, records the answer and shows the wal
   const stubs = installBrowserStubs();
   try {
     // Same specifier the browser modules use, so the test shares their store instance.
-    const store = await import("../dist/js/core/store.js?v=shop-2");
+    const store = await import("../dist/js/core/store.js?v=shop-7");
     store.loadState();
     const shopBefore = store.getShopResults().length;
     const { createShopController } = await import("../dist/js/features/fake-shop.js");
@@ -224,18 +224,29 @@ test("the controller renders the fake site, records the answer and shows the wal
     assert.match(stubs.shopBody.innerHTML, /找到 0 \/ 5/);
     assert.doesNotMatch(stubs.shopBody.innerHTML, /<input|<form/, "no real input fields on fake pages");
     shop.action("tap", { spot: "price" });
-    assert.match(stubs.shopBody.innerHTML, /⚠ 價格太便宜/);
+    assert.match(stubs.shopBody.innerHTML, /shop-tip-pop/, "tapping opens the floating explanation");
+    assert.match(stubs.shopBody.innerHTML, /⚠ 可疑：價格太便宜/);
+    assert.match(stubs.shopBody.innerHTML, /還有 4 個可疑處/);
+    shop.action("close-tip");
+    assert.doesNotMatch(stubs.shopBody.innerHTML, /shop-tip-pop/);
     assert.match(stubs.shopBody.innerHTML, /找到 1 \/ 5/);
     shop.action("decide");
     assert.match(stubs.shopBody.innerHTML, /你會怎麼做？/);
     shop.action("choose", { option: "0" });
     assert.match(stubs.shopBody.innerHTML, /data-wrong-answer-modal/);
+    assert.match(stubs.shopBody.innerHTML, /為什麼不行/, "the pop-up explains the mistake");
+    assert.match(stubs.shopBody.innerHTML, /錢包提醒/);
+    assert.match(stubs.shopBody.innerHTML, /assets\/free-money-meme\.jpg/);
+    assert.match(stubs.shopBody.innerHTML, /這是假網站，錢轉過去就拿不回來。/);
     assert.match(stubs.shopBody.innerHTML, /NT\$300/);
     assert.equal(store.getShopResults().length, shopBefore + 1);
     shop.action("next");
     assert.equal(shop.getSession().index, 0, "next waits for the wallet notice");
     shop.action("dismiss");
     assert.match(stubs.shopBody.innerHTML, /網址是假的（漏掉）/);
+    assert.match(stubs.shopBody.innerHTML, /每個選項解析/, "result lists every option");
+    assert.equal((stubs.shopBody.innerHTML.match(/class="shop-option-review /g) || []).length, 3);
+    assert.match(stubs.shopBody.innerHTML, /LINE 上的「客服」是騙子本人/, "reason for an option the learner did not pick");
     shop.action("next");
     assert.equal(shop.getSession().index, 1);
     assert.ok(stubs.sessionValues.has("vault-shop-session-v1"));
@@ -255,4 +266,15 @@ test("suspicious spots are spread across the page and answers vary in position",
   }
   const answers = new Set(activeShopQuestionIds.map((id) => questionOf(id).answer));
   assert.ok(answers.size >= 2, "correct answers are not always in the same slot");
+});
+
+test("every wrong shop option has its own short reason for the pop-up", () => {
+  for (const id of activeShopQuestionIds) {
+    const question = questionOf(id);
+    assert.equal(question.reasons.length, question.options.length, id);
+    question.reasons.forEach((reason, index) => {
+      if (index === question.answer) assert.equal(reason, null, id + ": correct option has no reason");
+      else assert.ok(reason && reason.length <= 24, id + ": reason " + index);
+    });
+  }
 });

@@ -387,6 +387,12 @@ export const bank = [
       "不買，自己開 App 查",
     ],
     answer: 2,
+    // Why each option is unsafe, shown in the wrong-answer pop-up (null = correct option).
+    reasons: [
+      "這是假網站，錢轉過去就拿不回來。",
+      "LINE 上的「客服」是騙子本人，只會催你匯款。",
+      null,
+    ],
     trap: "假冒 mama，用超低價和倒數讓你衝動轉帳。",
     explain: "網址不是 mama 官網，是假網站。想買，自己打開 mama App 搜尋，不要點廣告連結。",
   },
@@ -402,6 +408,11 @@ export const bank = [
       "先匯一半訂金",
     ],
     answer: 0,
+    reasons: [
+      null,
+      "離開嗨皮私下匯款，被騙平台也救不了你。",
+      "訂金也是匯到騙子帳戶，一樣拿不回來。",
+    ],
     trap: "用折扣騙你離開平台。",
     explain: "在嗨皮付款，錢會等你收到貨才給賣家。私下匯款，被騙就追不回來。",
   },
@@ -417,6 +428,11 @@ export const bank = [
       "照客服說的去 ATM",
     ],
     answer: 1,
+    reasons: [
+      "那是假網站，卡號和驗證碼會被盜刷。",
+      null,
+      "ATM 不能「認證」，照做就是把錢轉給騙子。",
+    ],
     trap: "用「不能下單」騙你點假客服連結。",
     explain: "購物平台不會要你做「金流認證」。不點聊天裡的連結，不給卡號和驗證碼。有疑問，打 165。",
   },

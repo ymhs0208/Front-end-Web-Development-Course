@@ -589,3 +589,232 @@ button.shop-spot:hover {
     animation: none;
   }
 }
+
+/* Wrong-answer pop-up: what you picked, why it fails, and the safe choice. */
+.shop-modal .bankrupt-dialog {
+  text-align: left;
+}
+.shop-modal .bankrupt-dialog h2,
+.shop-modal .shop-modal-loss {
+  text-align: center;
+}
+.shop-modal-box {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-left: 6px solid #888;
+  border-radius: 10px;
+  background: #f5f5f5;
+}
+.shop-modal .bankrupt-dialog .shop-modal-box p {
+  margin: 4px 0 0;
+  font-weight: 700;
+}
+.shop-modal-tag {
+  font-size: max(18px, calc(var(--read-font, 26px) * 0.75));
+  font-weight: 800;
+  color: #555;
+}
+.shop-modal-box.is-wrong {
+  border-color: #8c8098;
+}
+.shop-modal-box.is-why {
+  border-color: #b42318;
+  background: #fff1f0;
+}
+.shop-modal-box.is-why .shop-modal-tag {
+  color: #b42318;
+}
+.shop-modal-box.is-safe {
+  border-color: #2f6b3a;
+  background: #effaf1;
+}
+.shop-modal-box.is-safe .shop-modal-tag {
+  color: #2f6b3a;
+}
+.shop-modal .bankrupt-dialog .shop-modal-note {
+  color: #555;
+  text-align: center;
+  font-size: max(18px, calc(var(--read-font, 26px) * 0.8));
+}
+.shop-modal .bankrupt-dialog button {
+  width: 100%;
+}
+
+/* Floating explanation after tapping a spot: pinned to the bottom of the
+   screen so it is never scrolled out of view. */
+.shop-tip-pop {
+  position: fixed;
+  z-index: 900;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: min(calc(100% - 32px), 760px);
+  max-height: 50dvh;
+  overflow-y: auto;
+  margin: 0;
+  border-width: 4px;
+  box-shadow: 0 12px 40px #0004;
+  transform: translateX(-50%);
+  animation: shop-tip-in 0.25s ease-out;
+}
+.shop-tip-text {
+  flex: 1;
+  min-width: 0;
+}
+.shop-tip-pop.is-flag strong {
+  color: #b42318;
+}
+.shop-tip-pop.is-ok strong {
+  color: #2f6b3a;
+}
+.shop-tip-text small {
+  display: block;
+  margin-top: 6px;
+  color: #555;
+  font-size: max(18px, calc(var(--read-font, 26px) * 0.75));
+  font-weight: 700;
+}
+.shop-tip-close {
+  flex: none;
+  min-height: 56px;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 12px;
+  background: #333;
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.shop-tip-pop.is-flag .shop-tip-close {
+  background: #b42318;
+}
+.shop-tip-pop.is-ok .shop-tip-close {
+  background: #2f6b3a;
+}
+/* Leave room so the pop-up never covers the last buttons on the page. */
+.shop-task ~ .shop-actions {
+  padding-bottom: 200px;
+}
+@keyframes shop-tip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+@media (max-width: 520px) {
+  .shop-tip-pop {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shop-tip-pop {
+    animation: none;
+  }
+}
+
+/* Wallet reminder (shop version): picture + money pill, reasons beside it. */
+.shop-modal .bankrupt-kicker {
+  text-align: center;
+  font-size: max(18px, calc(var(--read-font, 26px) * 0.7));
+}
+.shop-modal .wrong-answer-dialog {
+  width: min(100%, 980px);
+}
+.shop-modal-layout {
+  display: grid;
+  gap: 8px 22px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.shop-modal .wrong-answer-image-row {
+  margin: 4px auto 0;
+}
+.shop-modal .wrong-answer-image-row img {
+  max-height: 46dvh;
+  border-radius: 12px;
+}
+.shop-modal-reasons .shop-modal-box:first-child {
+  margin-top: 0;
+}
+@media (min-width: 761px) {
+  .shop-modal-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+/* Result page: every option with its verdict and reason. */
+.shop-option-reviews h2 {
+  margin: 24px 0 10px;
+}
+.shop-option-reviews ol {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.shop-option-review {
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-left-width: 8px;
+  border-radius: 12px;
+  background: #fff;
+  font-size: var(--read-font, 26px);
+}
+.shop-option-review.is-wrong {
+  border-color: #f1c4c0;
+  border-left-color: #b42318;
+  background: #fff6f5;
+}
+.shop-option-review.is-right {
+  border-color: #c4e3ca;
+  border-left-color: #2f6b3a;
+  background: #effaf1;
+}
+.shop-option-review.is-picked {
+  border-width: 4px;
+  border-left-width: 8px;
+}
+.shop-option-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+.shop-option-mark {
+  font-weight: 900;
+}
+.is-wrong .shop-option-mark {
+  color: #b42318;
+}
+.is-right .shop-option-mark {
+  color: #2f6b3a;
+}
+.shop-option-picked {
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #333;
+  color: #fff;
+  font-size: max(18px, calc(var(--read-font, 26px) * 0.75));
+  font-weight: 800;
+}
+.shop-option-review p {
+  margin: 6px 0 0;
+  line-height: 1.5;
+}
+.shop-result .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

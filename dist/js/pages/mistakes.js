@@ -1,5 +1,5 @@
-import { activeLineQuestionIds, types } from "../data/questions.js?v=shop-2";
-import { getState, getMistakes as mistakes } from "../core/store.js?v=shop-2";
+import { activeLineQuestionIds, types } from "../data/questions.js?v=shop-7";
+import { getState, getMistakes as mistakes } from "../core/store.js?v=shop-7";
 export function mistakePage() {
   const data = getState();
   const list = mistakes().filter((question) => activeLineQuestionIds.includes(question.id));

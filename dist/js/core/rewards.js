@@ -1,4 +1,4 @@
-import { activeLineQuestionIds } from "../data/questions.js?v=shop-2";
+import { activeLineQuestionIds } from "../data/questions.js?v=shop-7";
 
 // Each saved, valid attempt earns one star, including repeat practice and mistakes.
 export function getRewards(attempts, questions) {

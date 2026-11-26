@@ -11,10 +11,10 @@ import {
   tapSpot,
   useHint,
   validateShopSession,
-} from "../core/shop-engine.js?v=shop-2";
-import { activeShopQuestionIds, bank, types } from "../data/questions.js?v=shop-2";
-import { flagIds, shopPlatforms } from "../data/shop-scenarios.js?v=shop-2";
-import { getState, recordResult, recordShopResult } from "../core/store.js?v=shop-2";
+} from "../core/shop-engine.js?v=shop-7";
+import { activeShopQuestionIds, bank, types } from "../data/questions.js?v=shop-7";
+import { flagIds, shopPlatforms } from "../data/shop-scenarios.js?v=shop-7";
+import { getState, recordResult, recordShopResult } from "../core/store.js?v=shop-7";
 import { renderMoneyBar } from "./branch-chat.js?v=q9-payment-return-1";
 import { escapeHtml } from "./line-chat.js?v=q5-repeat-call-2";
 import { isSpeaking, say, stopSpeech } from "./accessibility.js?v=job-9-4";
@@ -96,12 +96,15 @@ function renderScene(scene, session, interactive = true) {
   return `<section class="shop-device shop-site shop-site-${scene.platform}" aria-label="虛構購物網站「${escapeHtml(platform.name)}」（練習畫面）"><p class="shop-sim-label">練習用・假網站</p><div class="shop-brandbar" aria-hidden="true"><span class="shop-logo">${escapeHtml(platform.name)}<small>${escapeHtml(platform.tagline)}</small></span><span class="shop-search">🔍 ${escapeHtml(platform.search)}</span></div>${zone("top")}<div class="shop-product"><div class="shop-media">${zone("media")}</div><div class="shop-info">${zone("info")}</div></div>${below ? `<div class="shop-below">${below}</div>` : ""}</section>`;
 }
 
+// After a tap, the explanation floats at the bottom of the screen, so it is
+// visible next to the spot that was tapped, however far down the page it is.
 function renderFeedback(session, scene) {
   if (session.lastSpot) {
     const spot = scene.spots[session.lastSpot];
-    return spot.flag
-      ? `<div class="shop-feedback is-flag" role="status"><strong>⚠ ${escapeHtml(spot.label)}</strong><p>${escapeHtml(spot.tip)}</p></div>`
-      : `<div class="shop-feedback is-ok" role="status"><strong>✓ 沒問題</strong><p>${escapeHtml(spot.tip)}</p></div>`;
+    const left = flagIds(scene).length - session.found.length;
+    const status = left > 0 ? `還有 ${left} 個可疑處` : "全部找到了！按「下一步」";
+    const head = spot.flag ? `⚠ 可疑：${escapeHtml(spot.label)}` : `✓ 沒問題：${escapeHtml(spot.label)}`;
+    return `<div class="shop-feedback shop-tip-pop ${spot.flag ? "is-flag" : "is-ok"}" role="status"><div class="shop-tip-text"><strong>${head}</strong><p>${escapeHtml(spot.tip)}</p><small>${status}</small></div><button type="button" class="shop-tip-close" data-shop-action="close-tip" aria-label="關閉說明">知道了</button></div>`;
   }
   if (session.hintSpot)
     return `<div class="shop-feedback is-hint" role="status"><strong>👀 點閃爍的地方</strong></div>`;
@@ -125,10 +128,29 @@ function renderFlagList(session, scene) {
   }).join("")}</ul>`;
 }
 
-function renderModal(session) {
+// The wrong-answer pop-up carries the reason itself, so nobody has to scroll to find it.
+function wrongReason(session, question) {
+  return question.reasons?.[session.choice] || question.trap;
+}
+
+function renderModal(session, question) {
   const loss = session.lastMoneyLoss || WRONG_ANSWER_PENALTY;
   const broke = session.money === 0;
-  return `<div class="bankrupt-overlay wrong-answer-overlay shop-modal" data-wrong-answer-modal role="dialog" aria-modal="true" aria-labelledby="shop-modal-title"><section class="bankrupt-dialog wrong-answer-dialog"><h2 id="shop-modal-title">${broke ? "錢被騙光了！" : "錢被騙走了！"}</h2><p class="shop-modal-loss">💸 −NT$${loss}</p><p>只是練習，沒有真的付錢。</p><button class="primary" type="button" data-shop-action="dismiss" data-wrong-answer-dismiss>知道了</button></section></div>`;
+  // Same layout as the LINE wallet reminder: kicker, title, meme with the money pill,
+  // then the reasons beside the picture (stacked below it on narrow screens).
+  return `<div class="bankrupt-overlay wrong-answer-overlay shop-modal" data-wrong-answer-modal role="dialog" aria-modal="true" aria-labelledby="shop-modal-title" aria-describedby="shop-modal-why"><section class="bankrupt-dialog wrong-answer-dialog"><p class="bankrupt-kicker">錢包提醒</p><h2 id="shop-modal-title">${broke ? "你的錢被騙光了" : "你的錢被騙走了"}</h2><div class="shop-modal-layout"><div class="wrong-answer-image-row"><img src="assets/free-money-meme.jpg?v=2" alt="派大星在寫著「免費錢錢」的攤位，把一箱鈔票送給路人" /><span class="money-flight" aria-hidden="true">💸 −NT$${loss}</span></div><div class="shop-modal-reasons"><div class="shop-modal-box is-wrong"><span class="shop-modal-tag">你選了</span><p>${escapeHtml(question.options[session.choice])}</p></div><div class="shop-modal-box is-why" id="shop-modal-why"><span class="shop-modal-tag">✗ 為什麼不行</span><p>${escapeHtml(wrongReason(session, question))}</p></div><div class="shop-modal-box is-safe"><span class="shop-modal-tag">✓ 這樣做才安全</span><p>${escapeHtml(question.options[question.answer])}</p></div></div></div><p class="shop-modal-note">只是練習，沒有真的付錢。</p><button class="primary" type="button" data-shop-action="dismiss" data-wrong-answer-dismiss>知道了，查看解析</button></section></div>`;
+}
+
+// Every option with its verdict and reason, so learners see why each wrong one fails,
+// not only the one they picked.
+function renderOptionReview(session, question) {
+  const items = question.options.map((option, index) => {
+    const right = index === question.answer;
+    const picked = index === session.choice;
+    const reason = right ? "這樣最安全。" : question.reasons?.[index] || question.trap;
+    return `<li class="shop-option-review ${right ? "is-right" : "is-wrong"}${picked ? " is-picked" : ""}"><div class="shop-option-head"><span class="shop-option-mark" aria-hidden="true">${right ? "✓" : "✗"}</span><strong>${index + 1}. ${escapeHtml(option)}</strong>${picked ? `<span class="shop-option-picked">你選的</span>` : ""}</div><p><span class="visually-hidden">${right ? "正確：" : "錯誤："}</span>${escapeHtml(reason)}</p></li>`;
+  });
+  return `<section class="shop-option-reviews"><h2>每個選項解析</h2><ol>${items.join("")}</ol></section>`;
 }
 
 function renderResult(session, question, scene) {
@@ -136,7 +158,7 @@ function renderResult(session, question, scene) {
   const verdict = session.correct
     ? `<span class="answer-label">✓ 答對了</span><h1 tabindex="-1">做得好！</h1>`
     : `<span class="answer-label">答錯了</span><h1 tabindex="-1">這樣會被騙</h1>`;
-  return `<article class="quiz-content answer-page shop-result" data-shop-speech>${verdict}<section class="safe-action"><h2>這樣做才安全</h2><p>${escapeHtml(question.options[question.answer])}</p></section><p class="answer-explanation">${escapeHtml(question.explain)}</p><section class="shop-flag-summary"><h2>可疑的地方</h2>${renderFlagList(session, scene)}</section><div class="answer-actions"><button class="primary" type="button" data-shop-action="next">${last ? "看結果" : "下一題"} <span aria-hidden="true">→</span></button><button class="secondary" type="button" data-shop-action="read">唸給我聽</button></div></article>${session.modalOpen ? renderModal(session) : ""}`;
+  return `<article class="quiz-content answer-page shop-result" data-shop-speech>${verdict}<section class="safe-action"><h2>這樣做才安全</h2><p>${escapeHtml(question.options[question.answer])}</p></section><p class="answer-explanation">${escapeHtml(question.explain)}</p>${renderOptionReview(session, question)}<section class="shop-flag-summary"><h2>可疑的地方</h2>${renderFlagList(session, scene)}</section><div class="answer-actions"><button class="primary" type="button" data-shop-action="next">${last ? "看結果" : "下一題"} <span aria-hidden="true">→</span></button><button class="secondary" type="button" data-shop-action="read">唸給我聽</button></div></article>${session.modalOpen ? renderModal(session, question) : ""}`;
 }
 
 function renderComplete(session) {
@@ -160,7 +182,7 @@ function speechFor(session) {
   }
   if (session.stage === "decide")
     return `你會怎麼做？${question.options.map((o, i) => `${i + 1}，${o}`).join("。")}`;
-  return `${session.correct ? "答對了！" : "答錯了，錢被騙走了。"}這樣做才安全：${question.options[question.answer]}。${question.explain}`;
+  return `${session.correct ? "答對了！" : `答錯了，錢被騙走了。為什麼不行：${wrongReason(session, question)}`}這樣做才安全：${question.options[question.answer]}。${question.explain}其他選項：${question.options.map((o, i) => (i === question.answer ? "" : `${o}，${question.reasons?.[i] || question.trap}`)).filter(Boolean).join("")}`;
 }
 
 export function createShopController() {
@@ -231,6 +253,11 @@ export function createShopController() {
       session = tapSpot(session, data.spot);
       save();
       render({ focus: `[data-spot="${data.spot}"]` });
+    } else if (name === "close-tip") {
+      const spotId = session.lastSpot;
+      session = { ...session, lastSpot: null };
+      save();
+      render({ speak: false, focus: spotId ? `[data-spot="${spotId}"]` : null });
     } else if (name === "hint") {
       session = useHint(session);
       save();

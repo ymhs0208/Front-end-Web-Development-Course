@@ -1,6 +1,6 @@
-import { bank, branchScenarios } from "../data/questions.js?v=shop-2";
+import { bank, branchScenarios } from "../data/questions.js?v=shop-7";
 import { findMistakes } from "./engine.js?v=job-9-4";
-import { flagIds, shopScenes } from "../data/shop-scenarios.js?v=shop-2";
+import { flagIds, shopScenes } from "../data/shop-scenarios.js?v=shop-7";
 const STORAGE_KEY = "vault-training-v1";
 const SCENARIO_RESULTS_KEY = "vault-scenario-results-v1";
 const SHOP_RESULTS_KEY = "vault-shop-results-v1";

@@ -1,6 +1,6 @@
-import { pageNarration } from "./page-narration.js?v=shop-2";
+import { pageNarration } from "./page-narration.js?v=shop-7";
 import { $ } from "../core/dom.js?v=job-9-4";
-import { getState, updateSettings } from "../core/store.js?v=shop-2";
+import { getState, updateSettings } from "../core/store.js?v=shop-7";
 import { toast } from "../components/notifications.js?v=job-9-4";
 import { createTaiwaneseSpeech } from "./taiwanese-tts.js?v=job-9-4";
 import { createHakkaSpeech } from "./hakka-tts.js?v=job-9-4";

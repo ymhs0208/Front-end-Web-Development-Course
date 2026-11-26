@@ -9,14 +9,14 @@ import {
 } from "./branch-chat.js?v=q9-payment-return-1";
 import { escapeHtml, renderJobBlockResult, renderLineChatQuestion, renderSupportCallResult } from "./line-chat.js?v=q5-repeat-call-2";
 import { STARTING_MONEY, applyWrongAnswerPenalty } from "../core/money.js?v=job-9-4";
-import { compactOptions } from "../data/compact-options.js?v=shop-2";
+import { compactOptions } from "../data/compact-options.js?v=shop-7";
 import { $ } from "../core/dom.js?v=job-9-4";
-import { bank, types } from "../data/questions.js?v=shop-2";
+import { bank, types } from "../data/questions.js?v=shop-7";
 import {
   getState,
   recordResult,
   recordScenarioResult,
-} from "../core/store.js?v=shop-2";
+} from "../core/store.js?v=shop-7";
 import { selectQuestions } from "../core/engine.js?v=job-9-4";
 import { restoreSession, saveSession } from "../core/session.js?v=q5-repeat-call-2";
 import { say, stopSpeech, isSpeaking } from "./accessibility.js?v=job-9-4";

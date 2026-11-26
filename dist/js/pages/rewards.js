@@ -1,5 +1,5 @@
-import { activeLineQuestionIds, bank } from "../data/questions.js?v=shop-2";
-import { getState, getMistakes } from "../core/store.js?v=shop-2";
+import { activeLineQuestionIds, bank } from "../data/questions.js?v=shop-7";
+import { getState, getMistakes } from "../core/store.js?v=shop-7";
 import {
   getRewards,
   getCompanion,
